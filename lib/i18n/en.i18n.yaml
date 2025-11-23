@@ -230,7 +230,7 @@ coordinator:
     unresponsive: "This coordinator is unresponsive"
     waitingResponse: "Waiting for coordinator response"
     termsAccept: "I accept coordinator's "
-    termsOfUsage: "Terms of Usage"
+    termsOfUsage: "Terms of use"
   
   dialog:
     makerFee: "Maker Fee"

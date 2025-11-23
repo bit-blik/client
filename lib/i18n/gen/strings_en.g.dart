@@ -1053,8 +1053,8 @@ class TranslationsCoordinatorSelectorEn {
 	/// en: 'I accept coordinator's '
 	String get termsAccept => 'I accept coordinator\'s ';
 
-	/// en: 'Terms of Usage'
-	String get termsOfUsage => 'Terms of Usage';
+	/// en: 'Terms of use'
+	String get termsOfUsage => 'Terms of use';
 }
 
 // Path: coordinator.dialog
@@ -2749,7 +2749,7 @@ extension on Translations {
 			case 'coordinator.selector.unresponsive': return 'This coordinator is unresponsive';
 			case 'coordinator.selector.waitingResponse': return 'Waiting for coordinator response';
 			case 'coordinator.selector.termsAccept': return 'I accept coordinator\'s ';
-			case 'coordinator.selector.termsOfUsage': return 'Terms of Usage';
+			case 'coordinator.selector.termsOfUsage': return 'Terms of use';
 			case 'coordinator.dialog.makerFee': return 'Maker Fee';
 			case 'coordinator.dialog.takerFee': return 'Taker Fee';
 			case 'coordinator.dialog.amountRange': return 'Amount Range';
