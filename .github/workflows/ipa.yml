@@ -51,6 +51,9 @@ jobs:
             -archivePath build/Runner.xcarchive \
             DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM \
             CODE_SIGN_IDENTITY="Apple Distribution" \
+            CODE_SIGNING_REQUIRED=YES \
+            CODE_SIGN_STYLE=Manual \
+            PROVISIONING_PROFILE_SPECIFIER=bitblik1 \
             archive
 
       - name: Export signed IPA
