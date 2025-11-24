@@ -464,7 +464,7 @@ taker:
     expiredSentWarning: "Twórca oferty jeszcze nie potwierdził płatności. Co chcesz zrobić?"
     expiredInstruction1: "Jeśli chcesz spróbować ponownie z nowym kodem BLIK, odnów rezerwację."
     expiredInstruction2: "Jeśli nie chcesz już dokończyć tej transakcji, anuluj rezerwację."
-    expiredInstruction3: "Jeśli płatność BLIK została pobrana z Twojego konta bankowego, zgłoś konflikt, aby rozpocząć spór."
+    expiredInstruction3: "Jeśli płatność BLIK została pobrana z Twojego konta bankowego, nie martw się, bitcoin jest nadal bezpiecznie zablokowany u koordynatora."
     
     expiredActions:
       reportConflict: "BLIK został pobrany z mojego konta"
@@ -544,12 +544,15 @@ taker:
   invalidBlik:
     title: Nieprawidłowy Kod BLIK
     message: Maker Odrzucił Kod BLIK
-    explanation: Maker oferty wskazał, że podany przez Ciebie kod BLIK był nieprawidłowy lub nie zadziałał. Co chcesz zrobić?
-    
+    explanation: Maker oferty wskazał, że podany przez Ciebie kod BLIK był nieprawidłowy lub nie zadziałał.\n\nCo chcesz zrobić?
+
+    werentCharged: "Jeśli Twoje konto NIE zostało obciążone:"
+    wereCharged: "Jeśli Twoje konto zostało obciążone:"
+
     actions:
-      retry: NIE zapłaciłem, zarezerwuj ofertę ponownie i wyślij nowy kod BLIK
-      cancelReservation: NIE zapłaciłem, anuluj rezerwację
-      reportConflict: POTWIERDZIŁEM KOD BLIK I ZOSTAŁ OBCIĄŻONY Z MOJEGO KONTA BANKOWEGO, Zgłoś konflikt, spowoduje to SPÓR!
+      retry: Wyślij nowy kod BLIK
+      cancelReservation: Anuluj Transakcję
+      reportConflict: Rozpocząć Spór
       returnHome: Wróć do strony głównej
     
     feedback:

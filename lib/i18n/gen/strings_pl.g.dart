@@ -946,7 +946,7 @@ class _TranslationsTakerWaitConfirmationPl extends TranslationsTakerWaitConfirma
 	@override String get expiredSentWarning => 'Twórca oferty jeszcze nie potwierdził płatności. Co chcesz zrobić?';
 	@override String get expiredInstruction1 => 'Jeśli chcesz spróbować ponownie z nowym kodem BLIK, odnów rezerwację.';
 	@override String get expiredInstruction2 => 'Jeśli nie chcesz już dokończyć tej transakcji, anuluj rezerwację.';
-	@override String get expiredInstruction3 => 'Jeśli płatność BLIK została pobrana z Twojego konta bankowego, zgłoś konflikt, aby rozpocząć spór.';
+	@override String get expiredInstruction3 => 'Jeśli płatność BLIK została pobrana z Twojego konta bankowego, nie martw się, bitcoin jest nadal bezpiecznie zablokowany u koordynatora.';
 	@override late final _TranslationsTakerWaitConfirmationExpiredActionsPl expiredActions = _TranslationsTakerWaitConfirmationExpiredActionsPl._(_root);
 	@override late final _TranslationsTakerWaitConfirmationFeedbackPl feedback = _TranslationsTakerWaitConfirmationFeedbackPl._(_root);
 	@override late final _TranslationsTakerWaitConfirmationErrorsPl errors = _TranslationsTakerWaitConfirmationErrorsPl._(_root);
@@ -1005,7 +1005,9 @@ class _TranslationsTakerInvalidBlikPl extends TranslationsTakerInvalidBlikEn {
 	// Translations
 	@override String get title => 'Nieprawidłowy Kod BLIK';
 	@override String get message => 'Maker Odrzucił Kod BLIK';
-	@override String get explanation => 'Maker oferty wskazał, że podany przez Ciebie kod BLIK był nieprawidłowy lub nie zadziałał. Co chcesz zrobić?';
+	@override String get explanation => 'Maker oferty wskazał, że podany przez Ciebie kod BLIK był nieprawidłowy lub nie zadziałał.\n\nCo chcesz zrobić?';
+	@override String get werentCharged => 'Jeśli Twoje konto NIE zostało obciążone:';
+	@override String get wereCharged => 'Jeśli Twoje konto zostało obciążone:';
 	@override late final _TranslationsTakerInvalidBlikActionsPl actions = _TranslationsTakerInvalidBlikActionsPl._(_root);
 	@override late final _TranslationsTakerInvalidBlikFeedbackPl feedback = _TranslationsTakerInvalidBlikFeedbackPl._(_root);
 	@override late final _TranslationsTakerInvalidBlikErrorsPl errors = _TranslationsTakerInvalidBlikErrorsPl._(_root);
@@ -1644,9 +1646,9 @@ class _TranslationsTakerInvalidBlikActionsPl extends TranslationsTakerInvalidBli
 	final TranslationsPl _root; // ignore: unused_field
 
 	// Translations
-	@override String get retry => 'NIE zapłaciłem, zarezerwuj ofertę ponownie i wyślij nowy kod BLIK';
-	@override String get cancelReservation => 'NIE zapłaciłem, anuluj rezerwację';
-	@override String get reportConflict => 'POTWIERDZIŁEM KOD BLIK I ZOSTAŁ OBCIĄŻONY Z MOJEGO KONTA BANKOWEGO, Zgłoś konflikt, spowoduje to SPÓR!';
+	@override String get retry => 'Wyślij nowy kod BLIK';
+	@override String get cancelReservation => 'Anuluj Transakcję';
+	@override String get reportConflict => 'Rozpocząć Spór';
 	@override String get returnHome => 'Wróć do strony głównej';
 }
 
@@ -2031,7 +2033,7 @@ extension on TranslationsPl {
 			case 'taker.waitConfirmation.expiredSentWarning': return 'Twórca oferty jeszcze nie potwierdził płatności. Co chcesz zrobić?';
 			case 'taker.waitConfirmation.expiredInstruction1': return 'Jeśli chcesz spróbować ponownie z nowym kodem BLIK, odnów rezerwację.';
 			case 'taker.waitConfirmation.expiredInstruction2': return 'Jeśli nie chcesz już dokończyć tej transakcji, anuluj rezerwację.';
-			case 'taker.waitConfirmation.expiredInstruction3': return 'Jeśli płatność BLIK została pobrana z Twojego konta bankowego, zgłoś konflikt, aby rozpocząć spór.';
+			case 'taker.waitConfirmation.expiredInstruction3': return 'Jeśli płatność BLIK została pobrana z Twojego konta bankowego, nie martw się, bitcoin jest nadal bezpiecznie zablokowany u koordynatora.';
 			case 'taker.waitConfirmation.expiredActions.reportConflict': return 'BLIK został pobrany z mojego konta';
 			case 'taker.waitConfirmation.expiredActions.renewReservation': return 'Spróbuj ponownie z nowym kodem BLIK';
 			case 'taker.waitConfirmation.expiredActions.cancelReservation': return 'Anuluj rezerwację';
@@ -2081,10 +2083,12 @@ extension on TranslationsPl {
 			case 'taker.paymentSuccess.actions.goHome': return 'Przejdź do strony głównej';
 			case 'taker.invalidBlik.title': return 'Nieprawidłowy Kod BLIK';
 			case 'taker.invalidBlik.message': return 'Maker Odrzucił Kod BLIK';
-			case 'taker.invalidBlik.explanation': return 'Maker oferty wskazał, że podany przez Ciebie kod BLIK był nieprawidłowy lub nie zadziałał. Co chcesz zrobić?';
-			case 'taker.invalidBlik.actions.retry': return 'NIE zapłaciłem, zarezerwuj ofertę ponownie i wyślij nowy kod BLIK';
-			case 'taker.invalidBlik.actions.cancelReservation': return 'NIE zapłaciłem, anuluj rezerwację';
-			case 'taker.invalidBlik.actions.reportConflict': return 'POTWIERDZIŁEM KOD BLIK I ZOSTAŁ OBCIĄŻONY Z MOJEGO KONTA BANKOWEGO, Zgłoś konflikt, spowoduje to SPÓR!';
+			case 'taker.invalidBlik.explanation': return 'Maker oferty wskazał, że podany przez Ciebie kod BLIK był nieprawidłowy lub nie zadziałał.\n\nCo chcesz zrobić?';
+			case 'taker.invalidBlik.werentCharged': return 'Jeśli Twoje konto NIE zostało obciążone:';
+			case 'taker.invalidBlik.wereCharged': return 'Jeśli Twoje konto zostało obciążone:';
+			case 'taker.invalidBlik.actions.retry': return 'Wyślij nowy kod BLIK';
+			case 'taker.invalidBlik.actions.cancelReservation': return 'Anuluj Transakcję';
+			case 'taker.invalidBlik.actions.reportConflict': return 'Rozpocząć Spór';
 			case 'taker.invalidBlik.actions.returnHome': return 'Wróć do strony głównej';
 			case 'taker.invalidBlik.feedback.conflictReportedSuccess': return 'Konflikt zgłoszony. Koordynator rozpatrzy sprawę.';
 			case 'taker.invalidBlik.errors.reservationFailed': return 'Nie udało się ponownie zarezerwować oferty';

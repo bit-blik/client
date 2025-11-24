@@ -464,7 +464,7 @@ taker:
     expiredSentWarning: "The maker hasn't confirmed the payment yet. What would you like to do?"
     expiredInstruction1: "If you want to try again with a new BLIK code, renew the reservation."
     expiredInstruction2: "If you no longer want to complete this transaction, cancel the reservation."
-    expiredInstruction3: "If the BLIK payment was charged from your bank account, report a conflict to start a dispute."
+    expiredInstruction3: "If the BLIK payment was charged from your bank account, do not worry, the bitcoin is still safely locked with the coordinator."
     
     expiredActions:
       reportConflict: "BLIK was charged from my bank account"
@@ -544,12 +544,15 @@ taker:
   invalidBlik:
     title: Invalid BLIK Code
     message: Maker Rejected BLIK Code
-    explanation: The offer maker indicated that the BLIK code you provided was invalid or didn't work. What would you like to do?
-    
+    explanation: The offer maker indicated that the BLIK code you provided was invalid or didn't work.\n\nWhat would you like to do?
+
+    werentCharged: "If you were NOT charged:"
+    wereCharged: "If you were charged:"
+
     actions:
-      retry: I DID NOT PAY, reserve offer again and send new BLIK code
-      cancelReservation: I DID NOT PAY, cancel the reservation
-      reportConflict: I CONFIRMED BLIK CODE AND IT WAS CHARGED FROM MY BANK ACCOUNT, Report conflict, will cause DISPUTE!
+      retry: Send new BLIK code
+      cancelReservation: Cancel Transaction
+      reportConflict: Start Dispute
       returnHome: Return to home
     
     feedback:

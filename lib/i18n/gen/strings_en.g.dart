@@ -1474,8 +1474,8 @@ class TranslationsTakerWaitConfirmationEn {
 	/// en: 'If you no longer want to complete this transaction, cancel the reservation.'
 	String get expiredInstruction2 => 'If you no longer want to complete this transaction, cancel the reservation.';
 
-	/// en: 'If the BLIK payment was charged from your bank account, report a conflict to start a dispute.'
-	String get expiredInstruction3 => 'If the BLIK payment was charged from your bank account, report a conflict to start a dispute.';
+	/// en: 'If the BLIK payment was charged from your bank account, do not worry, the bitcoin is still safely locked with the coordinator.'
+	String get expiredInstruction3 => 'If the BLIK payment was charged from your bank account, do not worry, the bitcoin is still safely locked with the coordinator.';
 
 	late final TranslationsTakerWaitConfirmationExpiredActionsEn expiredActions = TranslationsTakerWaitConfirmationExpiredActionsEn.internal(_root);
 	late final TranslationsTakerWaitConfirmationFeedbackEn feedback = TranslationsTakerWaitConfirmationFeedbackEn.internal(_root);
@@ -1555,8 +1555,14 @@ class TranslationsTakerInvalidBlikEn {
 	/// en: 'Maker Rejected BLIK Code'
 	String get message => 'Maker Rejected BLIK Code';
 
-	/// en: 'The offer maker indicated that the BLIK code you provided was invalid or didn't work. What would you like to do?'
-	String get explanation => 'The offer maker indicated that the BLIK code you provided was invalid or didn\'t work. What would you like to do?';
+	/// en: 'The offer maker indicated that the BLIK code you provided was invalid or didn't work.\n\nWhat would you like to do?'
+	String get explanation => 'The offer maker indicated that the BLIK code you provided was invalid or didn\'t work.\n\nWhat would you like to do?';
+
+	/// en: 'If you were NOT charged:'
+	String get werentCharged => 'If you were NOT charged:';
+
+	/// en: 'If you were charged:'
+	String get wereCharged => 'If you were charged:';
 
 	late final TranslationsTakerInvalidBlikActionsEn actions = TranslationsTakerInvalidBlikActionsEn.internal(_root);
 	late final TranslationsTakerInvalidBlikFeedbackEn feedback = TranslationsTakerInvalidBlikFeedbackEn.internal(_root);
@@ -2488,14 +2494,14 @@ class TranslationsTakerInvalidBlikActionsEn {
 
 	// Translations
 
-	/// en: 'I DID NOT PAY, reserve offer again and send new BLIK code'
-	String get retry => 'I DID NOT PAY, reserve offer again and send new BLIK code';
+	/// en: 'Send new BLIK code'
+	String get retry => 'Send new BLIK code';
 
-	/// en: 'I DID NOT PAY, cancel the reservation'
-	String get cancelReservation => 'I DID NOT PAY, cancel the reservation';
+	/// en: 'Cancel Transaction'
+	String get cancelReservation => 'Cancel Transaction';
 
-	/// en: 'I CONFIRMED BLIK CODE AND IT WAS CHARGED FROM MY BANK ACCOUNT, Report conflict, will cause DISPUTE!'
-	String get reportConflict => 'I CONFIRMED BLIK CODE AND IT WAS CHARGED FROM MY BANK ACCOUNT, Report conflict, will cause DISPUTE!';
+	/// en: 'Start Dispute'
+	String get reportConflict => 'Start Dispute';
 
 	/// en: 'Return to home'
 	String get returnHome => 'Return to home';
@@ -2902,7 +2908,7 @@ extension on Translations {
 			case 'taker.waitConfirmation.expiredSentWarning': return 'The maker hasn\'t confirmed the payment yet. What would you like to do?';
 			case 'taker.waitConfirmation.expiredInstruction1': return 'If you want to try again with a new BLIK code, renew the reservation.';
 			case 'taker.waitConfirmation.expiredInstruction2': return 'If you no longer want to complete this transaction, cancel the reservation.';
-			case 'taker.waitConfirmation.expiredInstruction3': return 'If the BLIK payment was charged from your bank account, report a conflict to start a dispute.';
+			case 'taker.waitConfirmation.expiredInstruction3': return 'If the BLIK payment was charged from your bank account, do not worry, the bitcoin is still safely locked with the coordinator.';
 			case 'taker.waitConfirmation.expiredActions.reportConflict': return 'BLIK was charged from my bank account';
 			case 'taker.waitConfirmation.expiredActions.renewReservation': return 'Try again with new BLIK code';
 			case 'taker.waitConfirmation.expiredActions.cancelReservation': return 'Cancel reservation';
@@ -2952,10 +2958,12 @@ extension on Translations {
 			case 'taker.paymentSuccess.actions.goHome': return 'Go to home';
 			case 'taker.invalidBlik.title': return 'Invalid BLIK Code';
 			case 'taker.invalidBlik.message': return 'Maker Rejected BLIK Code';
-			case 'taker.invalidBlik.explanation': return 'The offer maker indicated that the BLIK code you provided was invalid or didn\'t work. What would you like to do?';
-			case 'taker.invalidBlik.actions.retry': return 'I DID NOT PAY, reserve offer again and send new BLIK code';
-			case 'taker.invalidBlik.actions.cancelReservation': return 'I DID NOT PAY, cancel the reservation';
-			case 'taker.invalidBlik.actions.reportConflict': return 'I CONFIRMED BLIK CODE AND IT WAS CHARGED FROM MY BANK ACCOUNT, Report conflict, will cause DISPUTE!';
+			case 'taker.invalidBlik.explanation': return 'The offer maker indicated that the BLIK code you provided was invalid or didn\'t work.\n\nWhat would you like to do?';
+			case 'taker.invalidBlik.werentCharged': return 'If you were NOT charged:';
+			case 'taker.invalidBlik.wereCharged': return 'If you were charged:';
+			case 'taker.invalidBlik.actions.retry': return 'Send new BLIK code';
+			case 'taker.invalidBlik.actions.cancelReservation': return 'Cancel Transaction';
+			case 'taker.invalidBlik.actions.reportConflict': return 'Start Dispute';
 			case 'taker.invalidBlik.actions.returnHome': return 'Return to home';
 			case 'taker.invalidBlik.feedback.conflictReportedSuccess': return 'Conflict reported. Coordinator will review.';
 			case 'taker.invalidBlik.errors.reservationFailed': return 'Failed to reserve offer again';
