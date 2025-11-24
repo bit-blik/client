@@ -513,7 +513,7 @@ taker:
       cancelled: Oferta anulowana.
       paymentFailed: Płatność oferty nie powiodła się.
       unknown: Nieznany błąd oferty.
-      takerPaymentFailed: "Płatność na Twoją fakturę Lightning nie powiodła się. Przejdź do szczegółów błędu, aby podać nową fakturę lub zbadać problem."
+      takerPaymentFailed: "Płatność na Twoją fakturę Lightning nie powiodła się."
       noPublicKey: "Błąd: Nie można pobrać Twojego klucza publicznego."
       loadingPublicKey: Błąd ładowania Twoich danych
       missingPaymentHash: "Błąd: Brakujące szczegóły płatności."
@@ -522,7 +522,7 @@ taker:
       publicKey: Ładowanie Twoich danych...
     
     actions:
-      goToFailureDetails: "Przejdź do Szczegółów Błędu"
+      goToFailureDetails: "Wprowadź nową fakturę Lightning"
   
   paymentFailed:
     title: Płatność Nie Powiodła Się

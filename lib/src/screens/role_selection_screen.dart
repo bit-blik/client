@@ -175,16 +175,15 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
         offerStatus == OfferStatus.expiredSentBlik ||
         offerStatus == OfferStatus.takerCharged
     ) {
-      // Pass the offer to the constructor using offer
       context.go("/wait-confirmation", extra: offer);
-    } else if (offerStatus == OfferStatus.takerPaymentFailed) {
-      // Navigate to the new payment failed screen
+    } else if (offerStatus == OfferStatus.settled) {
+      context.go('/paying-taker', extra: offer);
 
+    } else if (offerStatus == OfferStatus.takerPaymentFailed) {
       context.go('/taker-failed', extra: offer);
     } else if (offerStatus == OfferStatus.invalidBlik) {
       context.go('/taker-invalid-blik', extra: offer);
     } else if (offerStatus == OfferStatus.conflict) {
-      // Navigate to the taker conflict screen
       context.go('/taker-conflict', extra: offer.id);
     } else {
       Logger.log.e(

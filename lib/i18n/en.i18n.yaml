@@ -513,7 +513,7 @@ taker:
       cancelled: Offer cancelled.
       paymentFailed: Offer payment failed.
       unknown: Unknown offer error.
-      takerPaymentFailed: "The payment to your Lightning invoice failed. Please go to the failure details screen to provide a new invoice or investigate."
+      takerPaymentFailed: "The payment to your Lightning invoice failed."
       noPublicKey: "Error: Cannot fetch your public key."
       loadingPublicKey: Error loading your data
       missingPaymentHash: "Error: Missing payment details."
@@ -522,7 +522,7 @@ taker:
       publicKey: Loading your data...
     
     actions:
-      goToFailureDetails: "Go to Failure Details"
+      goToFailureDetails: "Retry with new invoice"
   
   paymentFailed:
     title: Payment Failed

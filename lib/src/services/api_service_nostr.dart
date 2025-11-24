@@ -321,13 +321,13 @@ class ApiServiceNostr {
   }
 
   // POST /offers/{offerId}/retry-taker-payment - via Nostr
-  Future<void> retryTakerPayment({
+  Future<Map<String, dynamic>> retryTakerPayment({
     required String offerId,
     required String userPubkey,
     required String coordinatorPubkey,
   }) async {
     try {
-      await _nostrService.retryTakerPayment(
+      return await _nostrService.retryTakerPayment(
         offerId: offerId,
         userPubkey: userPubkey,
         coordinatorPubkey: coordinatorPubkey,

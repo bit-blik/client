@@ -289,6 +289,7 @@ class _OfferDetailsScreenState extends ConsumerState<OfferDetailsScreen> {
             );
           } else if (myActiveOffer != null &&
               offer.id == myActiveOffer.id &&
+              offer.takerPubkey == publicKeyAsyncValue.value! &&
               (myActiveOffer.isInvalidBlik || myActiveOffer.isConflict)) {
             // Show button for conflict or invalidBlik if it's the active offer
             actionButton = SizedBox(
@@ -319,7 +320,7 @@ class _OfferDetailsScreenState extends ConsumerState<OfferDetailsScreen> {
               ),
             );
           } else if (isReserved || isBlikReceived) {
-            if (myActiveOffer != null && offer.id == myActiveOffer.id) {
+            if (myActiveOffer != null && offer.id == myActiveOffer.id && offer.takerPubkey == publicKeyAsyncValue.value!) {
               actionButton = SizedBox(
                 width: double.infinity,
                 height: 56,

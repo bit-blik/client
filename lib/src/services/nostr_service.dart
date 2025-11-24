@@ -419,7 +419,7 @@ class NostrService {
 
   /// Generate a random request ID
   String _generateRequestId() {
-    return _random.nextInt(999999).toString().padLeft(6, '0');
+    return _random.nextInt(9999999).toString().padLeft(6, '0');
   }
 
   /// Helper method to handle response and throw exceptions on error
@@ -809,7 +809,7 @@ class NostrService {
   }
 
   /// POST /offers/{offerId}/retry-taker-payment
-  Future<void> retryTakerPayment({
+  Future<Map<String, dynamic>> retryTakerPayment({
     required String offerId,
     required String userPubkey,
     required String coordinatorPubkey,
@@ -820,7 +820,7 @@ class NostrService {
     );
 
     final response = await sendRequest(request, coordinatorPubkey);
-    _handleResponse(response, (result) => null);
+    return _handleResponse(response, (result) => result);
   }
 
   /// POST /offers/{offerId}/blik-invalid

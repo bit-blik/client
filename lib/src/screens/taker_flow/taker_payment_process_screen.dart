@@ -1,3 +1,5 @@
+import 'dart:developer' as Logger;
+
 import '../../../i18n/gen/strings.g.dart'; // Import Slang
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,7 +9,6 @@ import '../../models/offer.dart'; // Import Offer which contains OfferStatus
 import '../../providers/providers.dart';
 import '../../widgets/progress_indicators.dart'; // Import for TakerProgressIndicator
 
-// Define the checklist steps and their corresponding statuses
 enum PaymentStep {
   makerConfirmed,
   makerSettled,
@@ -37,19 +38,13 @@ class TakerPaymentProcessScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final paymentHash = ref.watch(paymentHashProvider);
+    final t = Translations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(t.taker.paymentProcess.title),
-        automaticallyImplyLeading: false,
-      ),
       body: Padding(
-        // Add padding around the checklist
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Progress indicator
             const TakerProgressIndicator(activeStep: 3),
             const SizedBox(height: 24),
             Expanded(
@@ -79,6 +74,17 @@ class TakerPaymentProcessScreen extends ConsumerWidget {
   ) {
     // Watch the active offer for real-time updates
     final offer = ref.watch(activeOfferProvider);
+
+    ref.listen<Offer?>(activeOfferProvider, (previous, next) {
+      if (next != null && next.id == offer!.id) {
+        try {
+          final status = OfferStatus.values.byName(next.status);
+          print(status);
+        } catch (e) {
+          print(e);
+        }
+      }
+    });
 
     if (offer == null) {
       // Offer might be loading or cleared, show a loading indicator.
@@ -152,6 +158,7 @@ class _PaymentChecklist extends ConsumerWidget {
   });
 
   String _getStepText(PaymentStep step) {
+
     switch (step) {
       case PaymentStep.makerConfirmed:
         return t.taker.paymentProcess.steps.makerConfirmedBlik;
@@ -168,6 +175,8 @@ class _PaymentChecklist extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = Translations.of(context);
+
     bool isFailed = currentStatus == OfferStatus.takerPaymentFailed;
 
     // Find the index corresponding to the current status in the successful flow

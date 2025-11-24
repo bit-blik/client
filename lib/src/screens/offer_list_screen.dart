@@ -798,6 +798,7 @@ class _OfferListScreenState extends ConsumerState<OfferListScreen> {
                                     } else if (isReserved || isBlikReceived) {
                                       if (myActiveOffer != null &&
                                           offer.id == myActiveOffer.id &&
+                                          offer.takerPubkey == publicKey &&
                                           !myActiveOffer.isDispute) {
                                         trailingWidget = ElevatedButton(
                                           child: Text(t.offers.actions.view),

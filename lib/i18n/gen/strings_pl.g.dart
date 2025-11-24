@@ -1563,7 +1563,7 @@ class _TranslationsTakerPaymentProcessErrorsPl extends TranslationsTakerPaymentP
 	@override String get cancelled => 'Oferta anulowana.';
 	@override String get paymentFailed => 'Płatność oferty nie powiodła się.';
 	@override String get unknown => 'Nieznany błąd oferty.';
-	@override String get takerPaymentFailed => 'Płatność na Twoją fakturę Lightning nie powiodła się. Przejdź do szczegółów błędu, aby podać nową fakturę lub zbadać problem.';
+	@override String get takerPaymentFailed => 'Płatność na Twoją fakturę Lightning nie powiodła się.';
 	@override String get noPublicKey => 'Błąd: Nie można pobrać Twojego klucza publicznego.';
 	@override String get loadingPublicKey => 'Błąd ładowania Twoich danych';
 	@override String get missingPaymentHash => 'Błąd: Brakujące szczegóły płatności.';
@@ -1586,7 +1586,7 @@ class _TranslationsTakerPaymentProcessActionsPl extends TranslationsTakerPayment
 	final TranslationsPl _root; // ignore: unused_field
 
 	// Translations
-	@override String get goToFailureDetails => 'Przejdź do Szczegółów Błędu';
+	@override String get goToFailureDetails => 'Wprowadź nową fakturę Lightning';
 }
 
 // Path: taker.paymentFailed.form
@@ -2080,12 +2080,12 @@ extension on TranslationsPl {
 			case 'taker.paymentProcess.errors.cancelled': return 'Oferta anulowana.';
 			case 'taker.paymentProcess.errors.paymentFailed': return 'Płatność oferty nie powiodła się.';
 			case 'taker.paymentProcess.errors.unknown': return 'Nieznany błąd oferty.';
-			case 'taker.paymentProcess.errors.takerPaymentFailed': return 'Płatność na Twoją fakturę Lightning nie powiodła się. Przejdź do szczegółów błędu, aby podać nową fakturę lub zbadać problem.';
+			case 'taker.paymentProcess.errors.takerPaymentFailed': return 'Płatność na Twoją fakturę Lightning nie powiodła się.';
 			case 'taker.paymentProcess.errors.noPublicKey': return 'Błąd: Nie można pobrać Twojego klucza publicznego.';
 			case 'taker.paymentProcess.errors.loadingPublicKey': return 'Błąd ładowania Twoich danych';
 			case 'taker.paymentProcess.errors.missingPaymentHash': return 'Błąd: Brakujące szczegóły płatności.';
 			case 'taker.paymentProcess.loading.publicKey': return 'Ładowanie Twoich danych...';
-			case 'taker.paymentProcess.actions.goToFailureDetails': return 'Przejdź do Szczegółów Błędu';
+			case 'taker.paymentProcess.actions.goToFailureDetails': return 'Wprowadź nową fakturę Lightning';
 			case 'taker.paymentFailed.title': return 'Płatność Nie Powiodła Się';
 			case 'taker.paymentFailed.instructions': return ({required Object netAmount}) => 'Proszę podać nową fakturę Lightning na kwotę ${netAmount} satoshi';
 			case 'taker.paymentFailed.form.newInvoiceLabel': return 'Nowa faktura Lightning';

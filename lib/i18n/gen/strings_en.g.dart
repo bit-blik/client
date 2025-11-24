@@ -2387,8 +2387,8 @@ class TranslationsTakerPaymentProcessErrorsEn {
 	/// en: 'Unknown offer error.'
 	String get unknown => 'Unknown offer error.';
 
-	/// en: 'The payment to your Lightning invoice failed. Please go to the failure details screen to provide a new invoice or investigate.'
-	String get takerPaymentFailed => 'The payment to your Lightning invoice failed. Please go to the failure details screen to provide a new invoice or investigate.';
+	/// en: 'The payment to your Lightning invoice failed.'
+	String get takerPaymentFailed => 'The payment to your Lightning invoice failed.';
 
 	/// en: 'Error: Cannot fetch your public key.'
 	String get noPublicKey => 'Error: Cannot fetch your public key.';
@@ -2420,8 +2420,8 @@ class TranslationsTakerPaymentProcessActionsEn {
 
 	// Translations
 
-	/// en: 'Go to Failure Details'
-	String get goToFailureDetails => 'Go to Failure Details';
+	/// en: 'Retry with new invoice'
+	String get goToFailureDetails => 'Retry with new invoice';
 }
 
 // Path: taker.paymentFailed.form
@@ -2965,12 +2965,12 @@ extension on Translations {
 			case 'taker.paymentProcess.errors.cancelled': return 'Offer cancelled.';
 			case 'taker.paymentProcess.errors.paymentFailed': return 'Offer payment failed.';
 			case 'taker.paymentProcess.errors.unknown': return 'Unknown offer error.';
-			case 'taker.paymentProcess.errors.takerPaymentFailed': return 'The payment to your Lightning invoice failed. Please go to the failure details screen to provide a new invoice or investigate.';
+			case 'taker.paymentProcess.errors.takerPaymentFailed': return 'The payment to your Lightning invoice failed.';
 			case 'taker.paymentProcess.errors.noPublicKey': return 'Error: Cannot fetch your public key.';
 			case 'taker.paymentProcess.errors.loadingPublicKey': return 'Error loading your data';
 			case 'taker.paymentProcess.errors.missingPaymentHash': return 'Error: Missing payment details.';
 			case 'taker.paymentProcess.loading.publicKey': return 'Loading your data...';
-			case 'taker.paymentProcess.actions.goToFailureDetails': return 'Go to Failure Details';
+			case 'taker.paymentProcess.actions.goToFailureDetails': return 'Retry with new invoice';
 			case 'taker.paymentFailed.title': return 'Payment Failed';
 			case 'taker.paymentFailed.instructions': return ({required Object netAmount}) => 'Please provide a new Lightning invoice for ${netAmount} satoshi';
 			case 'taker.paymentFailed.form.newInvoiceLabel': return 'New Lightning invoice';
