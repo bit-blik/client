@@ -90,9 +90,8 @@ offers:
   
     amount: "Amount: ${amount} satoshi"
     amountWithCurrency: "${amount} ${currency}"
-    makerFee: "Maker fee: ${fee} satoshi"
-    takerFee: "Taker fee: ${fee} satoshi"
-    takerFeeWithStatus: "Taker fee: ${fee} satoshi | Status: ${status}"
+    makerFee: "Fee: ${fee} sats"
+    takerFee: "Fee: ${fee} sats"
     subtitle: "${sats} + ${fee} (fee) satoshi\nStatus: ${status}"
     subtitleWithDate: "${sats} + ${fee} (fee) satoshi\nStatus: ${status}\nPaid: ${date}"
     activeSubtitle: "Status: ${status}\nAmount: ${amount} satoshi"
@@ -405,7 +404,7 @@ maker:
   success:
     title: Offer completed
     headline: Payment confirmed!
-    subtitle: Taker has been paid.
+    subtitle: Taker will now be paid.
     detailsTitle: "Offer details:"
 
 # =============================================================================

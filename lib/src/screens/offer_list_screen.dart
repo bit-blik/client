@@ -689,17 +689,27 @@ class _OfferListScreenState extends ConsumerState<OfferListScreen> {
                                                   ),
 
                                                 ListTile(
+
                                                   title: Text(
                                                     t.offers.details.amountWithCurrency(
                                                       amount: formatDouble(offer.fiatAmount ?? 0.0),
                                                       currency: offer.fiatCurrency,
                                                     ),
                                                   ),
+                                                  titleTextStyle: const TextStyle(
+                                                    fontWeight: FontWeight.w300,
+                                                    fontSize: 24,
+                                                    color: Colors.black,
+                                                  ),
                                                   subtitle: Text(
-                                                    '${t.offers.details.amount(amount: offer.amountSats.toString())}\n${t.offers.details.takerFeeWithStatus(fee: offer.takerFees?.toString() ?? "0", status: offer.status)}',
+                                                    '${t.offers.details.takerFee(fee: offer.takerFees?.toString() ?? "0")}',
+                                                  ),
+                                                  subtitleTextStyle: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.grey[700],
                                                   ),
                                                   isThreeLine: true,
-                                                  trailing: trailingWidget,
+                                                  trailing: const Icon(Icons.arrow_forward_ios),
                                                 ),
                                               ],
                                             ),
@@ -754,9 +764,8 @@ class _OfferListScreenState extends ConsumerState<OfferListScreen> {
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                             Text(
-                                              t.offers.details.takerFeeWithStatus(
-                                                fee: offer.takerFees?.toString() ?? "0",
-                                                status: offer.status,
+                                              t.offers.details.takerFee(
+                                                fee: offer.takerFees?.toString() ?? "0"
                                               ),
                                               style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                                               overflow: TextOverflow.ellipsis,

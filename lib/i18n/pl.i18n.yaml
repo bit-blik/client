@@ -90,9 +90,8 @@ offers:
   
     amount: "Kwota: ${amount} satoshi"
     amountWithCurrency: "${amount} ${currency}"
-    makerFee: "Opłata Maker: ${fee} satoshi"
-    takerFee: "Opłata Taker: ${fee} satoshi"
-    takerFeeWithStatus: "Opłata Taker: ${fee} satoshi | Status: ${status}"
+    makerFee: "Opłata: ${fee} sats"
+    takerFee: "Opłata: ${fee} sats"
     subtitle: "${sats} + ${fee} (opłata) satoshi\nStatus: ${status}"
     subtitleWithDate: "${sats} + ${fee} (opłata) satoshi\nStatus: ${status}\nZapłacono: ${date}"
     activeSubtitle: "Status: ${status}\nKwota: ${amount} satoshi"
@@ -404,7 +403,7 @@ maker:
   success:
     title: Oferta zakończona
     headline: Płatność potwierdzona!
-    subtitle: Kupujący otrzymał zapłatę.
+    subtitle: Osoba przyjmująca ofertę otrzyma teraz zapłatę.
     detailsTitle: "Szczegóły oferty:"
     duration: "Oferta zajęła ${time}!"
 

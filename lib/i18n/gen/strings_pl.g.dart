@@ -473,9 +473,8 @@ class _TranslationsOffersDetailsPl extends TranslationsOffersDetailsEn {
 	@override String get loadingDetails => 'Ładowanie szczegółów oferty...';
 	@override String amount({required Object amount}) => 'Kwota: ${amount} satoshi';
 	@override String amountWithCurrency({required Object amount, required Object currency}) => '${amount} ${currency}';
-	@override String makerFee({required Object fee}) => 'Opłata Maker: ${fee} satoshi';
-	@override String takerFee({required Object fee}) => 'Opłata Taker: ${fee} satoshi';
-	@override String takerFeeWithStatus({required Object fee, required Object status}) => 'Opłata Taker: ${fee} satoshi | Status: ${status}';
+	@override String makerFee({required Object fee}) => 'Opłata: ${fee} sats';
+	@override String takerFee({required Object fee}) => 'Opłata: ${fee} sats';
 	@override String subtitle({required Object sats, required Object fee, required Object status}) => '${sats} + ${fee} (opłata) satoshi\nStatus: ${status}';
 	@override String subtitleWithDate({required Object sats, required Object fee, required Object status, required Object date}) => '${sats} + ${fee} (opłata) satoshi\nStatus: ${status}\nZapłacono: ${date}';
 	@override String activeSubtitle({required Object status, required Object amount}) => 'Status: ${status}\nKwota: ${amount} satoshi';
@@ -877,7 +876,7 @@ class _TranslationsMakerSuccessPl extends TranslationsMakerSuccessEn {
 	// Translations
 	@override String get title => 'Oferta zakończona';
 	@override String get headline => 'Płatność potwierdzona!';
-	@override String get subtitle => 'Kupujący otrzymał zapłatę.';
+	@override String get subtitle => 'Osoba przyjmująca ofertę otrzyma teraz zapłatę.';
 	@override String get detailsTitle => 'Szczegóły oferty:';
 	@override String duration({required Object time}) => 'Oferta zajęła ${time}!';
 }
@@ -1799,9 +1798,8 @@ extension on TranslationsPl {
 			case 'offers.details.loadingDetails': return 'Ładowanie szczegółów oferty...';
 			case 'offers.details.amount': return ({required Object amount}) => 'Kwota: ${amount} satoshi';
 			case 'offers.details.amountWithCurrency': return ({required Object amount, required Object currency}) => '${amount} ${currency}';
-			case 'offers.details.makerFee': return ({required Object fee}) => 'Opłata Maker: ${fee} satoshi';
-			case 'offers.details.takerFee': return ({required Object fee}) => 'Opłata Taker: ${fee} satoshi';
-			case 'offers.details.takerFeeWithStatus': return ({required Object fee, required Object status}) => 'Opłata Taker: ${fee} satoshi | Status: ${status}';
+			case 'offers.details.makerFee': return ({required Object fee}) => 'Opłata: ${fee} sats';
+			case 'offers.details.takerFee': return ({required Object fee}) => 'Opłata: ${fee} sats';
 			case 'offers.details.subtitle': return ({required Object sats, required Object fee, required Object status}) => '${sats} + ${fee} (opłata) satoshi\nStatus: ${status}';
 			case 'offers.details.subtitleWithDate': return ({required Object sats, required Object fee, required Object status, required Object date}) => '${sats} + ${fee} (opłata) satoshi\nStatus: ${status}\nZapłacono: ${date}';
 			case 'offers.details.activeSubtitle': return ({required Object status, required Object amount}) => 'Status: ${status}\nKwota: ${amount} satoshi';
@@ -2009,7 +2007,7 @@ extension on TranslationsPl {
 			case 'maker.conflict.errors.openingDispute': return ({required Object error}) => 'Błąd otwierania sporu: ${error}';
 			case 'maker.success.title': return 'Oferta zakończona';
 			case 'maker.success.headline': return 'Płatność potwierdzona!';
-			case 'maker.success.subtitle': return 'Kupujący otrzymał zapłatę.';
+			case 'maker.success.subtitle': return 'Osoba przyjmująca ofertę otrzyma teraz zapłatę.';
 			case 'maker.success.detailsTitle': return 'Szczegóły oferty:';
 			case 'maker.success.duration': return ({required Object time}) => 'Oferta zajęła ${time}!';
 			case 'taker.roleSelection.button': return 'SPRZEDAJ kod BLIK za satoshi';

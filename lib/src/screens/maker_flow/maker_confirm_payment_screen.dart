@@ -236,13 +236,14 @@ class _MakerConfirmPaymentScreenState
   Widget build(BuildContext context) {
     // final strings = AppLocalizations.of(context)!; // REMOVE THIS
     final t = Translations.of(context);
+
     final ref =
         this.ref; // 'ref' is already available in ConsumerStatefulWidget's state
     // Hard reset any lingering global loader to avoid blocking UI
-    final currentLoading = ref.read(isLoadingProvider);
-    if (currentLoading == true) {
-      ref.read(isLoadingProvider.notifier).state = false;
-    }
+    // final currentLoading = ref.read(isLoadingProvider);
+    // if (currentLoading == true) {
+    //   ref.read(isLoadingProvider.notifier).state = false;
+    // }
     // Listen for public key availability (must be done during build)
     // Only fetch BLIK code if status is not expired
     ref.listen(publicKeyProvider, (previous, next) {

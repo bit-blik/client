@@ -627,14 +627,11 @@ class TranslationsOffersDetailsEn {
 	/// en: '${amount} ${currency}'
 	String amountWithCurrency({required Object amount, required Object currency}) => '${amount} ${currency}';
 
-	/// en: 'Maker fee: ${fee} satoshi'
-	String makerFee({required Object fee}) => 'Maker fee: ${fee} satoshi';
+	/// en: 'Fee: ${fee} sats'
+	String makerFee({required Object fee}) => 'Fee: ${fee} sats';
 
-	/// en: 'Taker fee: ${fee} satoshi'
-	String takerFee({required Object fee}) => 'Taker fee: ${fee} satoshi';
-
-	/// en: 'Taker fee: ${fee} satoshi | Status: ${status}'
-	String takerFeeWithStatus({required Object fee, required Object status}) => 'Taker fee: ${fee} satoshi | Status: ${status}';
+	/// en: 'Fee: ${fee} sats'
+	String takerFee({required Object fee}) => 'Fee: ${fee} sats';
 
 	/// en: '${sats} + ${fee} (fee) satoshi Status: ${status}'
 	String subtitle({required Object sats, required Object fee, required Object status}) => '${sats} + ${fee} (fee) satoshi\nStatus: ${status}';
@@ -1349,8 +1346,8 @@ class TranslationsMakerSuccessEn {
 	/// en: 'Payment confirmed!'
 	String get headline => 'Payment confirmed!';
 
-	/// en: 'Taker has been paid.'
-	String get subtitle => 'Taker has been paid.';
+	/// en: 'Taker will now be paid.'
+	String get subtitle => 'Taker will now be paid.';
 
 	/// en: 'Offer details:'
 	String get detailsTitle => 'Offer details:';
@@ -2682,9 +2679,8 @@ extension on Translations {
 			case 'offers.details.loadingDetails': return 'Loading offer details...';
 			case 'offers.details.amount': return ({required Object amount}) => 'Amount: ${amount} satoshi';
 			case 'offers.details.amountWithCurrency': return ({required Object amount, required Object currency}) => '${amount} ${currency}';
-			case 'offers.details.makerFee': return ({required Object fee}) => 'Maker fee: ${fee} satoshi';
-			case 'offers.details.takerFee': return ({required Object fee}) => 'Taker fee: ${fee} satoshi';
-			case 'offers.details.takerFeeWithStatus': return ({required Object fee, required Object status}) => 'Taker fee: ${fee} satoshi | Status: ${status}';
+			case 'offers.details.makerFee': return ({required Object fee}) => 'Fee: ${fee} sats';
+			case 'offers.details.takerFee': return ({required Object fee}) => 'Fee: ${fee} sats';
 			case 'offers.details.subtitle': return ({required Object sats, required Object fee, required Object status}) => '${sats} + ${fee} (fee) satoshi\nStatus: ${status}';
 			case 'offers.details.subtitleWithDate': return ({required Object sats, required Object fee, required Object status, required Object date}) => '${sats} + ${fee} (fee) satoshi\nStatus: ${status}\nPaid: ${date}';
 			case 'offers.details.activeSubtitle': return ({required Object status, required Object amount}) => 'Status: ${status}\nAmount: ${amount} satoshi';
@@ -2895,7 +2891,7 @@ extension on Translations {
 			case 'maker.conflict.errors.openingDispute': return ({required Object error}) => 'Error opening dispute: ${error}';
 			case 'maker.success.title': return 'Offer completed';
 			case 'maker.success.headline': return 'Payment confirmed!';
-			case 'maker.success.subtitle': return 'Taker has been paid.';
+			case 'maker.success.subtitle': return 'Taker will now be paid.';
 			case 'maker.success.detailsTitle': return 'Offer details:';
 			case 'taker.roleSelection.button': return 'SELL BLIK code for satoshi';
 			case 'taker.progress.step1': return 'Submit BLIK';
