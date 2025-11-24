@@ -891,8 +891,8 @@ class TranslationsOffersSuccessEn {
 	/// en: 'Payment confirmed!'
 	String get headline => 'Payment confirmed!';
 
-	/// en: 'Taker has been paid.'
-	String get subtitle => 'Taker has been paid.';
+	/// en: 'Taker will be paid now.'
+	String get subtitle => 'Taker will be paid now.';
 
 	/// en: 'Offer details:'
 	String get detailsTitle => 'Offer details:';
@@ -2749,7 +2749,7 @@ extension on Translations {
 			case 'offers.errors.takerPublicKeyNotFound': return 'Taker public key not found.';
 			case 'offers.success.title': return 'Offer completed';
 			case 'offers.success.headline': return 'Payment confirmed!';
-			case 'offers.success.subtitle': return 'Taker has been paid.';
+			case 'offers.success.subtitle': return 'Taker will be paid now.';
 			case 'offers.success.detailsTitle': return 'Offer details:';
 			case 'offers.success.duration': return ({required Object time}) => 'Offer took ${time} to complete.';
 			case 'reservations.actions.cancel': return 'Cancel reservation';

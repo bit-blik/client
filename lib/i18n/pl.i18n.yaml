@@ -170,7 +170,7 @@ offers:
   success:
     title: Oferta zakończona
     headline: Płatność potwierdzona!
-    subtitle: Taker otrzymał zapłatę.
+    subtitle: Osoba przyjmująca ofertę otrzyma teraz zapłatę.
     detailsTitle: "Szczegóły oferty:"
     duration: "Realizacja oferty zajęła ${time}."
 

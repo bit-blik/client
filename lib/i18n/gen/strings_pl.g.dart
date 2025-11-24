@@ -602,7 +602,7 @@ class _TranslationsOffersSuccessPl extends TranslationsOffersSuccessEn {
 	// Translations
 	@override String get title => 'Oferta zakończona';
 	@override String get headline => 'Płatność potwierdzona!';
-	@override String get subtitle => 'Taker otrzymał zapłatę.';
+	@override String get subtitle => 'Osoba przyjmująca ofertę otrzyma teraz zapłatę.';
 	@override String get detailsTitle => 'Szczegóły oferty:';
 	@override String duration({required Object time}) => 'Realizacja oferty zajęła ${time}.';
 }
@@ -1865,7 +1865,7 @@ extension on TranslationsPl {
 			case 'offers.errors.takerPublicKeyNotFound': return 'Nie znaleziono klucza publicznego Takera.';
 			case 'offers.success.title': return 'Oferta zakończona';
 			case 'offers.success.headline': return 'Płatność potwierdzona!';
-			case 'offers.success.subtitle': return 'Taker otrzymał zapłatę.';
+			case 'offers.success.subtitle': return 'Osoba przyjmująca ofertę otrzyma teraz zapłatę.';
 			case 'offers.success.detailsTitle': return 'Szczegóły oferty:';
 			case 'offers.success.duration': return ({required Object time}) => 'Realizacja oferty zajęła ${time}.';
 			case 'reservations.actions.cancel': return 'Anuluj rezerwację';

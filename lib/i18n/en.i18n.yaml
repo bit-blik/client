@@ -171,7 +171,7 @@ offers:
   success:
     title: Offer completed
     headline: Payment confirmed!
-    subtitle: Taker has been paid.
+    subtitle: Taker will be paid now.
     detailsTitle: "Offer details:"
     duration: "Offer took ${time} to complete."
 
