@@ -34,10 +34,18 @@ jobs:
         env:
           CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
         run: |
+
           # Import certificate to default keychain
-          echo $CERTIFICATE_BASE64 | base64 -D > certificate.cer
-          security import certificate.cer -t agg -k ~/Library/Keychains/login.keychain -P "" -A
-          rm certificate.cer
+          echo $CERTIFICATE_BASE64 | base64 -D > certificate.p12
+          security import certificate.p12 -k build.keychain  -f pkcs12 -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:  build.keychain
+          
+          rm certificate.p12
+
+#
+#  echo $CERTIFICATE_BASE64 | base64 -D > certificate.cer
+#          security import certificate.cer -t agg -k ~/Library/Keychains/login.keychain -P "" -A
+#          rm certificate.cer
 
       - name: Build archive
         env:
