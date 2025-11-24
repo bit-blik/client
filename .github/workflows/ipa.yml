@@ -33,12 +33,18 @@ jobs:
       - name: Install certificate and provisioning profile
         env:
           CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
         run: |
+       # Create temporary keychain
+         security create-keychain -p "$CERTIFICATE_PASSWORD" build.keychain
+         security default-keychain -s build.keychain
+         security unlock-keychain -p "$CERTIFICATE_PASSWORD" build.keychain
+         security set-keychain-settings -lut 3600 build.keychain
           
           # Import certificate to default keychain
           echo $CERTIFICATE_BASE64 | base64 -D > certificate.p12
-          security import certificate.p12 -k build.keychain -P "" -f pkcs12 -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple: -k "" build.keychain
+          security import certificate.p12 -k build.keychain -P "$CERTIFICATE_PASSWORD" -f pkcs12 -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -k "$CERTIFICATE_PASSWORD" build.keychain
           
           rm certificate.p12
 
