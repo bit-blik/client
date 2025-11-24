@@ -828,12 +828,14 @@ class _TranslationsMakerConfirmPaymentPl extends TranslationsMakerConfirmPayment
 	@override String get instruction1 => 'Wprowadź kod do systemu płatności BLIK.';
 	@override String get instruction2 => 'Poczekaj, aż Kupujący potwierdzi płatność w swojej aplikacji banku.';
 	@override String get instruction3 => 'Gdy płatność zakończy się sukcesem, naciśnij Potwierdź poniżej:';
+	@override String get takerChargedWarning => 'Pobierający zgłosił, że płatność BLIK została pobrana z jego konta bankowego. Oznaczenie tego jako nieprawidłowe spowoduje konflikt.';
 	@override String get expiredTitle => 'Kod BLIK wygasł';
 	@override String get expiredWarning => 'Kod BLIK wygasł. Musisz ręcznie potwierdzić status płatności:';
 	@override String get expiredInstruction1 => 'Jeśli płatność BLIK zakończyła się sukcesem i zrealizowałeś zakup, kliknij "Potwierdź udaną płatność" poniżej.';
 	@override String get expiredInstruction2 => 'Jeśli płatność BLIK nie powiodła się lub nie została zrealizowana, kliknij "Nieprawidłowy kod BLIK" poniżej.';
 	@override late final _TranslationsMakerConfirmPaymentActionsPl actions = _TranslationsMakerConfirmPaymentActionsPl._(_root);
 	@override late final _TranslationsMakerConfirmPaymentConfirmDialogPl confirmDialog = _TranslationsMakerConfirmPaymentConfirmDialogPl._(_root);
+	@override late final _TranslationsMakerConfirmPaymentInvalidBlikDisputeDialogPl invalidBlikDisputeDialog = _TranslationsMakerConfirmPaymentInvalidBlikDisputeDialogPl._(_root);
 	@override late final _TranslationsMakerConfirmPaymentFeedbackPl feedback = _TranslationsMakerConfirmPaymentFeedbackPl._(_root);
 	@override late final _TranslationsMakerConfirmPaymentErrorsPl errors = _TranslationsMakerConfirmPaymentErrorsPl._(_root);
 }
@@ -1335,6 +1337,19 @@ class _TranslationsMakerConfirmPaymentConfirmDialogPl extends TranslationsMakerC
 	@override String get content => 'Ta akcja jest nieodwracalna. Po potwierdzeniu:\n\n• Kupujący otrzyma środki natychmiast\n• Koordynator nie będzie mógł zakwestionować środków\n• Nie możesz cofnąć tej akcji\n\nPotwierdź tylko wtedy, gdy płatność BLIK zakończyła się sukcesem.';
 	@override String get cancel => 'Anuluj';
 	@override String get confirmButton => 'Tak, potwierdź płatność';
+}
+
+// Path: maker.confirmPayment.invalidBlikDisputeDialog
+class _TranslationsMakerConfirmPaymentInvalidBlikDisputeDialogPl extends TranslationsMakerConfirmPaymentInvalidBlikDisputeDialogEn {
+	_TranslationsMakerConfirmPaymentInvalidBlikDisputeDialogPl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Otworzyć spór?';
+	@override String get content => 'Kupujący zgłosił, że płatność BLIK została pobrana z jego konta.\n\nOznaczenie tego jako nieprawidłowe natychmiast otworzy SPÓR wymagający interwencji koordynatora.\n\n• Opłata za spór może zostać naliczona, jeśli zostanie rozstrzygnięty na Twoją niekorzyść\n• Faktura hold zostanie rozliczona natychmiast\n• Wymagana będzie ręczna weryfikacja\n\nKontynuuj tylko wtedy, gdy masz pewność, że płatność BLIK NIE powiodła się.';
+	@override String get cancel => 'Anuluj';
+	@override String get confirmButton => 'Tak, otwórz spór';
 }
 
 // Path: maker.confirmPayment.feedback
@@ -1947,6 +1962,7 @@ extension on TranslationsPl {
 			case 'maker.confirmPayment.instruction1': return 'Wprowadź kod do systemu płatności BLIK.';
 			case 'maker.confirmPayment.instruction2': return 'Poczekaj, aż Kupujący potwierdzi płatność w swojej aplikacji banku.';
 			case 'maker.confirmPayment.instruction3': return 'Gdy płatność zakończy się sukcesem, naciśnij Potwierdź poniżej:';
+			case 'maker.confirmPayment.takerChargedWarning': return 'Pobierający zgłosił, że płatność BLIK została pobrana z jego konta bankowego. Oznaczenie tego jako nieprawidłowe spowoduje konflikt.';
 			case 'maker.confirmPayment.expiredTitle': return 'Kod BLIK wygasł';
 			case 'maker.confirmPayment.expiredWarning': return 'Kod BLIK wygasł. Musisz ręcznie potwierdzić status płatności:';
 			case 'maker.confirmPayment.expiredInstruction1': return 'Jeśli płatność BLIK zakończyła się sukcesem i zrealizowałeś zakup, kliknij "Potwierdź udaną płatność" poniżej.';
@@ -1958,6 +1974,10 @@ extension on TranslationsPl {
 			case 'maker.confirmPayment.confirmDialog.content': return 'Ta akcja jest nieodwracalna. Po potwierdzeniu:\n\n• Kupujący otrzyma środki natychmiast\n• Koordynator nie będzie mógł zakwestionować środków\n• Nie możesz cofnąć tej akcji\n\nPotwierdź tylko wtedy, gdy płatność BLIK zakończyła się sukcesem.';
 			case 'maker.confirmPayment.confirmDialog.cancel': return 'Anuluj';
 			case 'maker.confirmPayment.confirmDialog.confirmButton': return 'Tak, potwierdź płatność';
+			case 'maker.confirmPayment.invalidBlikDisputeDialog.title': return 'Otworzyć spór?';
+			case 'maker.confirmPayment.invalidBlikDisputeDialog.content': return 'Kupujący zgłosił, że płatność BLIK została pobrana z jego konta.\n\nOznaczenie tego jako nieprawidłowe natychmiast otworzy SPÓR wymagający interwencji koordynatora.\n\n• Opłata za spór może zostać naliczona, jeśli zostanie rozstrzygnięty na Twoją niekorzyść\n• Faktura hold zostanie rozliczona natychmiast\n• Wymagana będzie ręczna weryfikacja\n\nKontynuuj tylko wtedy, gdy masz pewność, że płatność BLIK NIE powiodła się.';
+			case 'maker.confirmPayment.invalidBlikDisputeDialog.cancel': return 'Anuluj';
+			case 'maker.confirmPayment.invalidBlikDisputeDialog.confirmButton': return 'Tak, otwórz spór';
 			case 'maker.confirmPayment.feedback.confirmed': return 'Maker potwierdził płatność.';
 			case 'maker.confirmPayment.feedback.confirmedTakerPaid': return 'Płatność potwierdzona! Taker otrzyma środki.';
 			case 'maker.confirmPayment.feedback.progressLabel': return ({required Object seconds}) => 'Potwierdzanie: ${seconds} s pozostało';

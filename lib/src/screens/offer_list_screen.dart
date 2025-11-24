@@ -780,7 +780,7 @@ class _OfferListScreenState extends ConsumerState<OfferListScreen> {
                                             myActiveOffer.isConflict)) {
                                       // Show button for conflict or invalidBlik if it's the active offer
                                       trailingWidget = ElevatedButton(
-                                        child: Text(t.offers.actions.View),
+                                        child: Text(t.offers.actions.view),
                                         onPressed: () {
                                           if (myActiveOffer.isInvalidBlik) {
                                             router.go(
@@ -800,7 +800,7 @@ class _OfferListScreenState extends ConsumerState<OfferListScreen> {
                                           offer.id == myActiveOffer.id &&
                                           !myActiveOffer.isDispute) {
                                         trailingWidget = ElevatedButton(
-                                          child: Text(t.offers.actions.View),
+                                          child: Text(t.offers.actions.view),
                                           onPressed: () {
                                             ref
                                                 .read(

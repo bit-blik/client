@@ -715,7 +715,7 @@ class TranslationsOffersActionsEn {
 	String get cancel => 'Cancel offer';
 
 	/// en: 'View details'
-	String get View => 'View details';
+	String get view => 'View details';
 }
 
 // Path: offers.status
@@ -1272,6 +1272,9 @@ class TranslationsMakerConfirmPaymentEn {
 	/// en: 'When payment is succesful, press Confirm below:'
 	String get instruction3 => 'When payment is succesful, press Confirm below:';
 
+	/// en: 'The taker has reported that the BLIK payment was charged from their bank account. If you mark this as invalid, this will cause a conflict.'
+	String get takerChargedWarning => 'The taker has reported that the BLIK payment was charged from their bank account. If you mark this as invalid, this will cause a conflict.';
+
 	/// en: 'BLIK Code Expired'
 	String get expiredTitle => 'BLIK Code Expired';
 
@@ -1286,6 +1289,7 @@ class TranslationsMakerConfirmPaymentEn {
 
 	late final TranslationsMakerConfirmPaymentActionsEn actions = TranslationsMakerConfirmPaymentActionsEn.internal(_root);
 	late final TranslationsMakerConfirmPaymentConfirmDialogEn confirmDialog = TranslationsMakerConfirmPaymentConfirmDialogEn.internal(_root);
+	late final TranslationsMakerConfirmPaymentInvalidBlikDisputeDialogEn invalidBlikDisputeDialog = TranslationsMakerConfirmPaymentInvalidBlikDisputeDialogEn.internal(_root);
 	late final TranslationsMakerConfirmPaymentFeedbackEn feedback = TranslationsMakerConfirmPaymentFeedbackEn.internal(_root);
 	late final TranslationsMakerConfirmPaymentErrorsEn errors = TranslationsMakerConfirmPaymentErrorsEn.internal(_root);
 }
@@ -2031,6 +2035,27 @@ class TranslationsMakerConfirmPaymentConfirmDialogEn {
 	String get confirmButton => 'Yes, Confirm Payment';
 }
 
+// Path: maker.confirmPayment.invalidBlikDisputeDialog
+class TranslationsMakerConfirmPaymentInvalidBlikDisputeDialogEn {
+	TranslationsMakerConfirmPaymentInvalidBlikDisputeDialogEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Open Dispute?'
+	String get title => 'Open Dispute?';
+
+	/// en: 'The taker has reported that the BLIK payment was charged from their account. Marking this as invalid will immediately open a DISPUTE that requires coordinator intervention. • A dispute fee may be charged if ruled against you • The hold invoice will be settled immediately • Manual verification will be required Only proceed if you are certain the BLIK payment did NOT succeed.'
+	String get content => 'The taker has reported that the BLIK payment was charged from their account.\n\nMarking this as invalid will immediately open a DISPUTE that requires coordinator intervention.\n\n• A dispute fee may be charged if ruled against you\n• The hold invoice will be settled immediately\n• Manual verification will be required\n\nOnly proceed if you are certain the BLIK payment did NOT succeed.';
+
+	/// en: 'Cancel'
+	String get cancel => 'Cancel';
+
+	/// en: 'Yes, Open Dispute'
+	String get confirmButton => 'Yes, Open Dispute';
+}
+
 // Path: maker.confirmPayment.feedback
 class TranslationsMakerConfirmPaymentFeedbackEn {
 	TranslationsMakerConfirmPaymentFeedbackEn.internal(this._root);
@@ -2680,7 +2705,7 @@ extension on Translations {
 			case 'offers.actions.takeOffer': return 'Take Offer';
 			case 'offers.actions.resume': return 'ENTER BLIK';
 			case 'offers.actions.cancel': return 'Cancel offer';
-			case 'offers.actions.View': return 'View details';
+			case 'offers.actions.view': return 'View details';
 			case 'offers.status.created': return 'Created';
 			case 'offers.status.funded': return 'Funded';
 			case 'offers.status.expired': return 'Expired';
@@ -2823,6 +2848,7 @@ extension on Translations {
 			case 'maker.confirmPayment.instruction1': return 'Enter the code into the BLIK payment request.';
 			case 'maker.confirmPayment.instruction2': return 'Wait until Taker confirms the payment in their app.';
 			case 'maker.confirmPayment.instruction3': return 'When payment is succesful, press Confirm below:';
+			case 'maker.confirmPayment.takerChargedWarning': return 'The taker has reported that the BLIK payment was charged from their bank account. If you mark this as invalid, this will cause a conflict.';
 			case 'maker.confirmPayment.expiredTitle': return 'BLIK Code Expired';
 			case 'maker.confirmPayment.expiredWarning': return 'The BLIK code has expired. You need to manually confirm the payment status:';
 			case 'maker.confirmPayment.expiredInstruction1': return 'If the BLIK payment was successful and you completed your purchase, click "Confirm successful payment" below.';
@@ -2834,6 +2860,10 @@ extension on Translations {
 			case 'maker.confirmPayment.confirmDialog.content': return 'This action is irreversible. After confirming:\n\n• The Taker will receive the funds immediately\n• The coordinator will not be able to dispute the funds\n• You cannot undo this action\n\nOnly confirm if the BLIK payment was successful.';
 			case 'maker.confirmPayment.confirmDialog.cancel': return 'Cancel';
 			case 'maker.confirmPayment.confirmDialog.confirmButton': return 'Yes, Confirm Payment';
+			case 'maker.confirmPayment.invalidBlikDisputeDialog.title': return 'Open Dispute?';
+			case 'maker.confirmPayment.invalidBlikDisputeDialog.content': return 'The taker has reported that the BLIK payment was charged from their account.\n\nMarking this as invalid will immediately open a DISPUTE that requires coordinator intervention.\n\n• A dispute fee may be charged if ruled against you\n• The hold invoice will be settled immediately\n• Manual verification will be required\n\nOnly proceed if you are certain the BLIK payment did NOT succeed.';
+			case 'maker.confirmPayment.invalidBlikDisputeDialog.cancel': return 'Cancel';
+			case 'maker.confirmPayment.invalidBlikDisputeDialog.confirmButton': return 'Yes, Open Dispute';
 			case 'maker.confirmPayment.feedback.confirmed': return 'Maker confirmed payment.';
 			case 'maker.confirmPayment.feedback.confirmedTakerPaid': return 'Payment confirmed! Taker will receive funds.';
 			case 'maker.confirmPayment.feedback.progressLabel': return ({required Object seconds}) => 'Confirming: ${seconds} s left';

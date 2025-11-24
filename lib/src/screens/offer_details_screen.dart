@@ -303,7 +303,7 @@ class _OfferDetailsScreenState extends ConsumerState<OfferDetailsScreen> {
                   ),
                 ),
                 child: Text(
-                  t.offers.actions.View,
+                  t.offers.actions.view,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -332,7 +332,7 @@ class _OfferDetailsScreenState extends ConsumerState<OfferDetailsScreen> {
                     ),
                   ),
                   child: Text(
-                    t.offers.actions.View,
+                    t.offers.actions.view,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,

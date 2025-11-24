@@ -172,7 +172,8 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
         offerStatus == OfferStatus.blikSentToMaker ||
         offerStatus == OfferStatus.makerConfirmed ||
         offerStatus == OfferStatus.expiredBlik ||
-        offerStatus == OfferStatus.expiredSentBlik
+        offerStatus == OfferStatus.expiredSentBlik ||
+        offerStatus == OfferStatus.takerCharged
     ) {
       // Pass the offer to the constructor using offer
       context.go("/wait-confirmation", extra: offer);
@@ -688,7 +689,9 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
     if (offerStatus == OfferStatus.blikReceived ||
         offerStatus == OfferStatus.blikSentToMaker ||
         offerStatus == OfferStatus.expiredBlik ||
-        offerStatus == OfferStatus.expiredSentBlik) {
+        offerStatus == OfferStatus.expiredSentBlik ||
+        offerStatus == OfferStatus.takerCharged
+    ) {
       try {
         ref.read(apiServiceProvider);
         if (currentPubKey == activeOffer.makerPubkey) {

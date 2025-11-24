@@ -24,7 +24,7 @@ class _MakerConfirmPaymentScreenState
     final offer = ref.read(activeOfferProvider);
     if (offer == null) return false;
     return offer.status == OfferStatus.expiredBlik.name ||
-           offer.status == OfferStatus.expiredSentBlik.name;
+           offer.status == OfferStatus.expiredSentBlik.name || offer.status == OfferStatus.takerCharged.name;
   }
   
   @override
@@ -175,6 +175,13 @@ class _MakerConfirmPaymentScreenState
       return;
     }
 
+    // // If offer is in takerCharged status, show confirmation dialog
+    // if (offer.statusEnum == OfferStatus.takerCharged) {
+    //   final confirmed = await _showInvalidBlikDisputeDialog(context);
+    //   if (confirmed != true) {
+    //     return; // User cancelled
+    //   }
+    // }
     ref.read(isLoadingProvider.notifier).state = true;
     ref.read(errorProvider.notifier).state = null;
 
@@ -190,7 +197,11 @@ class _MakerConfirmPaymentScreenState
       );
 
       if (context.mounted) {
-        context.go('/maker-invalid-blik', extra: offer);
+        if (offer.statusEnum == OfferStatus.takerCharged) {
+          context.go('/conflict', extra: offer);
+        } else {
+          context.go('/maker-invalid-blik', extra: offer);
+        }
       }
     } catch (e) {
       // TODO: Add specific localization for this error in YAML and use it here
@@ -313,6 +324,39 @@ class _MakerConfirmPaymentScreenState
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // Show info block if offer is in takerCharged status
+                  if (ref.watch(activeOfferProvider)?.statusEnum == OfferStatus.takerCharged) ...[
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(top: 2),
+                            child: Icon(
+                              Icons.warning_amber_rounded,
+                              color: Colors.orange,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              t.maker.confirmPayment.takerChargedWarning,
+                              style: const TextStyle(fontSize: 14, color: Colors.orange),
+                              softWrap: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                   // Instructions - only show for non-expired status
                   if (!isExpired) ...[
                     _buildInstructionItem(
@@ -484,7 +528,7 @@ class _MakerConfirmPaymentScreenState
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,
                   padding: const EdgeInsets.symmetric(
-                    vertical: 16,
+                    vertical: 8,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(40),
@@ -496,15 +540,15 @@ class _MakerConfirmPaymentScreenState
                     const Icon(
                       Icons.copy,
                       color: Colors.white,
-                      size: 24,
+                      size: 18,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       t.maker.confirmPayment.actions.copyBlik,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ],
@@ -607,7 +651,9 @@ class _MakerConfirmPaymentScreenState
 
   void _handleStatusUpdate(OfferStatus statusEnum) {
     if (statusEnum == OfferStatus.expiredBlik ||
-        statusEnum == OfferStatus.expiredSentBlik) {
+        statusEnum == OfferStatus.expiredSentBlik ||
+        statusEnum == OfferStatus.takerCharged
+    ) {
       // No special action needed, UI will update accordingly
       Logger.log.i(
         "[MakerConfirmPaymentScreen] Offer status updated to expired. UI will reflect this.",

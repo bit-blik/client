@@ -331,6 +331,8 @@ maker:
     instruction2: Poczekaj, aż Kupujący potwierdzi płatność w swojej aplikacji banku.
     instruction3: "Gdy płatność zakończy się sukcesem, naciśnij Potwierdź poniżej:"
     
+    takerChargedWarning: "Pobierający zgłosił, że płatność BLIK została pobrana z jego konta bankowego. Oznaczenie tego jako nieprawidłowe spowoduje konflikt."
+    
     expiredTitle: Kod BLIK wygasł
     expiredWarning: "Kod BLIK wygasł. Musisz ręcznie potwierdzić status płatności:"
     expiredInstruction1: "Jeśli płatność BLIK zakończyła się sukcesem i zrealizowałeś zakup, kliknij \"Potwierdź udaną płatność\" poniżej."
@@ -346,6 +348,12 @@ maker:
       content: "Ta akcja jest nieodwracalna. Po potwierdzeniu:\n\n• Kupujący otrzyma środki natychmiast\n• Koordynator nie będzie mógł zakwestionować środków\n• Nie możesz cofnąć tej akcji\n\nPotwierdź tylko wtedy, gdy płatność BLIK zakończyła się sukcesem."
       cancel: Anuluj
       confirmButton: Tak, potwierdź płatność
+    
+    invalidBlikDisputeDialog:
+      title: Otworzyć spór?
+      content: "Kupujący zgłosił, że płatność BLIK została pobrana z jego konta.\n\nOznaczenie tego jako nieprawidłowe natychmiast otworzy SPÓR wymagający interwencji koordynatora.\n\n• Opłata za spór może zostać naliczona, jeśli zostanie rozstrzygnięty na Twoją niekorzyść\n• Faktura hold zostanie rozliczona natychmiast\n• Wymagana będzie ręczna weryfikacja\n\nKontynuuj tylko wtedy, gdy masz pewność, że płatność BLIK NIE powiodła się."
+      cancel: Anuluj
+      confirmButton: Tak, otwórz spór
     
     feedback:
       confirmed: Maker potwierdził płatność.

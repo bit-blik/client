@@ -158,9 +158,9 @@ class _FundedOfferProgressIndicatorState
   Widget build(BuildContext context) {
     if (_progress <= 0) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(
-        top: 4.0,
-        bottom: 8.0,
+      padding: const EdgeInsets.symmetric(
+        vertical: 20.0,
+        horizontal: 20.0,
       ),
       child: Stack(
         alignment: Alignment.center,
@@ -168,7 +168,7 @@ class _FundedOfferProgressIndicatorState
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: SizedBox(
-              height: 20,
+              height: 25  ,
               child: LinearProgressIndicator(
                 value: _progress,
                 backgroundColor: Colors.grey[500],
@@ -181,8 +181,8 @@ class _FundedOfferProgressIndicatorState
             t.offers.progress.waitingForTaker(time: _formatMMSS(_remainingSeconds)),
             style: const TextStyle(
               color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
             ),
           ),
         ],
