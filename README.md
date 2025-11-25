@@ -2,7 +2,6 @@
 
 see https://github.com/bit-blik/client/blob/main/assets/faq/faq_en.md
 
-
 # Docker Runtime Configuration for Group Links
 
 This document explains how to configure group links (Telegram, Element, SimpleX, Signal) shown in the notifications bar at **runtime** when running the Docker container.
