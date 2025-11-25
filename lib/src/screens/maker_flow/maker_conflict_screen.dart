@@ -94,9 +94,9 @@ class _MakerConflictScreenState extends ConsumerState<MakerConflictScreen> {
   }
 
   Future<void> _openDispute(BuildContext context, WidgetRef ref) async {
+    // return;
     final apiService = ref.read(apiServiceProvider);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context); 
     final makerId = await ref.read(publicKeyProvider.future);
 
 
@@ -117,11 +117,11 @@ class _MakerConflictScreenState extends ConsumerState<MakerConflictScreen> {
           actions: <Widget>[
             TextButton(
               child: Text(t.common.buttons.cancel),
-              onPressed: () => navigator.pop(false), 
+              onPressed: () => context.pop(false),
             ),
             ElevatedButton(
               child: Text(t.maker.conflict.disputeDialog.actions.confirm),
-              onPressed: () => navigator.pop(true), 
+              onPressed: () => context.pop(true),
             ),
           ],
         );
@@ -132,11 +132,10 @@ class _MakerConflictScreenState extends ConsumerState<MakerConflictScreen> {
       return; 
     }
 
-    ref.read(isLoadingProvider.notifier).state = true;
-    ref.read(errorProvider.notifier).state = null;
+    // ref.read(isLoadingProvider.notifier).state = true;
+    // ref.read(errorProvider.notifier).state = null;
 
     try {
-      // Assuming openDispute is now markOfferConflict
       await apiService.openDispute(widget.offer.id,  widget.offer.coordinatorPubkey);
 
       setState(() {
@@ -159,11 +158,8 @@ class _MakerConflictScreenState extends ConsumerState<MakerConflictScreen> {
     final isLoading = ref.watch(isLoadingProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(t.maker.conflict.title),
-        automaticallyImplyLeading: false,
-      ),
-      body: Padding(
+      body:
+        Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
           child: Column(
@@ -183,18 +179,18 @@ class _MakerConflictScreenState extends ConsumerState<MakerConflictScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                _isDisputeOpened
-                    ? t.maker.conflict.feedback.disputeOpenedSuccess 
+                _isDisputeOpened || widget.offer.isDispute
+                    ? t.maker.conflict.feedback.disputeOpenedSuccess
                     : t.maker.conflict.body,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
               if (isLoading)
                 const CircularProgressIndicator()
-              else if (_isDisputeOpened)
+              else if (_isDisputeOpened || widget.offer.isDispute)
                 ElevatedButton(
                   onPressed: () => context.go('/'),
-                  child: Text(t.common.buttons.goHome), 
+                  child: Text(t.common.buttons.goHome),
                 )
               else
                 Column(
@@ -210,17 +206,17 @@ class _MakerConflictScreenState extends ConsumerState<MakerConflictScreen> {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.error, 
+                        backgroundColor: Theme.of(context).colorScheme.error,
                         foregroundColor:  Colors.white,
                       ),
                       onPressed: () => _openDispute(context, ref),
                       child: Text(t.maker.conflict.actions.openDispute),
                     ),
-                    const SizedBox(height: 16),
-                    TextButton(
-                      onPressed: () => context.go('/'),
-                      child: Text(t.common.actions.cancelAndReturnHome),
-                    ),
+                    // const SizedBox(height: 16),
+                    // TextButton(
+                    //   onPressed: () => context.go('/'),
+                    //   child: Text(t.common.actions.cancelAndReturnHome),
+                    // ),
                   ],
                 ),
             ],

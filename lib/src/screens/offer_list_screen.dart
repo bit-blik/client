@@ -440,7 +440,9 @@ class _OfferListScreenState extends ConsumerState<OfferListScreen> {
                 if (offers.isEmpty) {
                   return Column(
                     children: [
+                      SizedBox(height: 30,),
                       Center(child: Text(t.offers.details.noAvailable)),
+                      SizedBox(height: 30,),
                       const Divider(height: 32, thickness: 1),
                       _buildStatsSection(context, ref.watch(successfulOffersStatsProvider), t),
                     ],
@@ -785,7 +787,17 @@ class _OfferListScreenState extends ConsumerState<OfferListScreen> {
                   ],
                 );
               },
-              loading: () => Container(), //const Center(child: CircularProgressIndicator()),
+              loading: () {
+                return Column(
+                  children: [
+                    SizedBox(height: 30,),
+                    Center(child: Text(t.offers.details.noAvailable)),
+                    SizedBox(height: 30,),
+                    const Divider(height: 32, thickness: 1),
+                    _buildStatsSection(context, ref.watch(successfulOffersStatsProvider), t),
+                  ],
+                );
+              },
               error:
                   (error, stackTrace) => Center(
                     child: Column(

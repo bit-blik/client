@@ -472,7 +472,10 @@ taker:
     expiredInstruction1: "If you want to try again with a new BLIK code, renew the reservation."
     expiredInstruction2: "If you no longer want to complete this transaction, cancel the reservation."
     expiredInstruction3: "If the BLIK payment was charged from your bank account, do not worry, the bitcoin is still safely locked with the coordinator."
-    
+
+    takerCharged:
+      title: "You marked BLIK as charged"
+      message: "The maker has 60min to confirm the payment or dispute the payment. If they do nothing the payment will auto confirm and you will receive the bitcoin."
     expiredActions:
       reportConflict: "BLIK was charged from my bank account"
       renewReservation: "Try again with new BLIK code"

@@ -136,6 +136,7 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
         Logger.log.d("Maker offer in expired BLIK state: $offerStatus");
         break;
       case OfferStatus.conflict:
+      case OfferStatus.dispute:
         // Navigate to the maker conflict screen
         context.go("/maker-conflict", extra: offer);
         break;
@@ -171,7 +172,7 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
       context.go('/taker-failed', extra: offer);
     } else if (offerStatus == OfferStatus.invalidBlik) {
       context.go('/taker-invalid-blik', extra: offer);
-    } else if (offerStatus == OfferStatus.conflict) {
+    } else if (offerStatus == OfferStatus.conflict || offerStatus == OfferStatus.dispute) {
       context.go('/taker-conflict', extra: offer.id);
     } else {
       Logger.log.e("[RoleSelectionScreen] Error: Resuming Taker offer in unexpected state: $offerStatus");

@@ -1478,6 +1478,7 @@ class TranslationsTakerWaitConfirmationEn {
 	/// en: 'If the BLIK payment was charged from your bank account, do not worry, the bitcoin is still safely locked with the coordinator.'
 	String get expiredInstruction3 => 'If the BLIK payment was charged from your bank account, do not worry, the bitcoin is still safely locked with the coordinator.';
 
+	late final TranslationsTakerWaitConfirmationTakerChargedEn takerCharged = TranslationsTakerWaitConfirmationTakerChargedEn.internal(_root);
 	late final TranslationsTakerWaitConfirmationExpiredActionsEn expiredActions = TranslationsTakerWaitConfirmationExpiredActionsEn.internal(_root);
 	late final TranslationsTakerWaitConfirmationFeedbackEn feedback = TranslationsTakerWaitConfirmationFeedbackEn.internal(_root);
 	late final TranslationsTakerWaitConfirmationErrorsEn errors = TranslationsTakerWaitConfirmationErrorsEn.internal(_root);
@@ -2259,6 +2260,21 @@ class TranslationsTakerSubmitBlikDetailsEn {
 	String get youllReceive => 'You\'ll receive';
 }
 
+// Path: taker.waitConfirmation.takerCharged
+class TranslationsTakerWaitConfirmationTakerChargedEn {
+	TranslationsTakerWaitConfirmationTakerChargedEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'You marked BLIK as charged'
+	String get title => 'You marked BLIK as charged';
+
+	/// en: 'The maker has 60min to confirm the payment or dispute the payment. If they do nothing the payment will auto confirm and you will receive the bitcoin.'
+	String get message => 'The maker has 60min to confirm the payment or dispute the payment. If they do nothing the payment will auto confirm and you will receive the bitcoin.';
+}
+
 // Path: taker.waitConfirmation.expiredActions
 class TranslationsTakerWaitConfirmationExpiredActionsEn {
 	TranslationsTakerWaitConfirmationExpiredActionsEn.internal(this._root);
@@ -2935,6 +2951,8 @@ extension on Translations {
 			case 'taker.waitConfirmation.expiredInstruction1': return 'If you want to try again with a new BLIK code, renew the reservation.';
 			case 'taker.waitConfirmation.expiredInstruction2': return 'If you no longer want to complete this transaction, cancel the reservation.';
 			case 'taker.waitConfirmation.expiredInstruction3': return 'If the BLIK payment was charged from your bank account, do not worry, the bitcoin is still safely locked with the coordinator.';
+			case 'taker.waitConfirmation.takerCharged.title': return 'You marked BLIK as charged';
+			case 'taker.waitConfirmation.takerCharged.message': return 'The maker has 60min to confirm the payment or dispute the payment. If they do nothing the payment will auto confirm and you will receive the bitcoin.';
 			case 'taker.waitConfirmation.expiredActions.reportConflict': return 'BLIK was charged from my bank account';
 			case 'taker.waitConfirmation.expiredActions.renewReservation': return 'Try again with new BLIK code';
 			case 'taker.waitConfirmation.expiredActions.cancelReservation': return 'Cancel reservation';

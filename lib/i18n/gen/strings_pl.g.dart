@@ -948,6 +948,7 @@ class _TranslationsTakerWaitConfirmationPl extends TranslationsTakerWaitConfirma
 	@override String get expiredInstruction1 => 'Jeśli chcesz spróbować ponownie z nowym kodem BLIK, odnów rezerwację.';
 	@override String get expiredInstruction2 => 'Jeśli nie chcesz już dokończyć tej transakcji, anuluj rezerwację.';
 	@override String get expiredInstruction3 => 'Jeśli płatność BLIK została pobrana z Twojego konta bankowego, nie martw się, bitcoin jest nadal bezpiecznie zablokowany u koordynatora.';
+	@override late final _TranslationsTakerWaitConfirmationTakerChargedPl takerCharged = _TranslationsTakerWaitConfirmationTakerChargedPl._(_root);
 	@override late final _TranslationsTakerWaitConfirmationExpiredActionsPl expiredActions = _TranslationsTakerWaitConfirmationExpiredActionsPl._(_root);
 	@override late final _TranslationsTakerWaitConfirmationFeedbackPl feedback = _TranslationsTakerWaitConfirmationFeedbackPl._(_root);
 	@override late final _TranslationsTakerWaitConfirmationErrorsPl errors = _TranslationsTakerWaitConfirmationErrorsPl._(_root);
@@ -1484,6 +1485,17 @@ class _TranslationsTakerSubmitBlikDetailsPl extends TranslationsTakerSubmitBlikD
 	@override String get takerFee => 'Opłata Taker';
 	@override String get status => 'Status';
 	@override String get youllReceive => 'Otrzymasz';
+}
+
+// Path: taker.waitConfirmation.takerCharged
+class _TranslationsTakerWaitConfirmationTakerChargedPl extends TranslationsTakerWaitConfirmationTakerChargedEn {
+	_TranslationsTakerWaitConfirmationTakerChargedPl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Oznaczyłeś BLIK jako opłacony';
+	@override String get message => 'Twórca oferty musi potwierdzić płatność lub ją zakwestionować. Jeśli nic nie zrobi, płatność zostanie automatycznie potwierdzona, a Ty otrzymasz bitcoiny.';
 }
 
 // Path: taker.waitConfirmation.expiredActions
@@ -2052,6 +2064,8 @@ extension on TranslationsPl {
 			case 'taker.waitConfirmation.expiredInstruction1': return 'Jeśli chcesz spróbować ponownie z nowym kodem BLIK, odnów rezerwację.';
 			case 'taker.waitConfirmation.expiredInstruction2': return 'Jeśli nie chcesz już dokończyć tej transakcji, anuluj rezerwację.';
 			case 'taker.waitConfirmation.expiredInstruction3': return 'Jeśli płatność BLIK została pobrana z Twojego konta bankowego, nie martw się, bitcoin jest nadal bezpiecznie zablokowany u koordynatora.';
+			case 'taker.waitConfirmation.takerCharged.title': return 'Oznaczyłeś BLIK jako opłacony';
+			case 'taker.waitConfirmation.takerCharged.message': return 'Twórca oferty musi potwierdzić płatność lub ją zakwestionować. Jeśli nic nie zrobi, płatność zostanie automatycznie potwierdzona, a Ty otrzymasz bitcoiny.';
 			case 'taker.waitConfirmation.expiredActions.reportConflict': return 'BLIK został pobrany z mojego konta';
 			case 'taker.waitConfirmation.expiredActions.renewReservation': return 'Spróbuj ponownie z nowym kodem BLIK';
 			case 'taker.waitConfirmation.expiredActions.cancelReservation': return 'Anuluj rezerwację';

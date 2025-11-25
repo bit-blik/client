@@ -654,9 +654,9 @@ class _TakerChargedWidget extends StatelessWidget {
       children: [
         _buildInfoBox(
           context,
-          t.taker.waitConfirmation.expiredInstruction1,
+          t.taker.waitConfirmation.takerCharged.title,
           Icons.check_circle_outline,
-          Colors.orangeAccent,
+          Colors.green,
         ),
         const SizedBox(height: 20),
         // Show 60-minute countdown timer
@@ -665,7 +665,7 @@ class _TakerChargedWidget extends StatelessWidget {
             size: 200,
             key: ValueKey('taker_charged_timer_${offer.id}'),
             startTime: offer.blikReceivedAt!,
-            maxDuration: const Duration(minutes: 60),
+            maxDuration: const Duration(minutes: 5),
             strokeWidth: 16,
             progressColor: Colors.green,
             backgroundColor: Colors.white,
@@ -674,7 +674,7 @@ class _TakerChargedWidget extends StatelessWidget {
         const SizedBox(height: 20),
         _buildInfoBox(
           context,
-          t.taker.waitConfirmation.expiredInstruction3,
+          t.taker.waitConfirmation.takerCharged.message,
           Icons.info_outline,
           Colors.blue,
         ),

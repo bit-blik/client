@@ -472,7 +472,11 @@ taker:
     expiredInstruction1: "Jeśli chcesz spróbować ponownie z nowym kodem BLIK, odnów rezerwację."
     expiredInstruction2: "Jeśli nie chcesz już dokończyć tej transakcji, anuluj rezerwację."
     expiredInstruction3: "Jeśli płatność BLIK została pobrana z Twojego konta bankowego, nie martw się, bitcoin jest nadal bezpiecznie zablokowany u koordynatora."
-    
+
+    takerCharged:
+      title: "Oznaczyłeś BLIK jako opłacony"
+      message: "Twórca oferty musi potwierdzić płatność lub ją zakwestionować. Jeśli nic nie zrobi, płatność zostanie automatycznie potwierdzona, a Ty otrzymasz bitcoiny."
+
     expiredActions:
       reportConflict: "BLIK został pobrany z mojego konta"
       renewReservation: "Spróbuj ponownie z nowym kodem BLIK"
