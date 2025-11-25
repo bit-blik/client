@@ -3,9 +3,10 @@ identifier: app.bitblik
 name: BitBlik
 summary: Bitcoin Blik codes exchange app
 description: Pay with Bitcoin using Blik codes. Buy Bitcoin selling Blik codes.
-repository: https://github.com/bit-blik
+repository: https://github.com/bit-blik/client
 homepage: https://bitblik.app
 license: MIT
+changelog: CHANGELOG.md
 #builder: npub1k3g092rlzvn7nftz3jte9pkx63zp705nh78r6hjpjm55fjg7r2cqx8stj3
 blossom_server: https://cdn.zapstore.dev
 assets:
