@@ -829,14 +829,9 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
           kDebugMode ? SizedBox(width: 40) : Container(),
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: _buildBody(widget.body)
-      ),
+      body: _buildBody(widget.body),
       endDrawer: _buildNekoDrawer(context, publicKeyAsync),
-      bottomNavigationBar: SizedBox(
+      bottomSheet: SizedBox(
         height: 70,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
