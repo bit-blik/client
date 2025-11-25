@@ -198,7 +198,7 @@ class _MakerConfirmPaymentScreenState
 
       if (context.mounted) {
         if (offer.statusEnum == OfferStatus.takerCharged) {
-          context.go('/conflict', extra: offer);
+          context.go('/maker-conflict', extra: offer);
         } else {
           context.go('/maker-invalid-blik', extra: offer);
         }
