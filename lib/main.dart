@@ -719,6 +719,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Colors.white,
         automaticallyImplyLeading:
@@ -831,7 +832,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
       ),
       body: _buildBody(widget.body),
       endDrawer: _buildNekoDrawer(context, publicKeyAsync),
-      bottomSheet: SizedBox(
+      bottomNavigationBar: SizedBox(
         height: 70,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
