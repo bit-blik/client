@@ -263,6 +263,22 @@ class _MyAppState extends ConsumerState<MyApp> {
         // Initialize app lifecycle provider (reconnects NDK when app resumes)
         ref.read(appLifecycleProvider);
 
+        // Initialize NWC connection if saved
+        try {
+          final nwcService = ref.read(nwcServiceProvider);
+          await nwcService.initAndConnect();
+          if (nwcService.isConnected) {
+            ref.read(nwcConnectionStatusProvider.notifier).state = true;
+            
+            // Initialize notification manager to start listening
+            ref.read(nwcNotificationManagerProvider);
+            
+            Logger.log.i('💰 NWC connected and wallet info providers initialized');
+          }
+        } catch (e) {
+          Logger.log.w('⚠️ Error initializing NWC connection: $e');
+        }
+
         // Start listening to connectivity changes
         _connectivitySubscription = listenToConnectivityChanges(ref);
 

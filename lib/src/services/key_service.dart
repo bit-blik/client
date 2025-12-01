@@ -28,7 +28,8 @@ Uint8List hexToBytes(String hex) {
 class KeyService {
   final _storage = const FlutterSecureStorage();
   final _privateKeyStorageKey = 'bitblik_private_key_hex';
-  final _lightningAddressStorageKey = 'bitblik_lightning_address'; // New key
+  final _lightningAddressStorageKey = 'bitblik_lightning_address';
+  final _nwcConnectionStringKey = 'bitblik_nwc_connection_string';
 
   String? _publicKeyHex;
   String? _privateKeyHex; // Store keys as hex strings
@@ -149,6 +150,42 @@ class KeyService {
     } catch (e) {
       Logger.log.e('❌ Error retrieving Lightning Address: $e');
       return null; // Return null on error
+    }
+  }
+
+  // --- NWC Connection String Methods ---
+
+  // Saves the NWC connection string securely
+  Future<void> saveNwcConnectionString(String connectionString) async {
+    try {
+      await _storage.write(key: _nwcConnectionStringKey, value: connectionString);
+      Logger.log.i('🔗 Saved NWC connection string.');
+    } catch (e) {
+      Logger.log.e('❌ Error saving NWC connection string: $e');
+      rethrow;
+    }
+  }
+
+  // Retrieves the NWC connection string
+  Future<String?> getNwcConnectionString() async {
+    try {
+      final connectionString = await _storage.read(key: _nwcConnectionStringKey);
+      Logger.log.i('🔗 Retrieved NWC connection string: ${connectionString != null ? "[PRESENT]" : "[NULL]"}');
+      return connectionString;
+    } catch (e) {
+      Logger.log.e('❌ Error retrieving NWC connection string: $e');
+      return null;
+    }
+  }
+
+  // Deletes the NWC connection string
+  Future<void> deleteNwcConnectionString() async {
+    try {
+      await _storage.delete(key: _nwcConnectionStringKey);
+      Logger.log.i('🔗 Deleted NWC connection string.');
+    } catch (e) {
+      Logger.log.e('❌ Error deleting NWC connection string: $e');
+      rethrow;
     }
   }
 }

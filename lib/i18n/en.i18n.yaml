@@ -292,17 +292,25 @@ maker:
     title: "Pay this Hold invoice:"
     actions:
       copy: Copy Invoice
-      payInWallet: Pay in Wallet
+      payInWallet: Open in External Wallet
+      connectWallet: Connect Wallet
+      payWithNwc: "Pay"
+      paying: Paying...
     
     feedback:
       copied: Invoice copied to clipboard!
       waitingConfirmation: Waiting for payment confirmation...
+      nwcConnected: NWC wallet connected!
+      nwcPaymentSuccess: Payment successful!
     
     errors:
       couldNotOpenApp: Could not open Lightning app for invoice.
       openingApp: "Error opening Lightning app: ${details}"
       publicKeyNotAvailable: Public key is not available.
       couldNotFetchActive: Could not fetch active offer details. It may have expired.
+      nwcPaymentFailed: "Payment failed: ${details}"
+      nwcNotConnected: NWC wallet not connected
+      insufficientBalance: "Insufficient balance. Need ${required} sats, have ${available} sats"
   
   waitTaker:
     message: Waiting for a Taker to reserve your offer...
@@ -706,6 +714,45 @@ settings:
 wallet:
   title: Wallet
   description: Manage your Lightning wallet settings
+
+nwc:
+  title: Nostr Wallet Connect (NWC)
+  description: Connect your Lightning wallet via NWC
+  labels:
+    connectionString: NWC Connection String
+    hint: "nostr+walletconnect://..."
+    status: Connection Status
+    connected: Connected
+    disconnected: Disconnected
+    balance: "Balance"
+    budget: "Budget"
+    usedBudget: "Used"
+    totalBudget: "Total"
+    renewsIn: "Renews in"
+    renewalPeriod: "Renewal Period"
+  prompts:
+    enter: Enter your NWC connection string
+    connect: Connect
+    disconnect: Disconnect
+    confirmDisconnect: Are you sure you want to disconnect your NWC wallet?
+    pasteConnection: Paste connection string
+  feedback:
+    connected: NWC wallet connected successfully!
+    disconnected: NWC wallet disconnected
+    connecting: Connecting to NWC wallet...
+    loadingWalletInfo: Loading wallet information...
+  errors:
+    connecting: "Error connecting to NWC: ${details}"
+    disconnecting: "Error disconnecting NWC: ${details}"
+    invalid: Invalid NWC connection string
+    required: NWC connection string is required
+    loadingBalance: Failed to load wallet balance
+    loadingBudget: Failed to load wallet budget
+  time:
+    minutes: "${count}m"
+    hours: "${count}h"
+    days: "${count}d"
+    justNow: just now
 
 nekoManagement:
   title: Neko

@@ -59,6 +59,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	late final TranslationsFaqEn faq = TranslationsFaqEn.internal(_root);
 	late final TranslationsSettingsEn settings = TranslationsSettingsEn.internal(_root);
 	late final TranslationsWalletEn wallet = TranslationsWalletEn.internal(_root);
+	late final TranslationsNwcEn nwc = TranslationsNwcEn.internal(_root);
 	late final TranslationsNekoManagementEn nekoManagement = TranslationsNekoManagementEn.internal(_root);
 }
 
@@ -365,6 +366,27 @@ class TranslationsWalletEn {
 
 	/// en: 'Manage your Lightning wallet settings'
 	String get description => 'Manage your Lightning wallet settings';
+}
+
+// Path: nwc
+class TranslationsNwcEn {
+	TranslationsNwcEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Nostr Wallet Connect (NWC)'
+	String get title => 'Nostr Wallet Connect (NWC)';
+
+	/// en: 'Connect your Lightning wallet via NWC'
+	String get description => 'Connect your Lightning wallet via NWC';
+
+	late final TranslationsNwcLabelsEn labels = TranslationsNwcLabelsEn.internal(_root);
+	late final TranslationsNwcPromptsEn prompts = TranslationsNwcPromptsEn.internal(_root);
+	late final TranslationsNwcFeedbackEn feedback = TranslationsNwcFeedbackEn.internal(_root);
+	late final TranslationsNwcErrorsEn errors = TranslationsNwcErrorsEn.internal(_root);
+	late final TranslationsNwcTimeEn time = TranslationsNwcTimeEn.internal(_root);
 }
 
 // Path: nekoManagement
@@ -1856,6 +1878,141 @@ class TranslationsLandingActionsEn {
 	String get howItWorks => 'How it works?';
 }
 
+// Path: nwc.labels
+class TranslationsNwcLabelsEn {
+	TranslationsNwcLabelsEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'NWC Connection String'
+	String get connectionString => 'NWC Connection String';
+
+	/// en: 'nostr+walletconnect://...'
+	String get hint => 'nostr+walletconnect://...';
+
+	/// en: 'Connection Status'
+	String get status => 'Connection Status';
+
+	/// en: 'Connected'
+	String get connected => 'Connected';
+
+	/// en: 'Disconnected'
+	String get disconnected => 'Disconnected';
+
+	/// en: 'Balance'
+	String get balance => 'Balance';
+
+	/// en: 'Budget'
+	String get budget => 'Budget';
+
+	/// en: 'Used'
+	String get usedBudget => 'Used';
+
+	/// en: 'Total'
+	String get totalBudget => 'Total';
+
+	/// en: 'Renews in'
+	String get renewsIn => 'Renews in';
+
+	/// en: 'Renewal Period'
+	String get renewalPeriod => 'Renewal Period';
+}
+
+// Path: nwc.prompts
+class TranslationsNwcPromptsEn {
+	TranslationsNwcPromptsEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Enter your NWC connection string'
+	String get enter => 'Enter your NWC connection string';
+
+	/// en: 'Connect'
+	String get connect => 'Connect';
+
+	/// en: 'Disconnect'
+	String get disconnect => 'Disconnect';
+
+	/// en: 'Are you sure you want to disconnect your NWC wallet?'
+	String get confirmDisconnect => 'Are you sure you want to disconnect your NWC wallet?';
+
+	/// en: 'Paste connection string'
+	String get pasteConnection => 'Paste connection string';
+}
+
+// Path: nwc.feedback
+class TranslationsNwcFeedbackEn {
+	TranslationsNwcFeedbackEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'NWC wallet connected successfully!'
+	String get connected => 'NWC wallet connected successfully!';
+
+	/// en: 'NWC wallet disconnected'
+	String get disconnected => 'NWC wallet disconnected';
+
+	/// en: 'Connecting to NWC wallet...'
+	String get connecting => 'Connecting to NWC wallet...';
+
+	/// en: 'Loading wallet information...'
+	String get loadingWalletInfo => 'Loading wallet information...';
+}
+
+// Path: nwc.errors
+class TranslationsNwcErrorsEn {
+	TranslationsNwcErrorsEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Error connecting to NWC: ${details}'
+	String connecting({required Object details}) => 'Error connecting to NWC: ${details}';
+
+	/// en: 'Error disconnecting NWC: ${details}'
+	String disconnecting({required Object details}) => 'Error disconnecting NWC: ${details}';
+
+	/// en: 'Invalid NWC connection string'
+	String get invalid => 'Invalid NWC connection string';
+
+	/// en: 'NWC connection string is required'
+	String get required => 'NWC connection string is required';
+
+	/// en: 'Failed to load wallet balance'
+	String get loadingBalance => 'Failed to load wallet balance';
+
+	/// en: 'Failed to load wallet budget'
+	String get loadingBudget => 'Failed to load wallet budget';
+}
+
+// Path: nwc.time
+class TranslationsNwcTimeEn {
+	TranslationsNwcTimeEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: '${count}m'
+	String minutes({required Object count}) => '${count}m';
+
+	/// en: '${count}h'
+	String hours({required Object count}) => '${count}h';
+
+	/// en: '${count}d'
+	String days({required Object count}) => '${count}d';
+
+	/// en: 'just now'
+	String get justNow => 'just now';
+}
+
 // Path: maker.amountForm.progress
 class TranslationsMakerAmountFormProgressEn {
 	TranslationsMakerAmountFormProgressEn.internal(this._root);
@@ -1954,8 +2111,17 @@ class TranslationsMakerPayInvoiceActionsEn {
 	/// en: 'Copy Invoice'
 	String get copy => 'Copy Invoice';
 
-	/// en: 'Pay in Wallet'
-	String get payInWallet => 'Pay in Wallet';
+	/// en: 'Open in External Wallet'
+	String get payInWallet => 'Open in External Wallet';
+
+	/// en: 'Connect Wallet'
+	String get connectWallet => 'Connect Wallet';
+
+	/// en: 'Pay'
+	String get payWithNwc => 'Pay';
+
+	/// en: 'Paying...'
+	String get paying => 'Paying...';
 }
 
 // Path: maker.payInvoice.feedback
@@ -1971,6 +2137,12 @@ class TranslationsMakerPayInvoiceFeedbackEn {
 
 	/// en: 'Waiting for payment confirmation...'
 	String get waitingConfirmation => 'Waiting for payment confirmation...';
+
+	/// en: 'NWC wallet connected!'
+	String get nwcConnected => 'NWC wallet connected!';
+
+	/// en: 'Payment successful!'
+	String get nwcPaymentSuccess => 'Payment successful!';
 }
 
 // Path: maker.payInvoice.errors
@@ -1992,6 +2164,15 @@ class TranslationsMakerPayInvoiceErrorsEn {
 
 	/// en: 'Could not fetch active offer details. It may have expired.'
 	String get couldNotFetchActive => 'Could not fetch active offer details. It may have expired.';
+
+	/// en: 'Payment failed: ${details}'
+	String nwcPaymentFailed({required Object details}) => 'Payment failed: ${details}';
+
+	/// en: 'NWC wallet not connected'
+	String get nwcNotConnected => 'NWC wallet not connected';
+
+	/// en: 'Insufficient balance. Need ${required} sats, have ${available} sats'
+	String insufficientBalance({required Object required, required Object available}) => 'Insufficient balance. Need ${required} sats, have ${available} sats';
 }
 
 // Path: maker.confirmPayment.actions
@@ -2833,13 +3014,21 @@ extension on Translations {
 			case 'maker.amountForm.errors.publicKeyNotLoaded': return 'Error: Public key not yet loaded.';
 			case 'maker.payInvoice.title': return 'Pay this Hold invoice:';
 			case 'maker.payInvoice.actions.copy': return 'Copy Invoice';
-			case 'maker.payInvoice.actions.payInWallet': return 'Pay in Wallet';
+			case 'maker.payInvoice.actions.payInWallet': return 'Open in External Wallet';
+			case 'maker.payInvoice.actions.connectWallet': return 'Connect Wallet';
+			case 'maker.payInvoice.actions.payWithNwc': return 'Pay';
+			case 'maker.payInvoice.actions.paying': return 'Paying...';
 			case 'maker.payInvoice.feedback.copied': return 'Invoice copied to clipboard!';
 			case 'maker.payInvoice.feedback.waitingConfirmation': return 'Waiting for payment confirmation...';
+			case 'maker.payInvoice.feedback.nwcConnected': return 'NWC wallet connected!';
+			case 'maker.payInvoice.feedback.nwcPaymentSuccess': return 'Payment successful!';
 			case 'maker.payInvoice.errors.couldNotOpenApp': return 'Could not open Lightning app for invoice.';
 			case 'maker.payInvoice.errors.openingApp': return ({required Object details}) => 'Error opening Lightning app: ${details}';
 			case 'maker.payInvoice.errors.publicKeyNotAvailable': return 'Public key is not available.';
 			case 'maker.payInvoice.errors.couldNotFetchActive': return 'Could not fetch active offer details. It may have expired.';
+			case 'maker.payInvoice.errors.nwcPaymentFailed': return ({required Object details}) => 'Payment failed: ${details}';
+			case 'maker.payInvoice.errors.nwcNotConnected': return 'NWC wallet not connected';
+			case 'maker.payInvoice.errors.insufficientBalance': return ({required Object required, required Object available}) => 'Insufficient balance. Need ${required} sats, have ${available} sats';
 			case 'maker.waitTaker.message': return 'Waiting for a Taker to reserve your offer...';
 			case 'maker.waitTaker.progressLabel': return ({required Object time}) => 'Waiting for taker: ${time}';
 			case 'maker.waitTaker.errorActiveOfferDetailsLost': return 'Error: Lost active offer details.';
@@ -3071,6 +3260,38 @@ extension on Translations {
 			case 'settings.title': return 'Settings';
 			case 'wallet.title': return 'Wallet';
 			case 'wallet.description': return 'Manage your Lightning wallet settings';
+			case 'nwc.title': return 'Nostr Wallet Connect (NWC)';
+			case 'nwc.description': return 'Connect your Lightning wallet via NWC';
+			case 'nwc.labels.connectionString': return 'NWC Connection String';
+			case 'nwc.labels.hint': return 'nostr+walletconnect://...';
+			case 'nwc.labels.status': return 'Connection Status';
+			case 'nwc.labels.connected': return 'Connected';
+			case 'nwc.labels.disconnected': return 'Disconnected';
+			case 'nwc.labels.balance': return 'Balance';
+			case 'nwc.labels.budget': return 'Budget';
+			case 'nwc.labels.usedBudget': return 'Used';
+			case 'nwc.labels.totalBudget': return 'Total';
+			case 'nwc.labels.renewsIn': return 'Renews in';
+			case 'nwc.labels.renewalPeriod': return 'Renewal Period';
+			case 'nwc.prompts.enter': return 'Enter your NWC connection string';
+			case 'nwc.prompts.connect': return 'Connect';
+			case 'nwc.prompts.disconnect': return 'Disconnect';
+			case 'nwc.prompts.confirmDisconnect': return 'Are you sure you want to disconnect your NWC wallet?';
+			case 'nwc.prompts.pasteConnection': return 'Paste connection string';
+			case 'nwc.feedback.connected': return 'NWC wallet connected successfully!';
+			case 'nwc.feedback.disconnected': return 'NWC wallet disconnected';
+			case 'nwc.feedback.connecting': return 'Connecting to NWC wallet...';
+			case 'nwc.feedback.loadingWalletInfo': return 'Loading wallet information...';
+			case 'nwc.errors.connecting': return ({required Object details}) => 'Error connecting to NWC: ${details}';
+			case 'nwc.errors.disconnecting': return ({required Object details}) => 'Error disconnecting NWC: ${details}';
+			case 'nwc.errors.invalid': return 'Invalid NWC connection string';
+			case 'nwc.errors.required': return 'NWC connection string is required';
+			case 'nwc.errors.loadingBalance': return 'Failed to load wallet balance';
+			case 'nwc.errors.loadingBudget': return 'Failed to load wallet budget';
+			case 'nwc.time.minutes': return ({required Object count}) => '${count}m';
+			case 'nwc.time.hours': return ({required Object count}) => '${count}h';
+			case 'nwc.time.days': return ({required Object count}) => '${count}d';
+			case 'nwc.time.justNow': return 'just now';
 			case 'nekoManagement.title': return 'Neko';
 			default: return null;
 		}

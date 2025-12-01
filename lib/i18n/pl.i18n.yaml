@@ -291,17 +291,25 @@ maker:
     title: "Zapłać tę fakturę Hold:"
     actions:
       copy: Kopiuj Fakturę
-      payInWallet: Zapłać w Portfelu
+      payInWallet: Otwórz w portfelu zewnętrznym
+      connectWallet: Połącz portfel
+      payWithNwc: "Zapłać"
+      paying: Płacenie...
 
     feedback:
       copied: Faktura skopiowana do schowka!
       waitingConfirmation: Oczekiwanie na potwierdzenie płatności...
+      nwcConnected: Portfel NWC połączony!
+      nwcPaymentSuccess: Płatność udana!
     
     errors:
       couldNotOpenApp: Nie można otworzyć aplikacji Lightning dla faktury.
       openingApp: "Błąd otwierania aplikacji Lightning: ${details}"
       publicKeyNotAvailable: Klucz publiczny nie jest dostępny.
       couldNotFetchActive: Nie udało się pobrać szczegółów aktywnej oferty. Mogła wygasnąć.
+      nwcPaymentFailed: "Płatność nie powiodła się: ${details}"
+      nwcNotConnected: Portfel NWC nie jest połączony
+      insufficientBalance: "Niewystarczające środki. Potrzeba ${required} sats, dostępne ${available} sats"
   
   waitTaker:
     message: "Oczekiwanie na rezerwację przez Kupującego..."
@@ -707,6 +715,45 @@ settings:
 wallet:
   title: Portfel
   description: Zarządzaj ustawieniami portfela Lightning
+
+nwc:
+  title: Nostr Wallet Connect (NWC)
+  description: Połącz swój portfel Lightning przez NWC
+  labels:
+    connectionString: Ciąg połączenia NWC
+    hint: "nostr+walletconnect://..."
+    status: Status połączenia
+    connected: Połączono
+    disconnected: Rozłączono
+    balance: "Saldo"
+    budget: "Budżet"
+    usedBudget: "Wykorzystano"
+    totalBudget: "Łącznie"
+    renewsIn: "Odnowienie za"
+    renewalPeriod: "Okres odnowienia"
+  prompts:
+    enter: Wprowadź swój ciąg połączenia NWC
+    connect: Połącz
+    disconnect: Rozłącz
+    confirmDisconnect: Czy na pewno chcesz rozłączyć portfel NWC?
+    pasteConnection: Wklej ciąg połączenia
+  feedback:
+    connected: Portfel NWC połączony pomyślnie!
+    disconnected: Portfel NWC rozłączony
+    connecting: Łączenie z portfelem NWC...
+    loadingWalletInfo: Ładowanie informacji o portfelu...
+  errors:
+    connecting: "Błąd połączenia z NWC: ${details}"
+    disconnecting: "Błąd rozłączania NWC: ${details}"
+    invalid: Nieprawidłowy ciąg połączenia NWC
+    required: Wymagany ciąg połączenia NWC
+    loadingBalance: Nie udało się załadować salda portfela
+    loadingBudget: Nie udało się załadować budżetu portfela
+  time:
+    minutes: "${count}m"
+    hours: "${count}h"
+    days: "${count}d"
+    justNow: teraz
 
 nekoManagement:
   title: Neko

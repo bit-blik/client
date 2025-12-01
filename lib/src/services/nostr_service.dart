@@ -292,6 +292,7 @@ class NostrService {
     _responseSubscription = _ndk!.requests.subscription(
       name: "client-responses",
       filters: [filter],
+      explicitRelays: _relayUrls
     );
 
     _responseSubscription!.stream.listen(_handleResponseEvent);
@@ -382,7 +383,7 @@ class NostrService {
       await _clientSigner!.sign(event);
 
       // Publish the event
-      _ndk!.broadcast.broadcast(nostrEvent: event);
+      _ndk!.broadcast.broadcast(nostrEvent: event, specificRelays: _relayUrls);
 
       Logger.log.d(
         '📤 Sent request: ${request.method} (ID: $requestId) to $coordinatorPubkey',
@@ -484,7 +485,6 @@ class NostrService {
       kinds: [KIND_OFFER],
       tags: {
         "#f": ["PLN"],
-        "#s": ['pending'],
         "#y": ["Bitblik"],
         // "#pm": ["BLIK"],
       },
@@ -497,6 +497,7 @@ class NostrService {
     _offerSubscription = _ndk!.requests.subscription(
       name: "offers-stream",
       filters: [filter],
+      explicitRelays: _relayUrls
     );
     _offerSubscription!.stream.listen(_handleOfferEvent);
     Logger.log.i('🔎 Started offers subscription');
@@ -592,7 +593,7 @@ class NostrService {
     final filter = Filter(kinds: [KIND_OFFER], dTags: [offerId], limit: 1);
 
     // Use query for a one-time fetch.
-    final response = _ndk!.requests.query(filters: [filter], cacheRead: false);
+    final response = _ndk!.requests.query(filters: [filter], cacheRead: false, explicitRelays: _relayUrls);
     final events = await response.stream.toList();
 
     if (events.isEmpty) {
@@ -1044,6 +1045,7 @@ class NostrService {
     final response = _ndk!.requests.query(
       name: "coordinator-discovery",
       filters: [filter],
+      explicitRelays: _relayUrls
     );
     await for (final event in response.stream) {
       _handleCoordinatorInfoEvent(event);
@@ -1075,6 +1077,7 @@ class NostrService {
     _offerStatusSubscription = _ndk!.requests.subscription(
       name: "offer-status-updates",
       filters: [filter],
+      explicitRelays: _relayUrls
     );
 
     _offerStatusSubscription!.stream.listen(_handleOfferStatusEvent);

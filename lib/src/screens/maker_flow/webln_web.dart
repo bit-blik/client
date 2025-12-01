@@ -1,3 +1,4 @@
+import 'dart:js' show allowInterop;
 import 'package:flutter_webln/flutter_webln.dart';
 import 'package:ndk/shared/logger/logger.dart';
 
@@ -8,13 +9,13 @@ Future<bool> get isWeblnSupported async {
     Logger.log.d("!!!!!!!!!!!!!: isWeblnSupported weblnValue: $weblnValue");
     if (weblnValue.isNotEmpty) {
       try {
-        bool a = await FlutterWebln.getInfo().then(allowInterop((response) {
+        bool a = await FlutterWebln.getInfo().then((response) {
           Logger.log.d('[!] getInfo method is $response');
-          if (response!=null) {
+          if (response != null) {
             return true;
           }
           return false;
-        }));
+        });
         return a;
       } catch (error) {
         Logger.log.d('[!] Error in getInfo method is $error');

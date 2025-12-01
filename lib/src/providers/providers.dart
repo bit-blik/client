@@ -10,12 +10,152 @@ import '../models/offer.dart'; // OfferStatus is in here
 import '../services/api_service_nostr.dart';
 import '../services/nostr_service.dart'; // Import DiscoveredCoordinator
 import '../services/key_service.dart'; // Import KeyService
+import '../services/nwc_service.dart';
 import '../services/offer_db_service.dart';
 
 final keyServiceProvider = Provider<KeyService>((ref) {
   final service = KeyService();
   return service;
 });
+
+final nwcServiceProvider = Provider<NwcService>((ref) {
+  final keyService = ref.watch(keyServiceProvider);
+  final ndk = ref.watch(ndkProvider);
+  if (ndk == null) {
+    throw Exception('NDK instance not available');
+  }
+  final service = NwcService(keyService, ndk);
+  ref.onDispose(() {
+    service.dispose();
+  });
+  return service;
+});
+
+final nwcConnectionStatusProvider = StateProvider<bool>((ref) => false);
+
+// Provider for NWC wallet balance
+final nwcBalanceProvider = StateNotifierProvider<NwcBalanceNotifier, AsyncValue<int?>>((ref) {
+  return NwcBalanceNotifier(ref);
+});
+
+// Provider for NWC wallet budget information
+final nwcBudgetProvider = StateNotifierProvider<NwcBudgetNotifier, AsyncValue<Map<String, dynamic>?>>((ref) {
+  return NwcBudgetNotifier(ref);
+});
+
+// Provider that manages NWC notification subscription and refreshes balance/budget
+final nwcNotificationManagerProvider = Provider<void>((ref) {
+  StreamSubscription? notificationSubscription;
+  
+  void subscribeToNotifications() {
+    notificationSubscription?.cancel();
+    
+    final nwcService = ref.read(nwcServiceProvider);
+    final connection = nwcService.connection;
+    
+    if (connection != null) {
+      Logger.log.d('📡 Subscribing to NWC notifications...');
+      notificationSubscription = connection.notificationStream.stream.listen((notification) {
+        Logger.log.d('💰 NWC notification received: ${notification.type} amount: ${notification.amount}');
+        // Refresh both balance and budget when notification arrives
+        ref.read(nwcBalanceProvider.notifier).loadBalance();
+        ref.read(nwcBudgetProvider.notifier).loadBudget();
+      });
+    }
+  }
+  
+  // Initialize subscription if already connected
+  final isConnected = ref.read(nwcConnectionStatusProvider);
+  if (isConnected) {
+    subscribeToNotifications();
+  }
+  
+  // Watch for connection status changes
+  ref.listen<bool>(nwcConnectionStatusProvider, (previous, next) {
+    if (next) {
+      subscribeToNotifications();
+    } else {
+      notificationSubscription?.cancel();
+      notificationSubscription = null;
+    }
+  });
+  
+  ref.onDispose(() {
+    notificationSubscription?.cancel();
+  });
+});
+
+class NwcBalanceNotifier extends StateNotifier<AsyncValue<int?>> {
+  final Ref _ref;
+  
+  NwcBalanceNotifier(this._ref) : super(const AsyncValue.data(null)) {
+    _init();
+  }
+
+  Future<void> _init() async {
+    final isConnected = _ref.read(nwcConnectionStatusProvider);
+    if (isConnected) {
+      await loadBalance();
+    }
+    
+    // Watch for connection status changes
+    _ref.listen<bool>(nwcConnectionStatusProvider, (previous, next) {
+      if (next) {
+        loadBalance();
+      } else {
+        state = const AsyncValue.data(null);
+      }
+    });
+  }
+
+  Future<void> loadBalance() async {
+    state = const AsyncValue.loading();
+    try {
+      final nwcService = _ref.read(nwcServiceProvider);
+      final balance = await nwcService.getBalance();
+      state = AsyncValue.data(balance);
+    } catch (e, stack) {
+      Logger.log.e('❌ Error loading NWC balance: $e');
+      state = AsyncValue.error(e, stack);
+    }
+  }
+}
+
+class NwcBudgetNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>?>> {
+  final Ref _ref;
+  
+  NwcBudgetNotifier(this._ref) : super(const AsyncValue.data(null)) {
+    _init();
+  }
+
+  Future<void> _init() async {
+    final isConnected = _ref.read(nwcConnectionStatusProvider);
+    if (isConnected) {
+      await loadBudget();
+    }
+    
+    // Watch for connection status changes
+    _ref.listen<bool>(nwcConnectionStatusProvider, (previous, next) {
+      if (next) {
+        loadBudget();
+      } else {
+        state = const AsyncValue.data(null);
+      }
+    });
+  }
+
+  Future<void> loadBudget() async {
+    state = const AsyncValue.loading();
+    try {
+      final nwcService = _ref.read(nwcServiceProvider);
+      final budget = await nwcService.getBudget();
+      state = AsyncValue.data(budget);
+    } catch (e, stack) {
+      Logger.log.e('❌ Error loading NWC budget: $e');
+      state = AsyncValue.error(e, stack);
+    }
+  }
+}
 
 final apiServiceProvider = Provider<ApiServiceNostr>((ref) {
   final keyService = ref.watch(keyServiceProvider);

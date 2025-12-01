@@ -29,6 +29,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
   Timer? _statusPollTimer;
   bool isWallet = false;
   bool _sentWeblnPayment = false;
+  bool _isPayingWithNwc = false;
 
   @override
   void initState() {
@@ -159,6 +160,158 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
         );
       }
     }
+  }
+
+  Future<void> _showNwcConnectDialog() async {
+    final t = Translations.of(context);
+    final controller = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(t.maker.payInvoice.actions.connectWallet),
+          content: Form(
+            key: formKey,
+            child: TextFormField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: t.nwc.labels.hint,
+                labelText: t.nwc.labels.connectionString,
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return t.nwc.errors.required;
+                }
+                if (!value.startsWith('nostr+walletconnect://')) {
+                  return t.nwc.errors.invalid;
+                }
+                return null;
+              },
+              maxLines: 3,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(t.common.buttons.cancel),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (!formKey.currentState!.validate()) {
+                  return;
+                }
+
+                try {
+                  final nwcService = ref.read(nwcServiceProvider);
+                  await nwcService.connect(controller.text.trim());
+                  ref.read(nwcConnectionStatusProvider.notifier).state = true;
+                  
+                  if (!context.mounted) return;
+                  Navigator.of(context).pop(true);
+                  
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(t.maker.payInvoice.feedback.nwcConnected)),
+                  );
+
+                } catch (e) {
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        t.nwc.errors.connecting(details: e.toString()),
+                      ),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              child: Text(t.nwc.prompts.connect),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _payWithNwc(String invoice) async {
+    final t = Translations.of(context);
+    final nwcService = ref.read(nwcServiceProvider);
+    
+    if (!nwcService.isConnected) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(t.maker.payInvoice.errors.nwcNotConnected),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isPayingWithNwc = true;
+    });
+
+    try {
+      await nwcService.payInvoice(invoice);
+    } catch (e) {
+      // TODO
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isPayingWithNwc = false;
+        });
+      }
+    }
+  }
+
+  Widget _buildNwcButtons(BuildContext context, WidgetRef ref, String holdInvoice, Translations t) {
+    final isConnected = ref.watch(nwcConnectionStatusProvider);
+    
+    if (!isConnected) {
+      return SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          icon: const Icon(Icons.wallet),
+          label: Text(t.maker.payInvoice.actions.connectWallet),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue[700],
+            foregroundColor: Colors.white,
+          ),
+          onPressed: _showNwcConnectDialog,
+        ),
+      );
+    }
+
+    // Show pay button with balance
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        icon: _isPayingWithNwc
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : const Icon(Icons.bolt),
+        label: Text(
+          _isPayingWithNwc
+              ? t.maker.payInvoice.actions.paying
+              : isConnected
+                  ? t.maker.payInvoice.actions.payWithNwc
+                  : t.maker.payInvoice.actions.connectWallet,
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.orange[700],
+          foregroundColor: Colors.white,
+        ),
+        onPressed: _isPayingWithNwc ? null : () => _payWithNwc(holdInvoice),
+      ),
+    );
   }
 
   @override
@@ -339,6 +492,8 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
                 const SizedBox(height: 20),
                 Column(
                   children: [
+                    _buildNwcButtons(context, ref, holdInvoice, t),
+                    const SizedBox(height: 8),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(

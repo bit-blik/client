@@ -58,6 +58,7 @@ class TranslationsPl extends Translations {
 	@override late final _TranslationsFaqPl faq = _TranslationsFaqPl._(_root);
 	@override late final _TranslationsSettingsPl settings = _TranslationsSettingsPl._(_root);
 	@override late final _TranslationsWalletPl wallet = _TranslationsWalletPl._(_root);
+	@override late final _TranslationsNwcPl nwc = _TranslationsNwcPl._(_root);
 	@override late final _TranslationsNekoManagementPl nekoManagement = _TranslationsNekoManagementPl._(_root);
 }
 
@@ -320,6 +321,22 @@ class _TranslationsWalletPl extends TranslationsWalletEn {
 	// Translations
 	@override String get title => 'Portfel';
 	@override String get description => 'Zarządzaj ustawieniami portfela Lightning';
+}
+
+// Path: nwc
+class _TranslationsNwcPl extends TranslationsNwcEn {
+	_TranslationsNwcPl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Nostr Wallet Connect (NWC)';
+	@override String get description => 'Połącz swój portfel Lightning przez NWC';
+	@override late final _TranslationsNwcLabelsPl labels = _TranslationsNwcLabelsPl._(_root);
+	@override late final _TranslationsNwcPromptsPl prompts = _TranslationsNwcPromptsPl._(_root);
+	@override late final _TranslationsNwcFeedbackPl feedback = _TranslationsNwcFeedbackPl._(_root);
+	@override late final _TranslationsNwcErrorsPl errors = _TranslationsNwcErrorsPl._(_root);
+	@override late final _TranslationsNwcTimePl time = _TranslationsNwcTimePl._(_root);
 }
 
 // Path: nekoManagement
@@ -1220,6 +1237,81 @@ class _TranslationsLandingActionsPl extends TranslationsLandingActionsEn {
 	@override String get howItWorks => 'Jak to działa?';
 }
 
+// Path: nwc.labels
+class _TranslationsNwcLabelsPl extends TranslationsNwcLabelsEn {
+	_TranslationsNwcLabelsPl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get connectionString => 'Ciąg połączenia NWC';
+	@override String get hint => 'nostr+walletconnect://...';
+	@override String get status => 'Status połączenia';
+	@override String get connected => 'Połączono';
+	@override String get disconnected => 'Rozłączono';
+	@override String get balance => 'Saldo';
+	@override String get budget => 'Budżet';
+	@override String get usedBudget => 'Wykorzystano';
+	@override String get totalBudget => 'Łącznie';
+	@override String get renewsIn => 'Odnowienie za';
+	@override String get renewalPeriod => 'Okres odnowienia';
+}
+
+// Path: nwc.prompts
+class _TranslationsNwcPromptsPl extends TranslationsNwcPromptsEn {
+	_TranslationsNwcPromptsPl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get enter => 'Wprowadź swój ciąg połączenia NWC';
+	@override String get connect => 'Połącz';
+	@override String get disconnect => 'Rozłącz';
+	@override String get confirmDisconnect => 'Czy na pewno chcesz rozłączyć portfel NWC?';
+	@override String get pasteConnection => 'Wklej ciąg połączenia';
+}
+
+// Path: nwc.feedback
+class _TranslationsNwcFeedbackPl extends TranslationsNwcFeedbackEn {
+	_TranslationsNwcFeedbackPl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get connected => 'Portfel NWC połączony pomyślnie!';
+	@override String get disconnected => 'Portfel NWC rozłączony';
+	@override String get connecting => 'Łączenie z portfelem NWC...';
+	@override String get loadingWalletInfo => 'Ładowanie informacji o portfelu...';
+}
+
+// Path: nwc.errors
+class _TranslationsNwcErrorsPl extends TranslationsNwcErrorsEn {
+	_TranslationsNwcErrorsPl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String connecting({required Object details}) => 'Błąd połączenia z NWC: ${details}';
+	@override String disconnecting({required Object details}) => 'Błąd rozłączania NWC: ${details}';
+	@override String get invalid => 'Nieprawidłowy ciąg połączenia NWC';
+	@override String get required => 'Wymagany ciąg połączenia NWC';
+	@override String get loadingBalance => 'Nie udało się załadować salda portfela';
+	@override String get loadingBudget => 'Nie udało się załadować budżetu portfela';
+}
+
+// Path: nwc.time
+class _TranslationsNwcTimePl extends TranslationsNwcTimeEn {
+	_TranslationsNwcTimePl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String minutes({required Object count}) => '${count}m';
+	@override String hours({required Object count}) => '${count}h';
+	@override String days({required Object count}) => '${count}d';
+	@override String get justNow => 'teraz';
+}
+
 // Path: maker.amountForm.progress
 class _TranslationsMakerAmountFormProgressPl extends TranslationsMakerAmountFormProgressEn {
 	_TranslationsMakerAmountFormProgressPl._(TranslationsPl root) : this._root = root, super.internal(root);
@@ -1287,7 +1379,10 @@ class _TranslationsMakerPayInvoiceActionsPl extends TranslationsMakerPayInvoiceA
 
 	// Translations
 	@override String get copy => 'Kopiuj Fakturę';
-	@override String get payInWallet => 'Zapłać w Portfelu';
+	@override String get payInWallet => 'Otwórz w portfelu zewnętrznym';
+	@override String get connectWallet => 'Połącz portfel';
+	@override String get payWithNwc => 'Zapłać';
+	@override String get paying => 'Płacenie...';
 }
 
 // Path: maker.payInvoice.feedback
@@ -1299,6 +1394,8 @@ class _TranslationsMakerPayInvoiceFeedbackPl extends TranslationsMakerPayInvoice
 	// Translations
 	@override String get copied => 'Faktura skopiowana do schowka!';
 	@override String get waitingConfirmation => 'Oczekiwanie na potwierdzenie płatności...';
+	@override String get nwcConnected => 'Portfel NWC połączony!';
+	@override String get nwcPaymentSuccess => 'Płatność udana!';
 }
 
 // Path: maker.payInvoice.errors
@@ -1312,6 +1409,9 @@ class _TranslationsMakerPayInvoiceErrorsPl extends TranslationsMakerPayInvoiceEr
 	@override String openingApp({required Object details}) => 'Błąd otwierania aplikacji Lightning: ${details}';
 	@override String get publicKeyNotAvailable => 'Klucz publiczny nie jest dostępny.';
 	@override String get couldNotFetchActive => 'Nie udało się pobrać szczegółów aktywnej oferty. Mogła wygasnąć.';
+	@override String nwcPaymentFailed({required Object details}) => 'Płatność nie powiodła się: ${details}';
+	@override String get nwcNotConnected => 'Portfel NWC nie jest połączony';
+	@override String insufficientBalance({required Object required, required Object available}) => 'Niewystarczające środki. Potrzeba ${required} sats, dostępne ${available} sats';
 }
 
 // Path: maker.confirmPayment.actions
@@ -1947,13 +2047,21 @@ extension on TranslationsPl {
 			case 'maker.amountForm.errors.publicKeyNotLoaded': return 'Błąd: Klucz publiczny nie został jeszcze załadowany.';
 			case 'maker.payInvoice.title': return 'Zapłać tę fakturę Hold:';
 			case 'maker.payInvoice.actions.copy': return 'Kopiuj Fakturę';
-			case 'maker.payInvoice.actions.payInWallet': return 'Zapłać w Portfelu';
+			case 'maker.payInvoice.actions.payInWallet': return 'Otwórz w portfelu zewnętrznym';
+			case 'maker.payInvoice.actions.connectWallet': return 'Połącz portfel';
+			case 'maker.payInvoice.actions.payWithNwc': return 'Zapłać';
+			case 'maker.payInvoice.actions.paying': return 'Płacenie...';
 			case 'maker.payInvoice.feedback.copied': return 'Faktura skopiowana do schowka!';
 			case 'maker.payInvoice.feedback.waitingConfirmation': return 'Oczekiwanie na potwierdzenie płatności...';
+			case 'maker.payInvoice.feedback.nwcConnected': return 'Portfel NWC połączony!';
+			case 'maker.payInvoice.feedback.nwcPaymentSuccess': return 'Płatność udana!';
 			case 'maker.payInvoice.errors.couldNotOpenApp': return 'Nie można otworzyć aplikacji Lightning dla faktury.';
 			case 'maker.payInvoice.errors.openingApp': return ({required Object details}) => 'Błąd otwierania aplikacji Lightning: ${details}';
 			case 'maker.payInvoice.errors.publicKeyNotAvailable': return 'Klucz publiczny nie jest dostępny.';
 			case 'maker.payInvoice.errors.couldNotFetchActive': return 'Nie udało się pobrać szczegółów aktywnej oferty. Mogła wygasnąć.';
+			case 'maker.payInvoice.errors.nwcPaymentFailed': return ({required Object details}) => 'Płatność nie powiodła się: ${details}';
+			case 'maker.payInvoice.errors.nwcNotConnected': return 'Portfel NWC nie jest połączony';
+			case 'maker.payInvoice.errors.insufficientBalance': return ({required Object required, required Object available}) => 'Niewystarczające środki. Potrzeba ${required} sats, dostępne ${available} sats';
 			case 'maker.waitTaker.message': return 'Oczekiwanie na rezerwację przez Kupującego...';
 			case 'maker.waitTaker.errorActiveOfferDetailsLost': return 'Błąd: Utracono szczegóły aktywnej oferty.';
 			case 'maker.waitTaker.errorFailedToRetrieveBlik': return 'Błąd: Nie udało się pobrać kodu BLIK.';
@@ -2184,6 +2292,38 @@ extension on TranslationsPl {
 			case 'settings.title': return 'Ustawienia';
 			case 'wallet.title': return 'Portfel';
 			case 'wallet.description': return 'Zarządzaj ustawieniami portfela Lightning';
+			case 'nwc.title': return 'Nostr Wallet Connect (NWC)';
+			case 'nwc.description': return 'Połącz swój portfel Lightning przez NWC';
+			case 'nwc.labels.connectionString': return 'Ciąg połączenia NWC';
+			case 'nwc.labels.hint': return 'nostr+walletconnect://...';
+			case 'nwc.labels.status': return 'Status połączenia';
+			case 'nwc.labels.connected': return 'Połączono';
+			case 'nwc.labels.disconnected': return 'Rozłączono';
+			case 'nwc.labels.balance': return 'Saldo';
+			case 'nwc.labels.budget': return 'Budżet';
+			case 'nwc.labels.usedBudget': return 'Wykorzystano';
+			case 'nwc.labels.totalBudget': return 'Łącznie';
+			case 'nwc.labels.renewsIn': return 'Odnowienie za';
+			case 'nwc.labels.renewalPeriod': return 'Okres odnowienia';
+			case 'nwc.prompts.enter': return 'Wprowadź swój ciąg połączenia NWC';
+			case 'nwc.prompts.connect': return 'Połącz';
+			case 'nwc.prompts.disconnect': return 'Rozłącz';
+			case 'nwc.prompts.confirmDisconnect': return 'Czy na pewno chcesz rozłączyć portfel NWC?';
+			case 'nwc.prompts.pasteConnection': return 'Wklej ciąg połączenia';
+			case 'nwc.feedback.connected': return 'Portfel NWC połączony pomyślnie!';
+			case 'nwc.feedback.disconnected': return 'Portfel NWC rozłączony';
+			case 'nwc.feedback.connecting': return 'Łączenie z portfelem NWC...';
+			case 'nwc.feedback.loadingWalletInfo': return 'Ładowanie informacji o portfelu...';
+			case 'nwc.errors.connecting': return ({required Object details}) => 'Błąd połączenia z NWC: ${details}';
+			case 'nwc.errors.disconnecting': return ({required Object details}) => 'Błąd rozłączania NWC: ${details}';
+			case 'nwc.errors.invalid': return 'Nieprawidłowy ciąg połączenia NWC';
+			case 'nwc.errors.required': return 'Wymagany ciąg połączenia NWC';
+			case 'nwc.errors.loadingBalance': return 'Nie udało się załadować salda portfela';
+			case 'nwc.errors.loadingBudget': return 'Nie udało się załadować budżetu portfela';
+			case 'nwc.time.minutes': return ({required Object count}) => '${count}m';
+			case 'nwc.time.hours': return ({required Object count}) => '${count}h';
+			case 'nwc.time.days': return ({required Object count}) => '${count}d';
+			case 'nwc.time.justNow': return 'teraz';
 			case 'nekoManagement.title': return 'Neko';
 			default: return null;
 		}

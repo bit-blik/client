@@ -231,9 +231,470 @@ class WalletScreen extends ConsumerWidget {
               );
             },
           ),
+          const SizedBox(height: 24),
+          
+          // NWC Section
+          Text(
+            t.nwc.title,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 16),
+          
+          _buildNwcSection(context, ref, keyService, t),
         ],
       ),
     );
+  }
+
+  Widget _buildNwcSection(
+    BuildContext context,
+    WidgetRef ref,
+    dynamic keyService,
+    Translations t,
+  ) {
+    final nwcService = ref.watch(nwcServiceProvider);
+    final isConnected = ref.watch(nwcConnectionStatusProvider);
+    final balanceAsync = ref.watch(nwcBalanceProvider);
+    final budgetAsync = ref.watch(nwcBudgetProvider);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  isConnected ? Icons.link : Icons.link_off,
+                  color: isConnected ? Colors.green : Colors.grey,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        t.nwc.labels.status,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        isConnected ? t.nwc.labels.connected : t.nwc.labels.disconnected,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: isConnected ? Colors.green : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            if (!isConnected) ...[
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.blue.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.info_outline, color: Colors.blue, size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        t.nwc.description,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              Center(
+                child: ElevatedButton.icon(
+                  onPressed: () async {
+                    await _showNwcConnectDialog(
+                      context,
+                      ref,
+                      nwcService,
+                      t,
+                    );
+                  },
+                  icon: const Icon(Icons.add_link),
+                  label: Text(t.nwc.prompts.connect),
+                ),
+              ),
+            ] else ...[
+              const SizedBox(height: 16),
+              // Balance section
+              balanceAsync.when(
+                data: (balance) {
+                  if (balance == null) return const SizedBox.shrink();
+                  return Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.green.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: Colors.green.withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.account_balance_wallet, color: Colors.green, size: 20),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    t.nwc.labels.balance,
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '$balance sats',
+                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                  );
+                },
+                loading: () => const SizedBox.shrink(),
+                error: (_, __) => const SizedBox.shrink(),
+              ),
+              
+              // Budget section
+              budgetAsync.when(
+                data: (budget) {
+                  if (budget == null) return const SizedBox.shrink();
+                  return Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: Colors.blue.withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.bar_chart, color: Colors.blue, size: 20),
+                                const SizedBox(width: 12),
+                                Text(
+                                  t.nwc.labels.budget,
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        t.nwc.labels.usedBudget,
+                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${budget['usedBudgetSats']} sats',
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        t.nwc.labels.totalBudget,
+                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${budget['totalBudgetSats']} sats',
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (budget['renewsAt'] != null) ...[
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  const Icon(Icons.schedule, color: Colors.blue, size: 16),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '${t.nwc.labels.renewsIn}: ${_formatRelativeTime(budget['renewsAt'], t)}',
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.grey[700],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                            if (budget['renewalPeriod'] != null) ...[
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  const Icon(Icons.repeat, color: Colors.blue, size: 16),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '${t.nwc.labels.renewalPeriod}: ${budget['renewalPeriod']}',
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.grey[700],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  );
+                },
+                loading: () => const SizedBox.shrink(),
+                error: (_, __) => const SizedBox.shrink(),
+              ),
+              
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton.icon(
+                    onPressed: () async {
+                      await _showNwcDisconnectDialog(
+                        context,
+                        ref,
+                        nwcService,
+                        t,
+                      );
+                    },
+                    icon: const Icon(Icons.link_off, color: Colors.red),
+                    label: Text(
+                      t.nwc.prompts.disconnect,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatRelativeTime(int? renewsAtSeconds, Translations t) {
+    if (renewsAtSeconds == null) return '';
+    
+    final renewsAt = DateTime.fromMillisecondsSinceEpoch(renewsAtSeconds * 1000);
+    final now = DateTime.now();
+    final difference = renewsAt.difference(now);
+    
+    if (difference.isNegative) {
+      return t.nwc.time.justNow;
+    }
+    
+    if (difference.inDays > 0) {
+      return t.nwc.time.days(count: difference.inDays);
+    } else if (difference.inHours > 0) {
+      return t.nwc.time.hours(count: difference.inHours);
+    } else if (difference.inMinutes > 0) {
+      return t.nwc.time.minutes(count: difference.inMinutes);
+    } else {
+      return t.nwc.time.justNow;
+    }
+  }
+
+  Future<void> _showNwcConnectDialog(
+    BuildContext context,
+    WidgetRef ref,
+    dynamic nwcService,
+    Translations t,
+  ) async {
+    final controller = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    final focusNode = FocusNode();
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          focusNode.requestFocus();
+        });
+        return AlertDialog(
+          title: Text(t.nwc.prompts.connect),
+          content: Form(
+            key: formKey,
+            child: TextFormField(
+              controller: controller,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                hintText: t.nwc.labels.hint,
+                labelText: t.nwc.labels.connectionString,
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return t.nwc.errors.required;
+                }
+                if (!value.startsWith('nostr+walletconnect://')) {
+                  return t.nwc.errors.invalid;
+                }
+                return null;
+              },
+              maxLines: 3,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(t.common.buttons.cancel),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (!formKey.currentState!.validate()) {
+                  return;
+                }
+                
+                try {
+                  if (!context.mounted) return;
+                  
+                  // Show loading
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(t.nwc.feedback.connecting)),
+                  );
+                  
+                  await nwcService.connect(controller.text.trim());
+                  
+                  if (!context.mounted) return;
+                  ref.read(nwcConnectionStatusProvider.notifier).state = true;
+                  Navigator.of(context).pop(true);
+                  
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(t.nwc.feedback.connected)),
+                  );
+                  
+                  // Trigger balance and budget loading
+                  ref.read(nwcBalanceProvider.notifier).loadBalance();
+                  ref.read(nwcBudgetProvider.notifier).loadBudget();
+                } catch (e) {
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        t.nwc.errors.connecting(details: e.toString()),
+                      ),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              child: Text(t.nwc.prompts.connect),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showNwcDisconnectDialog(
+    BuildContext context,
+    WidgetRef ref,
+    dynamic nwcService,
+    Translations t,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(t.nwc.prompts.disconnect),
+          content: Text(t.nwc.prompts.confirmDisconnect),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(t.common.buttons.cancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: Text(t.nwc.prompts.disconnect),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      try {
+        await nwcService.disconnect();
+        ref.read(nwcConnectionStatusProvider.notifier).state = false;
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(t.nwc.feedback.disconnected)),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                t.nwc.errors.disconnecting(details: e.toString()),
+              ),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
   }
 
   Future<void> _showEditLightningAddressDialog(
@@ -494,4 +955,3 @@ class WalletScreen extends ConsumerWidget {
     }
   }
 }
-
