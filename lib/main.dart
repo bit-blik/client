@@ -566,9 +566,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                 if (newLocale != null) {
                   await asyncPrefs.setString('app_locale', newLocale.languageCode);
                   if (LocaleSettings.currentLocale.languageCode != newLocale.languageCode) {
-                    appLocale = newLocale.languageCode == 'pl' ? AppLocale.pl : AppLocale.en;
-                    LocaleSettings.setLocale(appLocale);
-                    // Force rebuild to update UI
+                    LocaleSettings.setLocale(AppLocaleUtils.parse(newLocale.languageCode));
                     if (mounted) {
                       setState(() {});
                     }
@@ -582,6 +580,8 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                             ? '🇬🇧'
                             : locale.languageCode == 'pl'
                             ? '🇵🇱'
+                            : locale.languageCode == 'it'
+                            ? '🇮🇹'
                             : '';
                     final String displayName =
                         locale.languageCode == 'en'
