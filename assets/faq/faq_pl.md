@@ -73,11 +73,11 @@ Ponieważ faktury wstrzymujące powinny być utrzymywane tylko przez krótki okr
 
 #### Co motywuje Takera do uczciwego działania?
 
-Taker przystępuje do transakcji dopiero po tym, jak Maker zablokował już Bitcoin w fakturze wstrzymującej. Chociaż chroni to Takera przed Makerem, który może nie mieć środków, Taker również ma silne motywacje do uczciwego działania:
+Taker przystępuje do transakcji dopiero po tym, jak Maker zablokował już Bitcoin w fakturze typu `hold invoice`. Chociaż chroni to Takera przed Makerem, który może nie mieć środków, Taker również ma silne motywacje do uczciwego działania:
 
 - **Jeśli Taker poda ważny kod BLIK i potwierdzi płatność:** Maker otrzymuje fiat, potwierdza odbiór, a koordynator uwalnia Bitcoin dla Takera. Wszyscy są zadowoleni.
-- **Jeśli Taker poda nieważny lub wygasły kod BLIK:** Maker nie może dokończyć płatności i nie potwierdzi odbioru. Transakcja nie dochodzi do skutku, a Bitcoin Makera jest zwracany przez anulowanie faktury wstrzymującej. Taker nie otrzymuje nic.
-- **Jeśli Taker fałszywie twierdzi, że zapłacił:** W sporze Taker musi dostarczyć dowód bankowy potwierdzający, że płatność BLIK została pobrana z jego konta. Bez takiego dowodu koordynator anuluje fakturę wstrzymującą po 48 godzinach, zwracając Bitcoin Makerowi. Taker nic nie zyskuje i marnuje czas wszystkich.
+- **Jeśli Taker poda nieważny lub wygasły kod BLIK:** Maker nie może dokończyć płatności i nie potwierdzi odbioru. Transakcja nie dochodzi do skutku, a Bitcoin Makera jest zwracany przez anulowanie faktury. Taker nie otrzymuje nic.
+- **Jeśli Taker fałszywie twierdzi, że zapłacił:** W sporze Taker musi dostarczyć dowód bankowy potwierdzający, że płatność BLIK została pobrana z jego konta. Bez takiego dowodu koordynator anuluje fakturę po 48 godzinach, zwracając Bitcoin Makerowi. Taker nic nie zyskuje i marnuje czas wszystkich.
 - **Jeśli Taker porzuci transakcję po zarezerwowaniu oferty:** Oferta w końcu wygasa lub zostaje anulowana, a Bitcoin Makera jest zwracany. Taker nic nie zyskuje.
 
 Ponieważ Taker musi dostarczyć weryfikowalne dowody w każdym sporze, nie ma realnej drogi do oszukańczego zdobycia Bitcoin. Nieuczciwy Taker jedynie marnuje czas—swój własny, Makera i koordynatora.
