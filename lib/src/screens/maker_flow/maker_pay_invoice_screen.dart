@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For Clipboard
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ndk/shared/logger/logger.dart';
+import 'package:ndk/entities.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:url_launcher/url_launcher.dart'; // For launching URLs/Intents
 import 'package:android_intent_plus/android_intent.dart'; // For Android Intents
@@ -16,6 +17,7 @@ import 'package:go_router/go_router.dart';
 import '../../../i18n/gen/strings.g.dart'; // Correct Slang import
 import 'webln_stub.dart' if (dart.library.js) 'webln_web.dart';
 import 'maker_amount_form.dart'; // Import MakerProgressIndicator
+import '../../screens/wallet_screen.dart'; // Import for kNwcWalletId
 
 class MakerPayInvoiceScreen extends ConsumerStatefulWidget {
   const MakerPayInvoiceScreen({super.key});
@@ -174,6 +176,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
     final t = Translations.of(context);
     final controller = TextEditingController();
     final formKey = GlobalKey<FormState>();
+    final ndk = ref.read(ndkProvider);
 
     final result = await showDialog<bool>(
       context: context,
@@ -212,9 +215,26 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
                 }
 
                 try {
-                  final nwcService = ref.read(nwcServiceProvider);
-                  await nwcService.connect(controller.text.trim());
-                  ref.read(nwcConnectionStatusProvider.notifier).state = true;
+                  if (ndk == null) {
+                    throw Exception('NDK not available');
+                  }
+
+                  // Create NWC wallet
+                  final nwcWallet = NwcWallet(
+                    id: kNwcWalletId,
+                    name: "NWC Wallet",
+                    supportedUnits: {'sat'},
+                    nwcUrl: controller.text.trim(),
+                  );
+                  
+                  // Add wallet
+                  await ndk.wallets.addWallet(nwcWallet);
+                  
+                  // Set as default
+                  ndk.wallets.setDefaultWallet(kNwcWalletId);
+                  
+                  // Refresh wallet state
+                  ref.read(defaultWalletProvider.notifier).refresh();
                   
                   if (!context.mounted) return;
                   Navigator.of(context).pop(true);
@@ -245,9 +265,10 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
 
   Future<void> _payWithNwc(String invoice) async {
     final t = Translations.of(context);
-    final nwcService = ref.read(nwcServiceProvider);
+    final ndk = ref.read(ndkProvider);
+    final defaultWallet = ref.read(defaultWalletProvider);
     
-    if (!nwcService.isConnected) {
+    if (ndk == null || defaultWallet == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(t.maker.payInvoice.errors.nwcNotConnected),
@@ -262,9 +283,18 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
     });
 
     try {
-      await nwcService.payInvoice(invoice);
+      // TODO: Implement payment through ndk.wallets when the API is available
+      // For now, this is a placeholder
+      throw UnimplementedError('Payment through ndk.wallets not yet implemented');
     } catch (e) {
-      // TODO
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Payment failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -275,7 +305,8 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
   }
 
   Widget _buildNwcButtons(BuildContext context, WidgetRef ref, String holdInvoice, Translations t) {
-    final isConnected = ref.watch(nwcConnectionStatusProvider);
+    final defaultWallet = ref.watch(defaultWalletProvider);
+    final isConnected = defaultWallet != null;
     
     if (!isConnected) {
       return SizedBox(

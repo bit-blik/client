@@ -7,6 +7,7 @@ import 'package:ndk/ndk.dart';
 import 'package:ndk/shared/logger/logger.dart';
 import 'package:ndk/shared/nips/nip19/nip19.dart';
 import 'package:ndk/shared/nips/nip44/nip44.dart';
+import 'package:ndk_objectbox/data_layer/db/object_box/db_object_box.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../main.dart';
@@ -223,7 +224,7 @@ class NostrService {
     // Initialize NDK with bootstrap relays config
     _ndk = Ndk(
       NdkConfig(
-        cache: MemCacheManager(),
+        cache: DbObjectBox(),
         eventVerifier: rustEventVerifier,//Bip340EventVerifier(),
         bootstrapRelays: _relayUrls,
         logLevel: kDebugMode?LogLevel.debug:LogLevel.warning,
