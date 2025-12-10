@@ -55,15 +55,15 @@ Koordynator nie jest custodialny w tradycyjnym sensie dla *końcowego* rozliczen
 
 #### Co motywuje Makera do uczciwego działania?
 
-Maker zablokował już swoje Bitcoin w fakturze wstrzymującej Lightning Network przed otrzymaniem kodu BLIK. To tworzy silną motywację do uczciwego dokończenia transakcji:
+Maker zablokował już swoje Bitcoin w fakturze `hold invoice` przed otrzymaniem kodu BLIK. To tworzy silną motywację do uczciwego dokończenia transakcji:
 
-- **Jeśli Maker potwierdzi otrzymanie ważnej płatności BLIK:** Koordynator rozlicza fakturę wstrzymującą, uwalniając Bitcoin dla Takera. Maker otrzymuje swoje fiat—wszyscy są zadowoleni.
-- **Jeśli Maker fałszywie zaprzeczy otrzymaniu ważnej płatności BLIK:** Taker może otworzyć spór i dostarczyć dowód bankowy potwierdzający, że płatność została dokonana. Jeśli koordynator przyzna rację Takerowi, faktura wstrzymująca zostanie rozliczona mimo wszystko, a Maker traci swoje Bitcoin bez możliwości odwołania.
+- **Jeśli Maker potwierdzi otrzymanie ważnej płatności BLIK:** Koordynator rozlicza fakturę, uwalniając Bitcoin dla Takera. Maker otrzymuje swoje fiat—wszyscy są zadowoleni.
+- **Jeśli Maker fałszywie zaprzeczy otrzymaniu ważnej płatności BLIK:** Taker może otworzyć spór i dostarczyć dowód bankowy potwierdzający, że płatność została dokonana. Jeśli koordynator przyzna rację Takerowi, faktura zostanie rozliczona mimo wszystko, a Maker traci swoje Bitcoin bez możliwości odwołania.
 - **Jeśli Maker porzuci transakcję lub przestanie odpowiadać:** Koordynator może rozliczyć fakturę na korzyść Takera (jeśli istnieje dowód płatności) lub, w niejednoznacznych przypadkach, utrzymać środki zablokowane do czasu rozwiązania sporu.
 
 Ponieważ faktury typu `hold invoice` mają ograniczone okno ważności (zazwyczaj kilka godzin), Maker nie może zwlekać w nieskończoność. Musi albo uczciwie dokończyć transakcję, albo ryzykować utratę swoich Bitcoin w procesie rozwiązywania sporów.
 
-Ponieważ Bitcoin są przechowywane w fakturze wstrzymującej Lightning Network, Maker (sprzedawca) jest motywowany do uczciwego działania. Bez dowodów przeciwnych faktura nie zostanie zwrócona Makerowi.
+Ponieważ Bitcoin są przechowywane w fakturze `hold invoice`, Maker (sprzedawca) jest motywowany do uczciwego działania. Bez dowodów przeciwnych faktura nie zostanie zwrócona Makerowi.
 Ponieważ faktury wstrzymujące powinny być utrzymywane tylko przez krótki okres (zazwyczaj kilka godzin), faktura zostanie rozliczona, a środki będą przechowywane przez koordynatora do czasu, gdy Taker dostarczy dowody w celu rozwiązania sporu.
 
 
