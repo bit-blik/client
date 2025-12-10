@@ -1,131 +1,144 @@
-## BitBlik FAQ
+## FAQ BitBlik
 
-### General Questions
+### Domande Generali
 
-#### What is BitBlik?
+#### Cos'è BitBlik?
 
-BitBlik is free and open source software designed to facilitate the peer-to-peer exchange of Bitcoin for BLIK codes.\
-The fundamental idea is to:
-- pay with Bitcoin everywhere where BLIK payment is accepted
-- buy Bitcoin by generating and selling BLIK codes
+BitBlik è un software gratuito e open source progettato per facilitare lo scambio peer-to-peer di Bitcoin per codici BLIK.\
+L'idea fondamentale è:
+- pagare con Bitcoin ovunque sia accettato il pagamento BLIK
+- acquistare Bitcoin generando e vendendo codici BLIK
 
-#### Why another P2P tool? Why not just use existing ones like RoboSats, Bisq, or Hodl Hodl?
+#### Perché un altro strumento P2P? Perché non usare quelli esistenti come RoboSats, Bisq o Hodlhodl?
 
-While those P2P escrow services are excellent and should be used for larger and longer-term trades, BitBlik is intended to be used as a quick payment method using BLIK codes in places/situations where it's appropriate, such as self-checkout stores, restaurants, online shopping, and even ATM machines.
-The entire exchange process shouldn't take more than a couple of minutes, depending on how quickly takers notice the new offer and are able to promptly provide and confirm the BLIK code.
-- **Makers** are users looking to sell Bitcoin.
-- **Takers** are users looking to buy Bitcoin.
+Sebbene questi servizi di escrow P2P siano eccellenti e dovrebbero essere utilizzati per scambi più grandi e a lungo termine, BitBlik è destinato ad essere utilizzato come metodo di pagamento rapido utilizzando codici BLIK in luoghi/situazioni in cui è appropriato, come negozi con self-checkout, ristoranti, acquisti online e persino sportelli bancomat.
+L'intero processo di scambio non dovrebbe richiedere più di un paio di minuti, a seconda della rapidità con cui i taker notano la nuova offerta e sono in grado di fornire e confermare prontamente il codice BLIK.
+- I **Maker** sono utenti che cercano di vendere Bitcoin.
+- I **Taker** sono utenti che cercano di acquistare Bitcoin.
 
-#### How does the escrow process work?
+#### Come funziona il processo di escrow?
 
-The process generally follows these steps:
-1.  **Offer Creation (Maker):** A Maker creates an offer, specifying the amount of fiat they want to receive a BLIK code for.
-2.  **Funding Escrow (Maker):** The Maker pays a Lightning Network "hold invoice" for the specified Bitcoin amount. This locks the Bitcoin with the coordinator but doesn't transfer it yet.
-3.  **Offer Acceptance (Taker):** A Taker finds an offer they like and accept it, then generate a BLIK code in their banking app and submit it to the coordinator.
-4.  **Fiat Payment (Maker):** The Maker receives the BLIK code and introduces it in the payment terminal or on-line ecommerce site.
-5.  **BLIK Confirmation (Taker):** The Taker will receive a notification from their bank app to confirm the BLIK payment.
-6.  **Payment Confirmation (Maker):** The Maker confirms within the BitBlik system that they have received the BLIK payment.
-7.  **Bitcoin Release (Coordinator):** Upon the Maker's confirmation, the coordinator uses the secret preimage to "settle" the hold invoice. This action releases the locked Bitcoin to the Taker's provided Lightning address or invoice.
+Il processo segue generalmente questi passaggi:
+1.  **Creazione Offerta (Maker):** Un Maker crea un'offerta, specificando l'importo in valuta fiat per cui desidera ricevere un codice BLIK.
+2.  **Finanziamento Escrow (Maker):** Il Maker paga una "fattura hold" Lightning Network per l'importo specificato in Bitcoin. Questo blocca il Bitcoin presso il coordinatore ma non lo trasferisce ancora.
+3.  **Accettazione Offerta (Taker):** Un Taker trova un'offerta che gli piace e la accetta, quindi genera un codice BLIK nella sua app bancaria e lo invia al coordinatore.
+4.  **Pagamento Fiat (Maker):** Il Maker riceve il codice BLIK e lo inserisce nel terminale di pagamento o nel sito di e-commerce online.
+5.  **Conferma BLIK (Taker):** Il Taker riceverà una notifica dalla sua app bancaria per confermare il pagamento BLIK.
+6.  **Conferma Pagamento (Maker):** Il Maker conferma all'interno del sistema BitBlik di aver ricevuto il pagamento BLIK.
+7.  **Rilascio Bitcoin (Coordinatore):** Dopo la conferma del Maker, il coordinatore utilizza la preimage segreta per "concludere" la fattura hold. Questa azione rilascia il Bitcoin bloccato all'indirizzo Lightning o alla fattura fornita dal Taker.
 
-#### How do takers are made aware of new offers?
+#### Come vengono informati i taker delle nuove offerte?
 
-Takers can register on several messenger channels ([SimpleX](https://simplex.chat/contact#/?v=2-7&smp=smp%3A%2F%2Fu2dS9sG8nMNURyZwqASV4yROM28Er0luVTx5X1CsMrU%3D%40smp4.simplex.im%2FjwS8YtivATVUtHogkN2QdhVkw2H6XmfX%23%2F%3Fv%3D1-3%26dh%3DMCowBQYDK2VuAyEAsNpGcPiALZKbKfIXTQdJAuFxOmvsuuxMLR9rwMIBUWY%253D%26srv%3Do5vmywmrnaxalvz6wi3zicyftgio6psuvyniis6gco6bp6ekl4cqj4id.onion&data=%7B%22groupLinkId%22%3A%22hCkt5Ph057tSeJdyEI0uug%3D%3D%22%7D), [Matrix](https://matrix.to/#/#bitblik-offers:matrix.org)) to receive notifications about new offers.
-Whenever a Maker pays the hold invoice to create a new offer, the coordinator will send a message to all notification channels with the offer details and a link to the BitBlik app where they can accept the offer.
+I taker possono registrarsi su diversi canali messenger ([SimpleX](https://simplex.chat/contact#/?v=2-7&smp=smp%3A%2F%2Fu2dS9sG8nMNURyZwqASV4yROM28Er0luVTx5X1CsMrU%3D%40smp4.simplex.im%2FjwS8YtivATVUtHogkN2QdhVkw2H6XmfX%23%2F%3Fv%3D1-3%26dh%3DMCowBQYDK2VuAyEAsNpGcPiALZKbKfIXTQdJAuFxOmvsuuxMLR9rwMIBUWY%253D%26srv%3Do5vmywmrnaxalvz6wi3zicyftgio6psuvyniis6gco6bp6ekl4cqj4id.onion&data=%7B%22groupLinkId%22%3A%22hCkt5Ph057tSeJdyEI0uug%3D%3D%22%7D), [Matrix](https://matrix.to/#/#bitblik-offers:matrix.org)) per ricevere notifiche sulle nuove offerte.
+Ogni volta che un Maker paga la fattura hold per creare una nuova offerta, il coordinatore invierà un messaggio a tutti i canali di notifica con i dettagli dell'offerta e un link all'app BitBlik dove possono accettare l'offerta.
 
-#### What is BLIK?
+#### Cos'è BLIK?
 
-BLIK is a mobile payment system used in Poland. It allows users to make payments using a 6-digit code generated by their banking app. In BitBlik, Takers use BLIK to pay Makers for Bitcoin.
+BLIK è un sistema di pagamento mobile utilizzato in Polonia. Permette agli utenti di effettuare pagamenti utilizzando un codice a 6 cifre generato dalla loro app bancaria. In BitBlik, i Taker utilizzano BLIK per pagare i Maker in cambio di Bitcoin.
 
-#### What are Lightning Network "hold invoices"?
+#### Cosa sono le "fatture hold" della Lightning Network?
 
-Hold invoices are a special type of Lightning invoice. When a hold invoice is paid by the Maker (seller of Bitcoin), the funds are not immediately settled. Instead, they are "held" by the coordinator's Lightning node. The funds are only truly released (settled) to the recipient (Taker) when a secret "preimage" is revealed. If the preimage is not revealed within a certain time, or if the invoice is explicitly cancelled, the funds are returned to the payer (Maker). This is the core of BitBlik's escrow mechanism.
-
----
-
-### Security & Risks
-
-#### How are my Bitcoin funds secured as a Maker (seller)?
-
-As a Maker, your Bitcoin is locked via a hold invoice. The coordinator has the preimage required to settle this invoice. The system is designed to only settle (release your Bitcoin to the Taker) *after* you confirm you've received the fiat (BLIK) payment from the Taker. If the Taker fails to pay, or if there's an issue, the hold invoice is cancelled, and the Bitcoin is returned to your LN node's control.
-
-#### How am I protected as a Taker (buyer) if I send BLIK payment?
-
-As a Taker, your primary protection is that the Maker has already locked their Bitcoin into a hold invoice with the coordinator *before* you are asked to send the BLIK payment. If the Maker confirms receipt of your BLIK, the system is designed to automatically release the Bitcoin to you. There is a risk if the Maker falsely denies receiving your BLIK. (See "Disputes").
-
-#### What happens if the Maker doesn't confirm my BLIK payment even though I sent it?
-
-This is a conflict scenario. (See "Disputes")
-
-#### What happens if the Taker provides a BLIK code but doesn't actually make the payment?
-
-As a Maker, you should not confirm receipt of payment until the fiat funds are actually in your account. If the Taker fails to pay after providing a BLIK code, you would not confirm, and the offer would likely expire or be cancellable. The hold invoice securing your Bitcoin would eventually be cancelled, returning the funds to you.
-
-#### What if the BLIK code provided by the Taker is invalid or expires?
-
-If the Maker attempts to use the BLIK code and it fails, the transaction cannot proceed. The Taker might need to provide a new code, or the offer might be cancelled.
-
-#### What are the risks of using this service?
-
-- **Counterparty Risk:** The primary risk is the other party not acting honestly (e.g., Taker not paying after Maker locks BTC, or Maker not confirming payment after Taker pays). The hold invoice mechanism mitigates this but doesn't eliminate it, especially around the fiat payment leg.
-- **Coordinator Trust:** You are trusting the BitBlik coordinator software and its operators to:
-  -   Securely manage hold invoice preimages.
-  -   Correctly trigger settlements or cancellations based on the process flow.
-  -   Operate the service reliably.
-- **LN Node Issues:** Both the coordinator's LN node and potentially users' LN nodes (if self-hosted and interacting directly) need to be online and operational. Issues with LN nodes can delay or complicate transactions.
-- **BLIK System Issues:** Problems with the BLIK payment system itself are outside BitBlik's control. Resolution of such issues must be handled through the Taker's bank or BLIK provider.
-- **Software Bugs:** As with any software, there's a risk of bugs in the BitBlik client or coordinator that could lead to errors or loss of funds. The software is open source, so users can audit it, but this requires technical expertise.
-- **Privacy:** Your public keys are stored by the coordinator. Transaction details are also stored in the database. **For better privacy you should generate a new key pair for each transaction.**
-
-#### Is the coordinator custodial?
-
-The coordinator is non-custodial in the traditional sense for the *final* Bitcoin settlement for the Taker, as it pays out to the Taker's invoice. However, during the escrow period, the Maker's funds are locked in a hold invoice that the coordinator has the power to settle (using the preimage) or instruct to be cancelled. So, there's a temporary control element by the coordinator over the locked funds. Both Maker and Taker trust the coordinator to release these funds according to the protocol.
-
-#### What motivates the Maker to act honestly?
-
-Since the Bitcoin are held in a Lightning Network hold invoice, the Maker (seller) is incentivized to act honestly. Without evidence to contrary the invoice will not be released back to the Maker.
-Since hold invoices should only be held for a short period (typically few hours), the invoice will settle and the funds will be kept by coordinator until the Taker provides evidence to resolve the dispute.
-
-
-#### What motivates the Taker to act honestly?
-
-If both parties signal a conflict, the Taker must provide evidence that the BLIK payment was deducted from their bank account, this will be resolved manually by a person in charge of the coordinator. Failure to provide such evidence will result in the Taker not receiving the Bitcoin, and after 48h the sats will return to the Maker.
-Currently there is no bond system in place to incentivize the Taker to not waste the coordinator's time trying to resolve the dispute, but this will be implemented in the near future.
-
-
-#### What motivates the coordinator to act honestly?
-
-To be accepted as a BitBlik coordinator by the client software, the coordinator must provide a nostr key (profile) which users can tag and report bad experiences with a given coordinator. Before choosing to use a specific coordinator check its reputation on Nostr. Given the censorship-resistant nature of Nostr, anyone can flood or post invalid reports, so use a client that uses Web of Trust to determine the reputation of each user's reports. Preferably choose a coordinator that has good reputation among your Bitcoin community or your trusted friends. Ultimately, you as the user of this software are responsible for choosing a coordinator with good reputation. This is not a platform or service and we take no responsibility for the actions of any coordinator.
+Le fatture hold sono un tipo speciale di fattura Lightning. Quando una fattura hold viene pagata dal Maker (venditore di Bitcoin), i fondi non vengono immediatamente trasferiti. Invece, vengono "trattenuti" dal nodo Lightning del coordinatore. I fondi vengono realmente rilasciati al destinatario (Taker) solo quando viene rivelata una preimmagine segreta (preimage, in inglese). Se la preimage non viene rivelata entro un certo tempo, o se la fattura viene esplicitamente annullata, i fondi vengono restituiti al pagatore (Maker). Questo è il cuore del meccanismo di escrow di BitBlik.
 
 ---
 
-### Fees & Technicals
+### Sicurezza e Rischi
 
-#### Are there any fees for using BitBlik?
+#### Come vengono protetti i miei fondi Bitcoin come Maker (venditore)?
 
-Each coordinator sets its fees, both for makers as for takers. These are displayed in the client application, before an offer is created or taken.
+Come Maker, i tuoi Bitcoin sono bloccati tramite una fattura hold. Il coordinatore ha la preimage necessaria per concludere questa fattura. Il sistema è progettato per concludere (rilasciare i tuoi bitcoin al Taker) solo *dopo* che confermi di aver ricevuto il pagamento fiat (BLIK) dal Taker. Se il Taker non riesce a pagare, o se c'è un problema, la fattura hold viene annullata e i bitcoin ti vengono restituiti.
 
-#### What happens if a Lightning payment (payout to Taker) fails?
+#### Come sono protetto come Taker (acquirente) se invio il pagamento BLIK?
 
-If the coordinator attempts to pay the Taker's Lightning invoice and it fails (e.g., Taker's node offline, no route), the transaction might enter this state. The Taker might need to provide a new invoice or resolve issues with their Lightning setup.
+Come Taker, la tua protezione principale è che il Maker ha già bloccato i suoi bitcoin in una fattura hold presso il coordinatore *prima* che ti venga chiesto di inviare il pagamento BLIK. Se il Maker conferma la ricezione del tuo codice BLIK, il sistema è progettato per rilasciarti automaticamente i bitcoin. C'è un rischio se il Maker nega falsamente di aver ricevuto il tuo BLIK. (Vedi "Dispute").
 
-#### What if I, as a Maker, want to cancel my offer after funding it but before a Taker accepts?
+#### Cosa succede se il Maker non conferma il mio pagamento BLIK anche se l'ho inviato?
 
-You can cancel the hold invoice, and the Bitcoin should be returned to your LN wallet. This is typically possible if the offer is still in a `funded` state and not yet `reserved` or further along.
+Questo è uno scenario di conflitto. (Vedi "Dispute")
 
-#### Why aren't the mobile apps distributed in Google Play store or Apple App Store?
-These platforms are not merely marketplaces; they are walled gardens governed by corporate gatekeepers who exercise absolute authority over what software users can install. This centralized model creates a single point of failure and a chokepoint for censorship. Apps that promote privacy-enhancing technologies, controversial political speech, or alternative economic models can be, and often are, delisted at the sole discretion of the platform owners, stifling innovation and the free exchange of ideas.
+#### Cosa succede se il Taker fornisce un codice BLIK ma non effettua realmente il pagamento?
 
-### Disputes
+Come Maker, non dovresti confermare la ricezione del pagamento finché i fondi fiat non sono effettivamente stati usati per concludere il pagamento. Se il Taker non riesce a pagare dopo aver fornito un codice BLIK, non devi confermare, e l'offerta è destinata a scadere o essere annullata. La fattura hold che protegge il tuo Bitcoin verrebbe eventualmente annullata, restituendoti i fondi.
 
-If both the maker and taker disagree on the payment status or if there are issues with the transaction, the offer enters a `conflict` state, in which each party must provide evidence for the coordinator to resolve the dispute manually.
+#### Cosa succede se il codice BLIK fornito dal Taker non è valido o scade?
 
-> ⚠️ **Important:** Each coordinator may have different requirements and/or procedure for dispute resolution, so check the coordinator's documentation or contact them directly to be sure.
+Se il Maker tenta di utilizzare il codice BLIK e questo fallisce, la transazione non può procedere. Il Taker potrebbe dover fornire un nuovo codice, o l'offerta potrebbe essere annullata.
 
-#### What kind of evidence might be generally required from me as a Maker from the coordinator?
-If the BLIK code you tried to use at the payment terminal or e-commerce site was invalid or expired, you should provide evidence of the failed payment attempt. This could include:
-- invalid BLIK code receipt printed by the payment terminal or ATM.
-- screenshot of the failed payment attempt in the e-commerce site
+#### Quali sono i rischi dell'utilizzo di questo servizio?
 
-#### What kind of evidence might be generally required from me as a Taker by the coordinator?
+- **Rischio di Controparte:** Il rischio principale è che l'altra parte non agisca onestamente (es. il Taker non paga dopo che il Maker blocca BTC, o il Maker non conferma il pagamento dopo che il Taker paga). Il meccanismo della fattura hold mitiga questo rischio ma non lo elimina, specialmente per quanto riguarda la parte fiat dello scambio.
+- **Fiducia nel Coordinatore:** Stai ponendo la tua fiducia nel software del coordinatore BitBlik e nei suoi operatori di:
+  -   Gestire in modo sicuro le preimage delle fatture hold.
+  -   Attivare correttamente le conclusioni o gli annullamenti in base al flusso del processo.
+  -   Gestire il servizio in modo affidabile.
+- **Problemi con i Nodi LN:** Sia il nodo Ligthning Network (LN) del coordinatore che potenzialmente i nodi LN degli utenti (se self-hosted e in interazione diretta) devono essere online e operativi. Problemi con i nodi LN possono ritardare o complicare le transazioni.
+- **Problemi con il Sistema BLIK:** I problemi con il sistema di pagamento BLIK stesso sono al di fuori del controllo di BitBlik. La risoluzione di tali problemi deve essere gestita tramite la banca del Taker o il fornitore BLIK.
+- **Bug Software:** Come con qualsiasi software, c'è il rischio di bug nel client BitBlik o nel coordinatore che potrebbero portare a errori o perdita di fondi. Il software è open source, quindi gli utenti possono verificarlo, ma questo richiede competenze tecniche.
+- **Privacy:** Le tue chiavi pubbliche sono memorizzate dal coordinatore. I dettagli delle transazioni sono anche memorizzati nel database. **Per una migliore privacy dovresti generare una nuova coppia di chiavi per ogni transazione.**
 
-If the Maker denies receiving your BLIK payment, you should provide evidence that the BLIK payment was successfully deducted from your bank account. This will typically be a payment receipt by your banking app showing the BLIK transaction details, including the amount & timestamp.
+#### Il coordinatore è custodial?
+
+Il coordinatore è non-custodial nel senso tradizionale per la conclusione *finale* del Bitcoin per il Taker, poiché paga la fattura del Taker. Tuttavia, durante il periodo di escrow, i fondi del Maker sono bloccati in una fattura hold che il coordinatore ha il potere di concludere (usando la preimage) o di annullare. Quindi, c'è un elemento di controllo temporaneo da parte del coordinatore sui fondi bloccati. Sia il Maker che il Taker si fidano del coordinatore per rilasciare questi fondi secondo il protocollo.
+
+#### Cosa motiva il Maker ad agire onestamente?
+
+Il Maker ha già bloccato i propri Bitcoin in una hold invoice della Lightning Network prima di ricevere il codice BLIK. Questo crea un forte incentivo a completare lo scambio in modo onesto:
+
+- **Se il Maker conferma la ricezione di un pagamento BLIK valido:** Il coordinatore chiude (settle) la hold invoice, rilasciando i Bitcoin al Taker. Il Maker riceve il suo denaro fiat—tutti sono soddisfatti.
+- **Se il Maker nega falsamente di aver ricevuto un pagamento BLIK valido:** Il Taker può aprire una disputa e fornire prove bancarie che dimostrano l'avvenuto pagamento. Se il coordinatore decide a favore del Taker, la hold invoice viene comunque chiusa e il Maker perde i propri Bitcoin senza possibilità di appello.
+- **Se il Maker abbandona lo scambio o non risponde:** Il coordinatore può chiudere la invoice a favore del Taker (se esistono prove del pagamento) oppure, in casi ambigui, mantenere i fondi bloccati fino alla risoluzione della disputa.
+
+Poiché le hold invoice hanno una finestra di validità limitata (tipicamente poche ore), il Maker non può temporeggiare indefinitamente. Deve completare lo scambio onestamente oppure rischiare di perdere i propri Bitcoin attraverso il processo di risoluzione delle dispute.
+
+
+#### Cosa motiva il Taker ad agire onestamente?
+
+Il Taker entra nello scambio solo dopo che il Maker ha già bloccato i Bitcoin in una hold invoice. Sebbene questo protegga il Taker da un Maker che potrebbe non avere fondi, anche il Taker ha forti incentivi ad agire onestamente:
+
+- **Se il Taker fornisce un codice BLIK valido e conferma il pagamento:** Il Maker riceve il denaro fiat, conferma la ricezione e il coordinatore rilascia i Bitcoin al Taker. Tutti sono soddisfatti.
+- **Se il Taker fornisce un codice BLIK invalido o scaduto:** Il Maker non può completare il pagamento e non confermerà la ricezione. Lo scambio fallisce e i Bitcoin del Maker vengono restituiti tramite la cancellazione della hold invoice. Il Taker non riceve nulla.
+- **Se il Taker afferma falsamente di aver pagato:** In caso di disputa, il Taker deve fornire prove bancarie che dimostrino che il pagamento BLIK è stato addebitato sul proprio conto. Senza tali prove, il coordinatore cancellerà la hold invoice dopo 48 ore, restituendo i Bitcoin al Maker. Il Taker non ottiene nulla e fa perdere tempo a tutti.
+- **Se il Taker abbandona lo scambio dopo aver riservato un'offerta:** L'offerta alla fine scade o viene cancellata e i Bitcoin del Maker vengono restituiti. Il Taker non ottiene nulla.
+
+Poiché il Taker deve fornire prove verificabili in qualsiasi disputa, non esiste un percorso praticabile per ottenere Bitcoin in modo fraudolento. Un Taker disonesto riesce solo a far perdere tempo: il proprio, quello del Maker e quello del coordinatore.
+
+> **Nota:** È prevista per il futuro l'implementazione di un sistema di bond per i Taker, che aggiungerà una penalità finanziaria per i Taker che fanno perdere tempo al coordinatore con dispute futili o scambi abbandonati.
+
+
+#### Cosa motiva il coordinatore ad agire onestamente?
+
+Per essere accettato come coordinatore BitBlik dal software client, il coordinatore deve fornire una chiave nostr (profilo) che gli utenti possono taggare e segnalare esperienze negative con un determinato coordinatore. Prima di scegliere di utilizzare un coordinatore specifico, controlla la sua reputazione su Nostr. Data la natura resistente alla censura di Nostr, chiunque può inondare o pubblicare segnalazioni non valide, quindi utilizza un client che utilizza il Web of Trust per determinare la reputazione delle segnalazioni di ciascun utente. Preferibilmente scegli un coordinatore che ha una buona reputazione tra la tua comunità Bitcoin o i tuoi amici di fiducia. In definitiva, tu come utente di questo software sei responsabile della scelta di un coordinatore con una buona reputazione. Questa non è una piattaforma o un servizio e non ci assumiamo alcuna responsabilità per le azioni di alcun coordinatore.
+
+---
+
+### Commissioni e Aspetti Tecnici
+
+#### Ci sono commissioni per l'utilizzo di BitBlik?
+
+Ogni coordinatore stabilisce le proprie commissioni, sia per i maker che per i taker. Queste vengono visualizzate nell'applicazione client, prima che un'offerta venga creata o accettata.
+
+#### Cosa succede se un pagamento Lightning (pagamento al Taker) fallisce?
+
+Se il coordinatore tenta di pagare la fattura Lightning del Taker e questa fallisce (es. nodo del Taker offline, nessuna route), la transazione potrebbe entrare in questo stato. Il Taker potrebbe dover fornire una nuova fattura o risolvere problemi con la sua configurazione Lightning.
+
+#### Cosa succede se io, come Maker, voglio annullare la mia offerta dopo averla finanziata ma prima che un Taker l'accetti?
+
+Puoi annullare la fattura hold, e il Bitcoin dovrebbe essere restituito al tuo wallet LN. Questo è tipicamente possibile se l'offerta è ancora in stato `funded` e non ancora `reserved` o oltre.
+
+#### Perché le app mobili non sono distribuite su Google Play Store o Apple App Store?
+Queste piattaforme non sono semplici mercati; sono giardini recintati governati da custodi aziendali che esercitano autorità assoluta su quale software gli utenti possono installare. Questo modello centralizzato crea un punto di criticità e un canale privilegiato per la censura. Le app che promuovono tecnologie che migliorano la privacy, discorsi politici controversi o modelli economici alternativi possono essere, e spesso sono, rimossi a sola discrezione dei proprietari della piattaforma, soffocando l'innovazione e il libero scambio di idee.
+
+### Dispute
+
+Se sia il maker che il taker non sono d'accordo sullo stato del pagamento o se ci sono problemi con la transazione, l'offerta entra in uno stato di `conflict`, in cui ogni partecipante deve fornire prove edlla propria buonafede affinché il coordinatore risolva manualmente la disputa.
+
+> ⚠️ **Importante:** Ogni coordinatore può avere requisiti e/o procedure diverse per la risoluzione delle dispute, quindi controlla la documentazione del coordinatore o contattalo direttamente per essere sicuro.
+
+#### Quale tipo di prova potrebbe essere generalmente richiesta a me come Maker dal coordinatore?
+Se il codice BLIK che hai provato a utilizzare al terminale di pagamento o al sito di e-commerce non era valido o era scaduto, dovresti fornire prova del tentativo di pagamento fallito. Questo potrebbe includere:
+- ricevuta del codice BLIK non valido stampata dal terminale di pagamento o dal bancomat.
+- screenshot del tentativo di pagamento fallito nel sito di e-commerce
+
+#### Quale tipo di prova potrebbe essermi richiesta come Taker dal coordinatore?
+
+Se il Maker nega di aver ricevuto il tuo pagamento BLIK, dovresti fornire prova che il pagamento BLIK è stato effettivamente detratto dal tuo conto bancario. Questo sarà tipicamente una ricevuta di pagamento dalla tua app bancaria che mostra i dettagli della transazione BLIK, inclusi importo e timestamp.
