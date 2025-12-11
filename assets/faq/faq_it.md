@@ -29,7 +29,7 @@ Il processo segue generalmente questi passaggi:
 
 #### Come vengono informati i taker delle nuove offerte?
 
-I taker possono registrarsi su diversi canali messenger ([SimpleX](https://simplex.chat/contact#/?v=2-7&smp=smp%3A%2F%2Fu2dS9sG8nMNURyZwqASV4yROM28Er0luVTx5X1CsMrU%3D%40smp4.simplex.im%2FjwS8YtivATVUtHogkN2QdhVkw2H6XmfX%23%2F%3Fv%3D1-3%26dh%3DMCowBQYDK2VuAyEAsNpGcPiALZKbKfIXTQdJAuFxOmvsuuxMLR9rwMIBUWY%253D%26srv%3Do5vmywmrnaxalvz6wi3zicyftgio6psuvyniis6gco6bp6ekl4cqj4id.onion&data=%7B%22groupLinkId%22%3A%22hCkt5Ph057tSeJdyEI0uug%3D%3D%22%7D), [Matrix](https://matrix.to/#/#bitblik-offers:matrix.org), [Telegram](https://t.me/+xSktv2JukXUxYmEx), [Signal](https://signal.group/#CjQKIGcFyMrwHN1UPB57IhdkGmz23_64AhyIU5oBaZufe2hcEhCltosTHbc9ROywT0KETJbk)) per ricevere notifiche sulle nuove offerte.
+I taker possono registrarsi su diversi canali messenger ([SimpleX](https://simplex.chat/contact#/?v=2-7&smp=smp%3A%2F%2Fu2dS9sG8nMNURyZwqASV4yROM28Er0luVTx5X1CsMrU%3D%40smp4.simplex.im%2FjwS8YtivATVUtHogkN2QdhVkw2H6XmfX%23%2F%3Fv%3D1-3%26dh%3DMCowBQYDK2VuAyEAsNpGcPiALZKbKfIXTQdJAuFxOmvsuuxMLR9rwMIBUWY%253D%26srv%3Do5vmywmrnaxalvz6wi3zicyftgio6psuvyniis6gco6bp6ekl4cqj4id.onion&data=%7B%22groupLinkId%22%3A%22hCkt5Ph057tSeJdyEI0uug%3D%3D%22%7D), [Matrix](https://matrix.to/#/#bitblik-offers:matrix.org)) per ricevere notifiche sulle nuove offerte.
 Ogni volta che un Maker paga la fattura hold per creare una nuova offerta, il coordinatore invierà un messaggio a tutti i canali di notifica con i dettagli dell'offerta e un link all'app BitBlik dove possono accettare l'offerta.
 
 #### Cos'è BLIK?

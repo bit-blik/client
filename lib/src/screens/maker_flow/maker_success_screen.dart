@@ -20,6 +20,8 @@ class MakerSuccessScreen extends ConsumerStatefulWidget {
 class _MakerSuccessScreenState extends ConsumerState<MakerSuccessScreen> {
   late final DateTime _enteredAt;
   Timer? _confettiTimer;
+  int _confettiCount = 0;
+  static const int _maxConfettiLaunches = 10;
 
   @override
   void initState() {
@@ -29,30 +31,30 @@ class _MakerSuccessScreenState extends ConsumerState<MakerSuccessScreen> {
     // Launch confetti after screen is ready
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        Confetti.launch(
-          context,
-          options: const ConfettiOptions(
-            particleCount: 100,
-            spread: 70,
-            y: 0.6,
-          ),
-        );
+        _launchConfetti();
 
-        // Launch confetti every 5 seconds
+        // Launch confetti every 5 seconds, up to 5 times total
         _confettiTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-          if (mounted) {
-            Confetti.launch(
-              context,
-              options: const ConfettiOptions(
-                particleCount: 100,
-                spread: 70,
-                y: 0.6,
-              ),
-            );
+          if (mounted && _confettiCount < _maxConfettiLaunches) {
+            _launchConfetti();
+          } else {
+            timer.cancel();
           }
         });
       }
     });
+  }
+
+  void _launchConfetti() {
+    _confettiCount++;
+    Confetti.launch(
+      context,
+      options: const ConfettiOptions(
+        particleCount: 100,
+        spread: 70,
+        y: 0.6,
+      ),
+    );
   }
 
   @override
