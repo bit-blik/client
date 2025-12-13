@@ -196,7 +196,7 @@ class DiscoveredCoordinatorsNotifier
         final apiService = await _ref.read(
           initializedApiServiceProvider.future,
         );
-        await apiService.startCoordinatorDiscovery();
+        // await apiService.startCoordinatorDiscovery();
         await _loadCoordinators();
       } catch (e) {
         Logger.log.e('Error during periodic coordinator refresh: $e');
@@ -791,7 +791,7 @@ class AppLifecycleNotifier with WidgetsBindingObserver {
         final ndkInstance = _ref.read(ndkProvider);
         // faster reconnects
         if (ndkInstance != null) {
-          ndkInstance.connectivity.tryReconnect();
+          // ndkInstance.connectivity.do();
         }
         break;
       case AppLifecycleState.inactive:

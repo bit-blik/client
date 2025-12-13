@@ -230,6 +230,10 @@ class NostrService {
       ),
     );
 
+    ndk!.connectivity.relayConnectivityChanges.listen((data) {
+      print("🔗 Relay connectivity change: ${data}");
+    });
+
     // _ndk!.connectivity.relayConnectivityChanges.listen((data) {
     //   print('🔗 Relay connectivity change: $data');
     //   print('🔗 Connectivity data type: ${data.runtimeType}');

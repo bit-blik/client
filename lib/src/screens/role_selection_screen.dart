@@ -71,8 +71,13 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
       Logger.log.d('[RoleSelectionScreen] Fetched offer result: ${fetchedOffer != null ? "found" : "null"}');
 
       final fetchedOfferObj = fetchedOffer != null ? Offer.fromJson(fetchedOffer) : null;
-
-      if (fetchedOfferObj == null ||
+      if (fetchedOfferObj == null) {
+        Logger.log.i(
+          '[RoleSelectionScreen] No active offer found on coordinator. Clearing local active offer.',
+        );
+        return;
+      }
+      if (
           fetchedOfferObj.statusEnum == OfferStatus.takerPaid ||
           fetchedOfferObj.statusEnum == OfferStatus.expired ||
           fetchedOfferObj.statusEnum == OfferStatus.cancelled ||
@@ -81,7 +86,7 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
         Logger.log.i(
           '[RoleSelectionScreen] No active offer on coordinator or taker has paid. Clearing local active offer.',
         );
-        await ref.read(activeOfferProvider.notifier).setActiveOffer(null);
+       await ref.read(activeOfferProvider.notifier).setActiveOffer(null);
       } else {
         // Check if the status differs
         if (fetchedOfferObj.status != activeOffer.status ||
