@@ -1,3 +1,6 @@
+## 0.4.4
+- fix reconnect to relays when app goes to background
+
 ## 0.4.3
 - 🇮🇹 italian translation
 - improve FAQ
