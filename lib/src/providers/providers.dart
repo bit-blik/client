@@ -753,6 +753,81 @@ final ndkProvider = Provider((ref) {
   return apiService.ndk;
 });
 
+/// Connection state enum for relay websocket
+enum RelayConnectionState {
+  connected,
+  connecting,
+  reconnecting,
+  disconnected,
+}
+
+/// Relay connectivity data for UI display
+class RelayStatus {
+  final String url;
+  final RelayConnectionState state;
+
+  RelayStatus({required this.url, required this.state});
+  
+  bool get isConnected => state == RelayConnectionState.connected;
+}
+
+/// Provider that streams relay connectivity status
+/// Returns a Map of relay URL to connection status
+final relayConnectivityProvider = StreamProvider<Map<String, RelayStatus>>((ref) async* {
+  // Wait for API service to be fully initialized before accessing NDK
+  final apiService = await ref.watch(initializedApiServiceProvider.future);
+  final ndk = apiService.ndk;
+  
+  if (ndk == null) {
+    yield {};
+    return;
+  }
+
+  // Yield an initial state from the current global state (using ndk.relays which is the RelayManager)
+  final initialRelays = ndk.relays.globalState.relays;
+  if (initialRelays.isNotEmpty) {
+    final initialResult = <String, RelayStatus>{};
+    for (final entry in initialRelays.entries) {
+      final relayConnectivity = entry.value;
+      initialResult[entry.key] = RelayStatus(
+        url: relayConnectivity.url,
+        state: _determineRelayState(relayConnectivity),
+      );
+    }
+    yield initialResult;
+  }
+
+  // Then listen to the stream for updates
+  await for (final connectivityMap in ndk.connectivity.relayConnectivityChanges) {
+    final result = <String, RelayStatus>{};
+    for (final entry in connectivityMap.entries) {
+      final relayConnectivity = entry.value;
+      result[entry.key] = RelayStatus(
+        url: relayConnectivity.url,
+        state: _determineRelayState(relayConnectivity),
+      );
+    }
+    yield result;
+  }
+});
+
+/// Helper function to determine relay connection state
+RelayConnectionState _determineRelayState(dynamic relayConnectivity) {
+  if (relayConnectivity.isConnected) {
+    return RelayConnectionState.connected;
+  } else if (relayConnectivity.relay.connecting) {
+    // If transport exists but not open, and relay is in connecting mode
+    if (relayConnectivity.relayTransport != null) {
+      // Has transport but not connected = reconnecting
+      return RelayConnectionState.reconnecting;
+    } else {
+      return RelayConnectionState.connecting;
+    }
+  } else {
+    return RelayConnectionState.disconnected;
+  }
+}
+
 // Provider for app lifecycle management
 final appLifecycleProvider = Provider<AppLifecycleNotifier>((ref) {
   // Pass the ref to the notifier

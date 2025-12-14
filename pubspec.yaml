@@ -46,7 +46,7 @@ dependencies:
   pretty_qr_code: ^3.5.0
 
   bip340: ^0.3.0 # For secp256k1 key pair generation (alternative to dart_nostr)
-  flutter_secure_storage: ^9.2.4 # For secure key storage (Updated to latest)
+  flutter_secure_storage: ^10.0.0 # For secure key storage (Updated to latest)
   ndk: 0.6.0
 #  ndk:
 #    path: ../../ndk/packages/ndk

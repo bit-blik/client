@@ -503,6 +503,154 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
     );
   }
 
+  /// Get the color for a relay connection state
+  Color _getStateColor(RelayConnectionState state) {
+    switch (state) {
+      case RelayConnectionState.connected:
+        return Colors.green;
+      case RelayConnectionState.connecting:
+        return Colors.blue;
+      case RelayConnectionState.reconnecting:
+        return Colors.orange;
+      case RelayConnectionState.disconnected:
+        return Colors.red;
+    }
+  }
+
+  /// Get the symbol for a relay connection state
+  String _getStateSymbol(RelayConnectionState state) {
+    switch (state) {
+      case RelayConnectionState.connected:
+        return '●'; // solid circle - connected
+      case RelayConnectionState.connecting:
+        return '◐'; // half circle - connecting
+      case RelayConnectionState.reconnecting:
+        return '◔'; // quarter circle - reconnecting  
+      case RelayConnectionState.disconnected:
+        return '○'; // empty circle - disconnected
+    }
+  }
+
+  /// Get the state name for tooltip
+  String _getStateName(RelayConnectionState state) {
+    switch (state) {
+      case RelayConnectionState.connected:
+        return 'Connected';
+      case RelayConnectionState.connecting:
+        return 'Connecting';
+      case RelayConnectionState.reconnecting:
+        return 'Reconnecting';
+      case RelayConnectionState.disconnected:
+        return 'Disconnected';
+    }
+  }
+
+  Widget _buildRelayConnectivityIndicator() {
+    final relayConnectivity = ref.watch(relayConnectivityProvider);
+    
+    return relayConnectivity.when(
+      data: (relays) {
+        if (relays.isEmpty) {
+          // No relay data yet, show loading/unknown state
+          return Tooltip(
+            message: 'Connecting to relays...',
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Icon(Icons.sensors, color: Colors.grey, size: 20),
+            ),
+          );
+        }
+        
+        final connectedCount = relays.values.where((r) => r.isConnected).length;
+        final totalCount = relays.length;
+        final allConnected = connectedCount == totalCount;
+        final someConnected = connectedCount > 0;
+        
+        // Determine overall icon color based on connectivity
+        final Color overallColor;
+        if (allConnected) {
+          overallColor = Colors.green;
+        } else if (someConnected) {
+          overallColor = Colors.orange;
+        } else {
+          overallColor = Colors.red;
+        }
+        
+        // Build tooltip message with relay details including specific state
+        final relayDetails = relays.entries.map((e) {
+          final shortUrl = e.key.replaceFirst('wss://', '').replaceFirst('ws://', '');
+          final stateName = _getStateName(e.value.state);
+          final stateSymbol = _getStateSymbol(e.value.state);
+          return '$stateSymbol $shortUrl ($stateName)';
+        }).join('\n');
+        
+        final tooltipMessage = 'Relays ($connectedCount/$totalCount connected)\n$relayDetails';
+        
+        return Tooltip(
+          message: tooltipMessage,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Show individual state indicators for each relay
+                ...relays.entries.map((e) {
+                  final stateColor = _getStateColor(e.value.state);
+                  final isConnecting = e.value.state == RelayConnectionState.connecting || 
+                                        e.value.state == RelayConnectionState.reconnecting;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                    child: isConnecting 
+                      ? SizedBox(
+                          width: 8,
+                          height: 8,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 1.5,
+                            color: stateColor,
+                          ),
+                        )
+                      : Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: stateColor,
+                          ),
+                        ),
+                  );
+                }),
+                const SizedBox(width: 4),
+                Text(
+                  '$connectedCount/$totalCount',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: overallColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+      loading: () => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.grey),
+        ),
+      ),
+      error: (_, __) => Tooltip(
+        message: 'Relay connection error',
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Icon(Icons.sensors_off, color: Colors.red, size: 20),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final publicKeyAsync = ref.watch(publicKeyProvider);
@@ -545,6 +693,8 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
         // Add a divider at the bottom of the AppBar
         bottom: const PreferredSize(preferredSize: Size.fromHeight(1.0), child: Divider(height: 1.0, thickness: 1.0)),
         actions: [
+          // Relay Connectivity Indicator
+          _buildRelayConnectivityIndicator(),
           // Language Switcher Dropdown
           DropdownButtonHideUnderline(
             child: DropdownButton<AppLocale>(
