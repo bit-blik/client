@@ -132,9 +132,9 @@ class NostrService {
   static const String _customWhitelistKey = 'coordinators.customWhitelist';
 
   static const List<String> _defaultRelayUrls = [
-    // 'wss://relay.damus.io',
+    'wss://relay.damus.io',
     'wss://relay.primal.net',
-    // 'wss://nos.lol',
+    'wss://nos.lol',
     'wss://relay.mostro.network',
   ];
 
