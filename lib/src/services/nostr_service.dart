@@ -225,8 +225,8 @@ class NostrService {
     _ndk = Ndk(
       NdkConfig(
         cache: MemCacheManager(),
-        // eventVerifier: rustEventVerifier,
-        eventVerifier: Bip340EventVerifier(),
+        eventVerifier: rustEventVerifier,
+        // eventVerifier: Bip340EventVerifier(),
         bootstrapRelays: _relayUrls,
         logLevel: kDebugMode?LogLevel.debug:LogLevel.warning,
       ),
