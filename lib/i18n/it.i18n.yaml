@@ -733,10 +733,14 @@ nwc:
     renewalPeriod: "Periodo di Rinnovo"
   prompts:
     enter: Inserisci la tua stringa di connessione NWC
-    connect: Connetti
+    connect: Connetti Portafoglio
     disconnect: Disconnetti
     confirmDisconnect: Sei sicuro di voler disconnettere il tuo portafoglio NWC?
     pasteConnection: Incolla stringa di connessione
+    chooseMethod: Scegli come connettere il tuo portafoglio Lightning
+  actions:
+    connectAlbyGo: Connetti con Alby Go
+    connectNwc: Scansiona QR Code NWC
   feedback:
     connected: Portafoglio NWC connesso con successo!
     disconnected: Portafoglio NWC disconnesso

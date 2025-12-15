@@ -388,6 +388,7 @@ class TranslationsNwcEn {
 
 	late final TranslationsNwcLabelsEn labels = TranslationsNwcLabelsEn.internal(_root);
 	late final TranslationsNwcPromptsEn prompts = TranslationsNwcPromptsEn.internal(_root);
+	late final TranslationsNwcActionsEn actions = TranslationsNwcActionsEn.internal(_root);
 	late final TranslationsNwcFeedbackEn feedback = TranslationsNwcFeedbackEn.internal(_root);
 	late final TranslationsNwcErrorsEn errors = TranslationsNwcErrorsEn.internal(_root);
 	late final TranslationsNwcTimeEn time = TranslationsNwcTimeEn.internal(_root);
@@ -1953,8 +1954,8 @@ class TranslationsNwcPromptsEn {
 	/// en: 'Enter your NWC connection string'
 	String get enter => 'Enter your NWC connection string';
 
-	/// en: 'Connect'
-	String get connect => 'Connect';
+	/// en: 'Connect Wallet'
+	String get connect => 'Connect Wallet';
 
 	/// en: 'Disconnect'
 	String get disconnect => 'Disconnect';
@@ -1964,6 +1965,24 @@ class TranslationsNwcPromptsEn {
 
 	/// en: 'Paste connection string'
 	String get pasteConnection => 'Paste connection string';
+
+	/// en: 'Choose how to connect your Lightning wallet'
+	String get chooseMethod => 'Choose how to connect your Lightning wallet';
+}
+
+// Path: nwc.actions
+class TranslationsNwcActionsEn {
+	TranslationsNwcActionsEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Connect with Alby Go'
+	String get connectAlbyGo => 'Connect with Alby Go';
+
+	/// en: 'Scan NWC QR Code'
+	String get connectNwc => 'Scan NWC QR Code';
 }
 
 // Path: nwc.feedback
@@ -3334,10 +3353,13 @@ extension on Translations {
 			case 'nwc.labels.renewsIn': return 'Renews in';
 			case 'nwc.labels.renewalPeriod': return 'Renewal Period';
 			case 'nwc.prompts.enter': return 'Enter your NWC connection string';
-			case 'nwc.prompts.connect': return 'Connect';
+			case 'nwc.prompts.connect': return 'Connect Wallet';
 			case 'nwc.prompts.disconnect': return 'Disconnect';
 			case 'nwc.prompts.confirmDisconnect': return 'Are you sure you want to disconnect your NWC wallet?';
 			case 'nwc.prompts.pasteConnection': return 'Paste connection string';
+			case 'nwc.prompts.chooseMethod': return 'Choose how to connect your Lightning wallet';
+			case 'nwc.actions.connectAlbyGo': return 'Connect with Alby Go';
+			case 'nwc.actions.connectNwc': return 'Scan NWC QR Code';
 			case 'nwc.feedback.connected': return 'NWC wallet connected successfully!';
 			case 'nwc.feedback.disconnected': return 'NWC wallet disconnected';
 			case 'nwc.feedback.connecting': return 'Connecting to NWC wallet...';

@@ -336,6 +336,7 @@ class _TranslationsNwcPl extends TranslationsNwcEn {
 	@override String get description => 'Połącz swój portfel Lightning przez NWC';
 	@override late final _TranslationsNwcLabelsPl labels = _TranslationsNwcLabelsPl._(_root);
 	@override late final _TranslationsNwcPromptsPl prompts = _TranslationsNwcPromptsPl._(_root);
+	@override late final _TranslationsNwcActionsPl actions = _TranslationsNwcActionsPl._(_root);
 	@override late final _TranslationsNwcFeedbackPl feedback = _TranslationsNwcFeedbackPl._(_root);
 	@override late final _TranslationsNwcErrorsPl errors = _TranslationsNwcErrorsPl._(_root);
 	@override late final _TranslationsNwcTimePl time = _TranslationsNwcTimePl._(_root);
@@ -1280,10 +1281,22 @@ class _TranslationsNwcPromptsPl extends TranslationsNwcPromptsEn {
 
 	// Translations
 	@override String get enter => 'Wprowadź swój ciąg połączenia NWC';
-	@override String get connect => 'Połącz';
+	@override String get connect => 'Połącz portfel';
 	@override String get disconnect => 'Rozłącz';
 	@override String get confirmDisconnect => 'Czy na pewno chcesz rozłączyć portfel NWC?';
 	@override String get pasteConnection => 'Wklej ciąg połączenia';
+	@override String get chooseMethod => 'Wybierz sposób połączenia portfela Lightning';
+}
+
+// Path: nwc.actions
+class _TranslationsNwcActionsPl extends TranslationsNwcActionsEn {
+	_TranslationsNwcActionsPl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get connectAlbyGo => 'Połącz z Alby Go';
+	@override String get connectNwc => 'Skanuj kod QR NWC';
 }
 
 // Path: nwc.feedback
@@ -2347,10 +2360,13 @@ extension on TranslationsPl {
 			case 'nwc.labels.renewsIn': return 'Odnowienie za';
 			case 'nwc.labels.renewalPeriod': return 'Okres odnowienia';
 			case 'nwc.prompts.enter': return 'Wprowadź swój ciąg połączenia NWC';
-			case 'nwc.prompts.connect': return 'Połącz';
+			case 'nwc.prompts.connect': return 'Połącz portfel';
 			case 'nwc.prompts.disconnect': return 'Rozłącz';
 			case 'nwc.prompts.confirmDisconnect': return 'Czy na pewno chcesz rozłączyć portfel NWC?';
 			case 'nwc.prompts.pasteConnection': return 'Wklej ciąg połączenia';
+			case 'nwc.prompts.chooseMethod': return 'Wybierz sposób połączenia portfela Lightning';
+			case 'nwc.actions.connectAlbyGo': return 'Połącz z Alby Go';
+			case 'nwc.actions.connectNwc': return 'Skanuj kod QR NWC';
 			case 'nwc.feedback.connected': return 'Portfel NWC połączony pomyślnie!';
 			case 'nwc.feedback.disconnected': return 'Portfel NWC rozłączony';
 			case 'nwc.feedback.connecting': return 'Łączenie z portfelem NWC...';

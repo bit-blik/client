@@ -734,10 +734,14 @@ nwc:
     renewalPeriod: "Renewal Period"
   prompts:
     enter: Enter your NWC connection string
-    connect: Connect
+    connect: Connect Wallet
     disconnect: Disconnect
     confirmDisconnect: Are you sure you want to disconnect your NWC wallet?
     pasteConnection: Paste connection string
+    chooseMethod: Choose how to connect your Lightning wallet
+  actions:
+    connectAlbyGo: Connect with Alby Go
+    connectNwc: Scan NWC QR Code
   feedback:
     connected: NWC wallet connected successfully!
     disconnected: NWC wallet disconnected

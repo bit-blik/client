@@ -16,7 +16,7 @@ import 'package:go_router/go_router.dart';
 import '../../../i18n/gen/strings.g.dart'; // Correct Slang import
 import 'webln_stub.dart' if (dart.library.js) 'webln_web.dart';
 import 'maker_amount_form.dart'; // Import MakerProgressIndicator
-import '../nwc_connect_screen.dart'; // Import NwcConnectScreen
+import '../../widgets/nwc_connect_dialog.dart'; // Import NWC connect dialog
 
 class MakerPayInvoiceScreen extends ConsumerStatefulWidget {
   const MakerPayInvoiceScreen({super.key});
@@ -172,10 +172,8 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
     }
   }
 
-  Future<void> _showNwcConnectScreen() async {
-    await Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (context) => const NwcConnectScreen()));
+  Future<void> _showNwcConnectDialog() async {
+    await showNwcConnectDialog(context);
   }
 
   Future<void> _payWithNwc(String invoice) async {
@@ -228,7 +226,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
             backgroundColor: Colors.blue[700],
             foregroundColor: Colors.white,
           ),
-          onPressed: _showNwcConnectScreen,
+          onPressed: _showNwcConnectDialog,
         ),
       );
     }

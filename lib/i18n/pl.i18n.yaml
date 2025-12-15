@@ -735,10 +735,14 @@ nwc:
     renewalPeriod: "Okres odnowienia"
   prompts:
     enter: Wprowadź swój ciąg połączenia NWC
-    connect: Połącz
+    connect: Połącz portfel
     disconnect: Rozłącz
     confirmDisconnect: Czy na pewno chcesz rozłączyć portfel NWC?
     pasteConnection: Wklej ciąg połączenia
+    chooseMethod: Wybierz sposób połączenia portfela Lightning
+  actions:
+    connectAlbyGo: Połącz z Alby Go
+    connectNwc: Skanuj kod QR NWC
   feedback:
     connected: Portfel NWC połączony pomyślnie!
     disconnected: Portfel NWC rozłączony

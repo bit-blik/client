@@ -361,13 +361,12 @@ class _MyAppState extends ConsumerState<MyApp> {
       await _handleNwcDeepLink(uri.toString());
       return;
     }
-
     // Handle bitblik:// scheme
     if (scheme == 'bitblik') {
       // Check if it's an NWC connection string passed via bitblik scheme
       final path = uri.host + uri.path;
-      if (path.startsWith('nwc') || uri.queryParameters.containsKey('nwc')) {
-        final nwcString = uri.queryParameters['nwc'];
+      if (path.startsWith('value') || uri.queryParameters.containsKey('value')) {
+        final nwcString = uri.queryParameters['value'];
         if (nwcString != null) {
           await _handleNwcDeepLink(nwcString);
         }

@@ -5,7 +5,7 @@ import '../../i18n/gen/strings.g.dart';
 import '../providers/providers.dart';
 import '../utils/ln.dart';
 import 'package:ndk/shared/logger/logger.dart';
-import 'nwc_connect_screen.dart';
+import '../widgets/nwc_connect_dialog.dart';
 
 class WalletScreen extends ConsumerWidget {
   const WalletScreen({super.key});
@@ -351,11 +351,7 @@ class WalletScreen extends ConsumerWidget {
                     Center(
                       child: ElevatedButton.icon(
                         onPressed: () async {
-                          await Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const NwcConnectScreen(),
-                            ),
-                          );
+                          await showNwcConnectDialog(context);
                         },
                         icon: const Icon(Icons.add_link),
                         label: Text(t.nwc.prompts.connect),
