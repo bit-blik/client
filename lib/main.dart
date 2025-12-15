@@ -12,7 +12,8 @@ import 'package:bitblik/src/screens/taker_flow/taker_invalid_blik_screen.dart';
 import 'package:bitblik/src/screens/taker_flow/taker_payment_failed_screen.dart';
 import 'package:bitblik/src/screens/taker_flow/taker_payment_process_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode; // Import kIsWeb
+import 'package:flutter/foundation.dart'
+    show kIsWeb, kDebugMode; // Import kIsWeb
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart'; // Keep for GlobalMaterialLocalizations.delegates
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -74,8 +75,14 @@ final routerProvider = Provider<GoRouter>((ref) {
           );
         },
         routes: [
-          GoRoute(path: '/', builder: (context, state) => const RoleSelectionScreen()),
-          GoRoute(path: '/offers', builder: (context, state) => const OfferListScreen()),
+          GoRoute(
+            path: '/',
+            builder: (context, state) => const RoleSelectionScreen(),
+          ),
+          GoRoute(
+            path: '/offers',
+            builder: (context, state) => const OfferListScreen(),
+          ),
           GoRoute(
             path: '/offers/:id',
             builder: (context, state) {
@@ -86,11 +93,26 @@ final routerProvider = Provider<GoRouter>((ref) {
               return OfferDetailsScreen(offerId: offerId);
             },
           ),
-          GoRoute(path: '/create', builder: (context, state) => const MakerAmountForm()),
-          GoRoute(path: '/pay', builder: (context, state) => const MakerPayInvoiceScreen()),
-          GoRoute(path: '/wait-taker', builder: (context, state) => const MakerWaitTakerScreen()),
-          GoRoute(path: '/wait-blik', builder: (context, state) => const MakerWaitForBlikScreen()),
-          GoRoute(path: '/confirm-blik', builder: (context, state) => const MakerConfirmPaymentScreen()),
+          GoRoute(
+            path: '/create',
+            builder: (context, state) => const MakerAmountForm(),
+          ),
+          GoRoute(
+            path: '/pay',
+            builder: (context, state) => const MakerPayInvoiceScreen(),
+          ),
+          GoRoute(
+            path: '/wait-taker',
+            builder: (context, state) => const MakerWaitTakerScreen(),
+          ),
+          GoRoute(
+            path: '/wait-blik',
+            builder: (context, state) => const MakerWaitForBlikScreen(),
+          ),
+          GoRoute(
+            path: '/confirm-blik',
+            builder: (context, state) => const MakerConfirmPaymentScreen(),
+          ),
           GoRoute(
             path: '/maker-success',
             builder: (context, state) {
@@ -102,10 +124,22 @@ final routerProvider = Provider<GoRouter>((ref) {
               }
             },
           ),
-          GoRoute(path: '/coordinators', builder: (context, state) => const CoordinatorManagementScreen()),
-          GoRoute(path: '/settings', builder: (context, state) => const SettingsScreen()),
-          GoRoute(path: '/wallet', builder: (context, state) => const WalletScreen()),
-          GoRoute(path: '/neko-management', builder: (context, state) => const NekoManagementScreen()),
+          GoRoute(
+            path: '/coordinators',
+            builder: (context, state) => const CoordinatorManagementScreen(),
+          ),
+          GoRoute(
+            path: '/settings',
+            builder: (context, state) => const SettingsScreen(),
+          ),
+          GoRoute(
+            path: '/wallet',
+            builder: (context, state) => const WalletScreen(),
+          ),
+          GoRoute(
+            path: '/neko-management',
+            builder: (context, state) => const NekoManagementScreen(),
+          ),
           GoRoute(
             path: '/submit-blik',
             builder: (context, state) {
@@ -113,7 +147,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                 context.go("/");
                 return Container();
               } else {
-                return TakerSubmitBlikScreen(initialOffer: state.extra as Offer);
+                return TakerSubmitBlikScreen(
+                  initialOffer: state.extra as Offer,
+                );
               }
             },
           ),
@@ -139,7 +175,10 @@ final routerProvider = Provider<GoRouter>((ref) {
               }
             },
           ),
-          GoRoute(path: '/paying-taker', builder: (context, state) => TakerPaymentProcessScreen()),
+          GoRoute(
+            path: '/paying-taker',
+            builder: (context, state) => TakerPaymentProcessScreen(),
+          ),
           GoRoute(
             path: '/taker-invalid-blik',
             builder: (context, state) {
@@ -153,7 +192,9 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/taker-conflict',
-            builder: (context, state) => TakerConflictScreen(offerId: state.extra as String),
+            builder:
+                (context, state) =>
+                    TakerConflictScreen(offerId: state.extra as String),
           ),
           GoRoute(
             path: '/maker-invalid-blik',
@@ -177,7 +218,10 @@ final routerProvider = Provider<GoRouter>((ref) {
               }
             },
           ),
-          GoRoute(path: FaqScreen.routeName, builder: (context, state) => const FaqScreen()),
+          GoRoute(
+            path: FaqScreen.routeName,
+            builder: (context, state) => const FaqScreen(),
+          ),
         ],
       ),
     ],
@@ -228,7 +272,9 @@ class _MyAppState extends ConsumerState<MyApp> {
       ref.read(keyServiceProvider);
       ref.read(apiServiceProvider);
 
-      Logger.log.i('🚀 App initialized: API service and coordinator discovery started');
+      Logger.log.i(
+        '🚀 App initialized: API service and coordinator discovery started',
+      );
     } catch (e) {
       Logger.log.e('❌ Error during app initialization: $e');
     }
@@ -252,40 +298,135 @@ class _MyAppState extends ConsumerState<MyApp> {
           await nwcService.initAndConnect();
           if (nwcService.isConnected) {
             ref.read(nwcConnectionStatusProvider.notifier).state = true;
-            
+
             // Initialize notification manager to start listening
             ref.read(nwcNotificationManagerProvider);
-            
-            Logger.log.i('💰 NWC connected and wallet info providers initialized');
+
+            Logger.log.i(
+              '💰 NWC connected and wallet info providers initialized',
+            );
           }
         } catch (e) {
           Logger.log.w('⚠️ Error initializing NWC connection: $e');
         }
 
-        Logger.log.i('🚀 App initialized: API service and coordinator discovery started');
+        Logger.log.i(
+          '🚀 App initialized: API service and coordinator discovery started',
+        );
       } catch (e) {
         Logger.log.e('❌ Error during app initialization: $e');
       }
     });
 
-    // Only listen for deep links on Android/iOS, not web
+    // Only listen for deep links on Android/iOS/macOS, not web
     if (!kIsWeb) {
       _sub = _appLinks.uriLinkStream.listen(
         (Uri? uri) {
           if (uri != null) {
-            // Handle both /offers and #/offers
-            final path = uri.path;
-            final fragment = uri.fragment;
-            final router = ref.read(routerProvider);
-            if (path == '/offers' || fragment == '/offers') {
-              kIsWeb ? router.go('/offers') : router.push('/offers');
-            }
+            _handleDeepLink(uri);
           }
         },
         onError: (err) {
-          // Handle error
+          Logger.log.e('Deep link error: $err');
         },
       );
+
+      // Also check for initial link (cold start)
+      _checkInitialLink();
+    }
+  }
+
+  Future<void> _checkInitialLink() async {
+    try {
+      final initialUri = await _appLinks.getInitialLink();
+      if (initialUri != null) {
+        _handleDeepLink(initialUri);
+      }
+    } catch (e) {
+      Logger.log.e('Error getting initial link: $e');
+    }
+  }
+
+  Future<void> _handleDeepLink(Uri uri) async {
+    final router = ref.read(routerProvider);
+    final scheme = uri.scheme.toLowerCase();
+
+    Logger.log.i('🔗 Deep link received: $uri (scheme: $scheme)');
+
+    // Handle nostr+walletconnect:// scheme (NWC connection)
+    if (scheme == 'nostr+walletconnect') {
+      await _handleNwcDeepLink(uri.toString());
+      return;
+    }
+
+    // Handle bitblik:// scheme
+    if (scheme == 'bitblik') {
+      // Check if it's an NWC connection string passed via bitblik scheme
+      final path = uri.host + uri.path;
+      if (path.startsWith('nwc') || uri.queryParameters.containsKey('nwc')) {
+        final nwcString = uri.queryParameters['nwc'];
+        if (nwcString != null) {
+          await _handleNwcDeepLink(nwcString);
+        }
+        return;
+      }
+
+      // Handle other bitblik:// paths
+      if (path == 'offers' || path == '/offers') {
+        router.push('/offers');
+        return;
+      }
+    }
+
+    // Handle https://bitblik.app deep links
+    if (scheme == 'https') {
+      final path = uri.path;
+      final fragment = uri.fragment;
+      if (path == '/offers' || fragment == '/offers') {
+        router.push('/offers');
+      }
+    }
+  }
+
+  /// Handle NWC deep link: connect wallet and navigate based on active offer status
+  Future<void> _handleNwcDeepLink(String connectionString) async {
+    final router = ref.read(routerProvider);
+
+    Logger.log.i('🔗 NWC deep link: connecting wallet...');
+
+    try {
+      // Connect NWC
+      final nwcService = await ref.read(nwcServiceProvider.future);
+      await nwcService.connect(connectionString);
+      ref.read(nwcConnectionStatusProvider.notifier).state = true;
+
+      // Trigger balance and budget loading
+      ref.read(nwcBalanceProvider.notifier).loadBalance();
+      ref.read(nwcBudgetProvider.notifier).loadBudget();
+
+      Logger.log.i('💰 NWC connected via deep link');
+
+      // Check if there's an active offer in 'created' status
+      final activeOffer = ref.read(activeOfferProvider);
+
+      if (activeOffer != null &&
+          activeOffer.status == OfferStatus.created.name) {
+        // Active offer in created status - go to pay invoice screen
+        Logger.log.i(
+          '📝 Active offer found in created status, navigating to pay screen',
+        );
+        router.go('/pay');
+      } else {
+        // No active offer or not in created status - go to wallet screen
+        Logger.log.i(
+          '💳 No active offer in created status, navigating to wallet',
+        );
+        router.go('/wallet');
+      }
+    } catch (e) {
+      Logger.log.e('❌ Error connecting NWC via deep link: $e');
+      // Still navigate to wallet screen on error so user can see what happened
+      router.go('/wallet');
     }
   }
 
@@ -356,14 +497,22 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
     super.dispose();
   }
 
-  Widget _buildNekoDrawer(BuildContext context, AsyncValue<String?> publicKeyAsync) {
+  Widget _buildNekoDrawer(
+    BuildContext context,
+    AsyncValue<String?> publicKeyAsync,
+  ) {
     final t = Translations.of(context);
     return Drawer(
       backgroundColor: Colors.white,
       child: publicKeyAsync.when(
         data: (publicKey) {
           if (publicKey == null) {
-            return const Center(child: Padding(padding: EdgeInsets.all(16.0), child: Text('No Neko found')));
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text('No Neko found'),
+              ),
+            );
           }
           return ListView(
             padding: EdgeInsets.zero,
@@ -386,8 +535,10 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                       borderRadius: BorderRadius.circular(40),
                       child: CachedNetworkImage(
                         imageUrl: 'https://robohash.org/$publicKey?set=set4',
-                        placeholder: (context, url) => const CircularProgressIndicator(),
-                        errorWidget: (context, url, error) => const Icon(Icons.error),
+                        placeholder:
+                            (context, url) => const CircularProgressIndicator(),
+                        errorWidget:
+                            (context, url, error) => const Icon(Icons.error),
                         width: 80,
                         height: 80,
                       ),
@@ -404,11 +555,17 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                       },
                       borderRadius: BorderRadius.circular(4),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(t.nekoInfo.title, style: const TextStyle(fontSize: 14)),
+                            Text(
+                              t.nekoInfo.title,
+                              style: const TextStyle(fontSize: 14),
+                            ),
                             const SizedBox(width: 4),
                             const Icon(Icons.info_outline, size: 18),
                           ],
@@ -432,7 +589,11 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                 },
               ),
               ListTile(
-                leading: Image.asset('assets/sell-blik.png', width: 24, height: 24),
+                leading: Image.asset(
+                  'assets/sell-blik.png',
+                  width: 24,
+                  height: 24,
+                ),
                 title: Text(t.landing.actions.sellBlik),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () {
@@ -474,10 +635,20 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
             ],
           );
         },
-        loading: () => const Center(child: Padding(padding: EdgeInsets.all(16.0), child: CircularProgressIndicator())),
+        loading:
+            () => const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: CircularProgressIndicator(),
+              ),
+            ),
         error:
-            (error, stack) =>
-                Center(child: Padding(padding: const EdgeInsets.all(16.0), child: Text('Error: ${error.toString()}'))),
+            (error, stack) => Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text('Error: ${error.toString()}'),
+              ),
+            ),
       ),
     );
   }
@@ -511,11 +682,14 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
   }
 
   /// Shows the relay status popup when tapped
-  void _showRelayStatusPopup(BuildContext context, Map<String, RelayStatus> relays) {
+  void _showRelayStatusPopup(
+    BuildContext context,
+    Map<String, RelayStatus> relays,
+  ) {
     final t = Translations.of(context);
     final connectedCount = relays.values.where((r) => r.isConnected).length;
     final totalCount = relays.length;
-    
+
     showDialog(
       context: context,
       barrierColor: Colors.transparent,
@@ -545,7 +719,10 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        t.relays.popup.title(connected: connectedCount.toString(), total: totalCount.toString()),
+                        t.relays.popup.title(
+                          connected: connectedCount.toString(),
+                          total: totalCount.toString(),
+                        ),
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
@@ -553,12 +730,15 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                       ),
                       const SizedBox(height: 8),
                       ...relays.entries.map((e) {
-                        final shortUrl = e.key.replaceFirst('wss://', '').replaceFirst('ws://', '');
+                        final shortUrl = e.key
+                            .replaceFirst('wss://', '')
+                            .replaceFirst('ws://', '');
                         final stateColor = _getStateColor(e.value.state);
                         final stateName = _getStateName(e.value.state, t);
-                        final isConnecting = e.value.state == RelayConnectionState.connecting || 
-                                              e.value.state == RelayConnectionState.reconnecting;
-                        
+                        final isConnecting =
+                            e.value.state == RelayConnectionState.connecting ||
+                            e.value.state == RelayConnectionState.reconnecting;
+
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(
@@ -616,7 +796,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
 
   Widget _buildRelayConnectivityIndicator() {
     final relays = ref.watch(relayConnectivityProvider);
-    
+
     if (relays.isEmpty) {
       // No relay data yet, show loading/unknown state
       return Padding(
@@ -628,12 +808,12 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
         ),
       );
     }
-    
+
     final connectedCount = relays.values.where((r) => r.isConnected).length;
     final totalCount = relays.length;
     final allConnected = connectedCount == totalCount;
     final someConnected = connectedCount > 0;
-    
+
     // Determine overall icon color based on connectivity
     final Color overallColor;
     if (allConnected) {
@@ -643,53 +823,56 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
     } else {
       overallColor = Colors.red;
     }
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: () => _showRelayStatusPopup(context, relays),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => _showRelayStatusPopup(context, relays),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
         child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Show individual state indicators for each relay
-            ...relays.entries.map((e) {
-              final stateColor = _getStateColor(e.value.state);
-              final isConnecting = e.value.state == RelayConnectionState.connecting || 
-                                    e.value.state == RelayConnectionState.reconnecting;
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                child: isConnecting 
-                  ? SizedBox(
-                      width: 8,
-                      height: 8,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 1.5,
-                        color: stateColor,
-                      ),
-                    )
-                  : Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: stateColor,
-                      ),
-                    ),
-              );
-            }),
-            const SizedBox(width: 4),
-            Text(
-              '$connectedCount/$totalCount',
-              style: TextStyle(
-                fontSize: 11,
-                color: overallColor,
-                fontWeight: FontWeight.w500,
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Show individual state indicators for each relay
+              ...relays.entries.map((e) {
+                final stateColor = _getStateColor(e.value.state);
+                final isConnecting =
+                    e.value.state == RelayConnectionState.connecting ||
+                    e.value.state == RelayConnectionState.reconnecting;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                  child:
+                      isConnecting
+                          ? SizedBox(
+                            width: 8,
+                            height: 8,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 1.5,
+                              color: stateColor,
+                            ),
+                          )
+                          : Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: stateColor,
+                            ),
+                          ),
+                );
+              }),
+              const SizedBox(width: 4),
+              Text(
+                '$connectedCount/$totalCount',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: overallColor,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -719,7 +902,11 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
             // Navigate to home
             context.go('/');
           },
-          child: Image.asset('assets/logo-horizontal.png', height: 30, fit: BoxFit.cover),
+          child: Image.asset(
+            'assets/logo-horizontal.png',
+            height: 30,
+            fit: BoxFit.cover,
+          ),
         ),
       );
     }
@@ -730,11 +917,15 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
         backgroundColor: Colors.white,
         automaticallyImplyLeading:
             !widget.hideBackButton &&
-            ((widget.pageTitle != null && widget.pageTitle!.isNotEmpty) || widget.showBackButton),
+            ((widget.pageTitle != null && widget.pageTitle!.isNotEmpty) ||
+                widget.showBackButton),
         // Show back button if pageTitle is present or showBackButton is true, unless hideBackButton is true
         title: appBarTitle,
         // Add a divider at the bottom of the AppBar
-        bottom: const PreferredSize(preferredSize: Size.fromHeight(1.0), child: Divider(height: 1.0, thickness: 1.0)),
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(1.0),
+          child: Divider(height: 1.0, thickness: 1.0),
+        ),
         actions: [
           // Relay Connectivity Indicator
           _buildRelayConnectivityIndicator(),
@@ -751,15 +942,26 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                   return Container(
                     alignment: Alignment.center,
                     constraints: const BoxConstraints(minWidth: 48),
-                    child: Image.asset('assets/lang-switcher.png', width: 60, height: 60, fit: BoxFit.fitHeight),
+                    child: Image.asset(
+                      'assets/lang-switcher.png',
+                      width: 60,
+                      height: 60,
+                      fit: BoxFit.fitHeight,
+                    ),
                   );
                 }).toList();
               },
               onChanged: (AppLocale? newLocale) async {
                 if (newLocale != null) {
-                  await asyncPrefs.setString('app_locale', newLocale.languageCode);
-                  if (LocaleSettings.currentLocale.languageCode != newLocale.languageCode) {
-                    LocaleSettings.setLocale(AppLocaleUtils.parse(newLocale.languageCode));
+                  await asyncPrefs.setString(
+                    'app_locale',
+                    newLocale.languageCode,
+                  );
+                  if (LocaleSettings.currentLocale.languageCode !=
+                      newLocale.languageCode) {
+                    LocaleSettings.setLocale(
+                      AppLocaleUtils.parse(newLocale.languageCode),
+                    );
                     if (mounted) {
                       setState(() {});
                     }
@@ -767,7 +969,9 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                 }
               },
               items:
-                  AppLocale.values.map<DropdownMenuItem<AppLocale>>((AppLocale locale) {
+                  AppLocale.values.map<DropdownMenuItem<AppLocale>>((
+                    AppLocale locale,
+                  ) {
                     final String flagEmoji =
                         locale.languageCode == 'en'
                             ? '🇬🇧'
@@ -812,14 +1016,19 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                               (builderContext) => IconButton(
                                 icon: ClipOval(
                                   child: CachedNetworkImage(
-                                    imageUrl: 'https://robohash.org/$publicKey?set=set4',
+                                    imageUrl:
+                                        'https://robohash.org/$publicKey?set=set4',
                                     placeholder:
                                         (context, url) => const SizedBox(
                                           width: 32,
                                           height: 32,
-                                          child: CircularProgressIndicator(strokeWidth: 2),
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
                                         ),
-                                    errorWidget: (context, url, error) => const Icon(Icons.error, size: 24),
+                                    errorWidget:
+                                        (context, url, error) =>
+                                            const Icon(Icons.error, size: 24),
                                     width: 32,
                                     height: 32,
                                     fit: BoxFit.cover,
@@ -838,11 +1047,11 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
           kDebugMode ? SizedBox(width: 40) : Container(),
         ],
       ),
-      body:  Center(
+      body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 625), // Adjust this value
           child: _buildBody(widget.body),
-        )
+        ),
       ),
       endDrawer: _buildNekoDrawer(context, publicKeyAsync),
       bottomNavigationBar: SizedBox(
@@ -876,7 +1085,10 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                             // },
                             child: Text(
                               _clientVersion != null ? 'v$_clientVersion' : '',
-                              style: const TextStyle(fontSize: 12, color: Colors.black45),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black45,
+                              ),
                             ),
                           ),
                         ),
@@ -894,9 +1106,16 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                             final Uri url = Uri.parse(
                               'https://njump.to/npub1k3g092rlzvn7nftz3jte9pkx63zp705nh78r6hjpjm55fjg7r2cqx8stj3',
                             );
-                            await launchUrl(url, mode: LaunchMode.externalApplication);
+                            await launchUrl(
+                              url,
+                              mode: LaunchMode.externalApplication,
+                            );
                           },
-                          child: Image.asset('assets/nostr.png', width: 32, height: 32),
+                          child: Image.asset(
+                            'assets/nostr.png',
+                            width: 32,
+                            height: 32,
+                          ),
                         ),
                       ],
                     ),
@@ -907,26 +1126,42 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                         children: [
                           InkWell(
                             onTap: () async {
-                              final Uri url = Uri.parse('https://github.com/bit-blik/client/releases');
+                              final Uri url = Uri.parse(
+                                'https://github.com/bit-blik/client/releases',
+                              );
                               if (await canLaunchUrl(url)) {
                                 await launchUrl(url);
                               } else {
                                 if (mounted) {
-                                  ScaffoldMessenger.of(
-                                    context,
-                                  ).showSnackBar(SnackBar(content: Text('Could not open APK link.')));
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Could not open APK link.'),
+                                    ),
+                                  );
                                 }
                               }
                             },
-                            child: Image.asset('assets/apk.png', width: 100, height: 31, fit: BoxFit.contain),
+                            child: Image.asset(
+                              'assets/apk.png',
+                              width: 100,
+                              height: 31,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                           const SizedBox(width: 16),
                           InkWell(
                             onTap: () async {
-                              final Uri url = Uri.parse('zapstore://app.bitblik');
+                              final Uri url = Uri.parse(
+                                'zapstore://app.bitblik',
+                              );
                               await launchUrl(url);
                             },
-                            child: Image.asset('assets/zapstore.png', width: 100, height: 31, fit: BoxFit.contain),
+                            child: Image.asset(
+                              'assets/zapstore.png',
+                              width: 100,
+                              height: 31,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                           const SizedBox(width: 8),
                         ],

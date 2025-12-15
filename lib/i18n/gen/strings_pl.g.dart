@@ -1262,6 +1262,7 @@ class _TranslationsNwcLabelsPl extends TranslationsNwcLabelsEn {
 	@override String get status => 'Status połączenia';
 	@override String get connected => 'Połączono';
 	@override String get disconnected => 'Rozłączono';
+	@override String get scanQrCode => 'Zeskanuj kod QR z połączeniem NWC';
 	@override String get balance => 'Saldo';
 	@override String get budget => 'Budżet';
 	@override String get usedBudget => 'Wykorzystano';
@@ -2336,6 +2337,7 @@ extension on TranslationsPl {
 			case 'nwc.labels.status': return 'Status połączenia';
 			case 'nwc.labels.connected': return 'Połączono';
 			case 'nwc.labels.disconnected': return 'Rozłączono';
+			case 'nwc.labels.scanQrCode': return 'Zeskanuj kod QR z połączeniem NWC';
 			case 'nwc.labels.balance': return 'Saldo';
 			case 'nwc.labels.budget': return 'Budżet';
 			case 'nwc.labels.usedBudget': return 'Wykorzystano';

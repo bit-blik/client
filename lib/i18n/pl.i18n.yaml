@@ -725,6 +725,7 @@ nwc:
     status: Status połączenia
     connected: Połączono
     disconnected: Rozłączono
+    scanQrCode: Zeskanuj kod QR z połączeniem NWC
     balance: "Saldo"
     budget: "Budżet"
     usedBudget: "Wykorzystano"

@@ -1917,6 +1917,9 @@ class TranslationsNwcLabelsEn {
 	/// en: 'Disconnected'
 	String get disconnected => 'Disconnected';
 
+	/// en: 'Scan QR code with your NWC connection'
+	String get scanQrCode => 'Scan QR code with your NWC connection';
+
 	/// en: 'Balance'
 	String get balance => 'Balance';
 
@@ -3319,6 +3322,7 @@ extension on Translations {
 			case 'nwc.labels.status': return 'Connection Status';
 			case 'nwc.labels.connected': return 'Connected';
 			case 'nwc.labels.disconnected': return 'Disconnected';
+			case 'nwc.labels.scanQrCode': return 'Scan QR code with your NWC connection';
 			case 'nwc.labels.balance': return 'Balance';
 			case 'nwc.labels.budget': return 'Budget';
 			case 'nwc.labels.usedBudget': return 'Used';
