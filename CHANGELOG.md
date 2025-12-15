@@ -1,5 +1,4 @@
 ## [0.4.5] - 2025-12-15
-### Fixed
 - add relay connection indicator in app bar 
 - improve relay connection handling
 - NWC connection QR scanner screen
