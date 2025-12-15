@@ -36,46 +36,60 @@ final nwcServiceProvider = FutureProvider<NwcService>((ref) async {
 
 final nwcConnectionStatusProvider = StateProvider<bool>((ref) => false);
 
-// Provider for NWC wallet balance
-final nwcBalanceProvider = StateNotifierProvider<NwcBalanceNotifier, AsyncValue<int?>>((ref) {
-  return NwcBalanceNotifier(ref);
+// Provider for NWC relay URLs
+final nwcRelayUrlsProvider = Provider<List<String>>((ref) {
+  final nwcServiceAsync = ref.watch(nwcServiceProvider);
+  return nwcServiceAsync.valueOrNull?.relayUrls ?? [];
 });
 
+// Provider for NWC wallet balance
+final nwcBalanceProvider =
+    StateNotifierProvider<NwcBalanceNotifier, AsyncValue<int?>>((ref) {
+      return NwcBalanceNotifier(ref);
+    });
+
 // Provider for NWC wallet budget information
-final nwcBudgetProvider = StateNotifierProvider<NwcBudgetNotifier, AsyncValue<Map<String, dynamic>?>>((ref) {
-  return NwcBudgetNotifier(ref);
-});
+final nwcBudgetProvider =
+    StateNotifierProvider<NwcBudgetNotifier, AsyncValue<Map<String, dynamic>?>>(
+      (ref) {
+        return NwcBudgetNotifier(ref);
+      },
+    );
 
 // Provider that manages NWC notification subscription and refreshes balance/budget
 final nwcNotificationManagerProvider = Provider<void>((ref) {
   StreamSubscription? notificationSubscription;
-  
+
   Future<void> subscribeToNotifications() async {
     notificationSubscription?.cancel();
-    
+
     final nwcServiceAsync = ref.read(nwcServiceProvider);
     final nwcService = nwcServiceAsync.valueOrNull;
     if (nwcService == null) return;
-    
+
     final connection = nwcService.connection;
-    
+
     if (connection != null) {
       Logger.log.d('📡 Subscribing to NWC notifications...');
-      notificationSubscription = connection.notificationStream.stream.listen((notification) {
-        Logger.log.d('💰 NWC notification received: ${notification.type} amount: ${notification.amount}');
+      notificationSubscription = connection.notificationStream.stream.listen((
+        notification,
+      ) {
+        Logger.log.d(
+          '💰 NWC notification received: ${notification.type} amount: ${notification.amount}',
+        );
         // Refresh both balance and budget when notification arrives
         ref.read(nwcBalanceProvider.notifier).loadBalance();
         ref.read(nwcBudgetProvider.notifier).loadBudget();
       });
     }
   }
-  
+
   // Initialize subscription if already connected
   final isConnected = ref.read(nwcConnectionStatusProvider);
   if (isConnected) {
     subscribeToNotifications();
   }
-  
+
   // Watch for connection status changes
   ref.listen<bool>(nwcConnectionStatusProvider, (previous, next) {
     if (next) {
@@ -85,7 +99,7 @@ final nwcNotificationManagerProvider = Provider<void>((ref) {
       notificationSubscription = null;
     }
   });
-  
+
   ref.onDispose(() {
     notificationSubscription?.cancel();
   });
@@ -93,7 +107,7 @@ final nwcNotificationManagerProvider = Provider<void>((ref) {
 
 class NwcBalanceNotifier extends StateNotifier<AsyncValue<int?>> {
   final Ref _ref;
-  
+
   NwcBalanceNotifier(this._ref) : super(const AsyncValue.data(null)) {
     _init();
   }
@@ -103,7 +117,7 @@ class NwcBalanceNotifier extends StateNotifier<AsyncValue<int?>> {
     if (isConnected) {
       await loadBalance();
     }
-    
+
     // Watch for connection status changes
     _ref.listen<bool>(nwcConnectionStatusProvider, (previous, next) {
       if (next) {
@@ -127,9 +141,10 @@ class NwcBalanceNotifier extends StateNotifier<AsyncValue<int?>> {
   }
 }
 
-class NwcBudgetNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>?>> {
+class NwcBudgetNotifier
+    extends StateNotifier<AsyncValue<Map<String, dynamic>?>> {
   final Ref _ref;
-  
+
   NwcBudgetNotifier(this._ref) : super(const AsyncValue.data(null)) {
     _init();
   }
@@ -139,7 +154,7 @@ class NwcBudgetNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>?>>
     if (isConnected) {
       await loadBudget();
     }
-    
+
     // Watch for connection status changes
     _ref.listen<bool>(nwcConnectionStatusProvider, (previous, next) {
       if (next) {
@@ -761,12 +776,7 @@ final ndkProvider = Provider((ref) {
 });
 
 /// Connection state enum for relay websocket
-enum RelayConnectionState {
-  connected,
-  connecting,
-  reconnecting,
-  disconnected,
-}
+enum RelayConnectionState { connected, connecting, reconnecting, disconnected }
 
 /// Relay connectivity data for UI display
 class RelayStatus {
@@ -774,18 +784,22 @@ class RelayStatus {
   final RelayConnectionState state;
 
   RelayStatus({required this.url, required this.state});
-  
+
   bool get isConnected => state == RelayConnectionState.connected;
 }
 
 /// Provider that streams relay connectivity status
 /// Returns a Map of relay URL to connection status
-final relayConnectivityProvider = StateNotifierProvider<RelayConnectivityNotifier, Map<String, RelayStatus>>((ref) {
-  return RelayConnectivityNotifier(ref);
-});
+final relayConnectivityProvider =
+    StateNotifierProvider<RelayConnectivityNotifier, Map<String, RelayStatus>>((
+      ref,
+    ) {
+      return RelayConnectivityNotifier(ref);
+    });
 
 /// Notifier that manages relay connectivity state
-class RelayConnectivityNotifier extends StateNotifier<Map<String, RelayStatus>> {
+class RelayConnectivityNotifier
+    extends StateNotifier<Map<String, RelayStatus>> {
   final Ref _ref;
   StreamSubscription? _subscription;
   bool _initialized = false;
@@ -796,12 +810,12 @@ class RelayConnectivityNotifier extends StateNotifier<Map<String, RelayStatus>> 
 
   Future<void> _init() async {
     if (_initialized) return;
-    
+
     try {
       // Wait for API service to be fully initialized before accessing NDK
       final apiService = await _ref.read(initializedApiServiceProvider.future);
       final ndk = apiService.ndk;
-      
+
       if (ndk == null) {
         return;
       }
@@ -810,7 +824,9 @@ class RelayConnectivityNotifier extends StateNotifier<Map<String, RelayStatus>> 
       _updateFromRelays(ndk.relays.globalState.relays);
 
       // Subscribe to the stream for updates
-      _subscription = ndk.connectivity.relayConnectivityChanges.listen((connectivityMap) {
+      _subscription = ndk.connectivity.relayConnectivityChanges.listen((
+        connectivityMap,
+      ) {
         _updateFromRelays(connectivityMap);
       });
 

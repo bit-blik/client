@@ -23,12 +23,39 @@ Future<bool?> showNwcConnectDialog(BuildContext context) async {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(width: 24), // Spacer to balance the X button
+                    Expanded(
+                      child: Text(
+                        t.nwc.prompts.connect,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.of(dialogContext).pop(false),
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.white54,
+                        size: 24,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
                 Text(
                   t.nwc.prompts.chooseMethod,
                   style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white70,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white54,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -63,14 +90,6 @@ Future<bool?> showNwcConnectDialog(BuildContext context) async {
                       },
                     ),
                   ],
-                ),
-                const SizedBox(height: 24),
-                TextButton(
-                  onPressed: () => Navigator.of(dialogContext).pop(false),
-                  child: Text(
-                    t.common.buttons.cancel,
-                    style: const TextStyle(color: Colors.white54),
-                  ),
                 ),
               ],
             ),

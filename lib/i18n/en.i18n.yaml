@@ -732,6 +732,8 @@ nwc:
     totalBudget: "Total"
     renewsIn: "Renews in"
     renewalPeriod: "Renewal Period"
+    relay: "Relay"
+    relays: "Relays"
   prompts:
     enter: Enter your NWC connection string
     connect: Connect Wallet

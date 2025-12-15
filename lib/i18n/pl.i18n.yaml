@@ -733,6 +733,8 @@ nwc:
     totalBudget: "Łącznie"
     renewsIn: "Odnowienie za"
     renewalPeriod: "Okres odnowienia"
+    relay: "Przekaźnik"
+    relays: "Przekaźniki"
   prompts:
     enter: Wprowadź swój ciąg połączenia NWC
     connect: Połącz portfel

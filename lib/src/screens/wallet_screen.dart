@@ -283,40 +283,39 @@ class WalletScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Icon(
-                        isConnected ? Icons.link : Icons.link_off,
-                        color: isConnected ? Colors.green : Colors.grey,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              t.nwc.labels.status,
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(color: Colors.grey[600]),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              isConnected
-                                  ? t.nwc.labels.connected
-                                  : t.nwc.labels.disconnected,
-                              style: Theme.of(
-                                context,
-                              ).textTheme.bodyLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: isConnected ? Colors.green : Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
+                  // Row(
+                  //   children: [
+                  //     Icon(
+                  //       isConnected ? Icons.link : Icons.link_off,
+                  //       color: isConnected ? Colors.green : Colors.grey,
+                  //     ),
+                  //     const SizedBox(width: 12),
+                  //     Expanded(
+                  //       child: Column(
+                  //         crossAxisAlignment: CrossAxisAlignment.start,
+                  //         children: [
+                  //           Text(
+                  //             t.nwc.labels.status,
+                  //             style: Theme.of(context).textTheme.bodySmall
+                  //                 ?.copyWith(color: Colors.grey[600]),
+                  //           ),
+                  //           const SizedBox(height: 4),
+                  //           Text(
+                  //             isConnected
+                  //                 ? t.nwc.labels.connected
+                  //                 : t.nwc.labels.disconnected,
+                  //             style: Theme.of(
+                  //               context,
+                  //             ).textTheme.bodyLarge?.copyWith(
+                  //               fontWeight: FontWeight.bold,
+                  //               color: isConnected ? Colors.green : Colors.grey,
+                  //             ),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                   if (!isConnected) ...[
                     Container(
                       padding: const EdgeInsets.all(12),
@@ -565,6 +564,12 @@ class WalletScreen extends ConsumerWidget {
                       loading: () => const SizedBox.shrink(),
                       error: (_, __) => const SizedBox.shrink(),
                     ),
+                    // Show NWC relay status when connected
+                    if (isConnected) ...[
+                      const SizedBox(height: 12),
+                      _buildNwcRelayStatus(context, ref, t),
+                    ],
+                    const SizedBox(height: 10),
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -616,6 +621,126 @@ class WalletScreen extends ConsumerWidget {
     } else {
       return t.nwc.time.justNow;
     }
+  }
+
+  /// Builds the NWC relay status indicator for multiple relays
+  Widget _buildNwcRelayStatus(
+    BuildContext context,
+    WidgetRef ref,
+    Translations t,
+  ) {
+    final nwcRelayUrls = ref.watch(nwcRelayUrlsProvider);
+    final globalRelays = ref.watch(relayConnectivityProvider);
+
+    if (nwcRelayUrls.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.grey.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            nwcRelayUrls.length == 1 ? t.nwc.labels.relay : t.nwc.labels.relays,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.grey[600],
+              fontSize: 11,
+            ),
+          ),
+          const SizedBox(height: 6),
+          ...nwcRelayUrls.map((relayUrl) {
+            // Check if the NWC relay is in the global relay list and get its status
+            final relayStatus = globalRelays[relayUrl];
+            final isRelayConnected = relayStatus?.isConnected ?? false;
+            final relayState =
+                relayStatus?.state ?? RelayConnectionState.disconnected;
+
+            // Determine color based on state
+            Color stateColor;
+            bool isConnecting = false;
+            switch (relayState) {
+              case RelayConnectionState.connected:
+                stateColor = Colors.green;
+                break;
+              case RelayConnectionState.connecting:
+                stateColor = Colors.blue;
+                isConnecting = true;
+                break;
+              case RelayConnectionState.reconnecting:
+                stateColor = Colors.orange;
+                isConnecting = true;
+                break;
+              case RelayConnectionState.disconnected:
+                stateColor = Colors.red;
+                break;
+            }
+
+            // Format relay URL for display
+            final shortUrl = relayUrl
+                .replaceFirst('wss://', '')
+                .replaceFirst('ws://', '');
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                children: [
+                  // Relay status indicator
+                  if (isConnecting)
+                    SizedBox(
+                      width: 10,
+                      height: 10,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1.5,
+                        color: stateColor,
+                      ),
+                    )
+                  else
+                    Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: stateColor,
+                      ),
+                    ),
+                  const SizedBox(width: 8),
+                  // Relay URL
+                  Expanded(
+                    child: Text(
+                      shortUrl,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 13,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  // Status text
+                  Text(
+                    isRelayConnected
+                        ? t.relays.status.connected
+                        : isConnecting
+                        ? t.relays.status.connecting
+                        : t.relays.status.disconnected,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: stateColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
   }
 
   Future<void> _showNwcDisconnectDialog(

@@ -1271,6 +1271,8 @@ class _TranslationsNwcLabelsPl extends TranslationsNwcLabelsEn {
 	@override String get totalBudget => 'Łącznie';
 	@override String get renewsIn => 'Odnowienie za';
 	@override String get renewalPeriod => 'Okres odnowienia';
+	@override String get relay => 'Przekaźnik';
+	@override String get relays => 'Przekaźniki';
 }
 
 // Path: nwc.prompts
@@ -2359,6 +2361,8 @@ extension on TranslationsPl {
 			case 'nwc.labels.totalBudget': return 'Łącznie';
 			case 'nwc.labels.renewsIn': return 'Odnowienie za';
 			case 'nwc.labels.renewalPeriod': return 'Okres odnowienia';
+			case 'nwc.labels.relay': return 'Przekaźnik';
+			case 'nwc.labels.relays': return 'Przekaźniki';
 			case 'nwc.prompts.enter': return 'Wprowadź swój ciąg połączenia NWC';
 			case 'nwc.prompts.connect': return 'Połącz portfel';
 			case 'nwc.prompts.disconnect': return 'Rozłącz';

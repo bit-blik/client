@@ -18,12 +18,17 @@ class NwcService {
   /// Check if NWC is currently connected
   bool get isConnected => _isConnected;
 
+  /// Get the relay URLs used by the NWC connection
+  List<String> get relayUrls => _nwcConnection?.relays ?? [];
+
   /// Initialize and connect to NWC if a connection string is saved
   Future<void> initAndConnect() async {
     try {
       final connectionString = await _keyService.getNwcConnectionString();
       if (connectionString != null && connectionString.isNotEmpty) {
-        Logger.log.i('🔗 Found saved NWC connection string, attempting to connect...');
+        Logger.log.i(
+          '🔗 Found saved NWC connection string, attempting to connect...',
+        );
         await connect(connectionString);
       } else {
         Logger.log.i('🔗 No saved NWC connection string found.');
@@ -39,10 +44,10 @@ class NwcService {
       Logger.log.i('🔗 Connecting to NWC...');
       _nwcConnection = await _ndk.nwc.connect(nwcUri, doGetInfoMethod: true);
       _isConnected = true;
-      
+
       // Save the connection string
       await _keyService.saveNwcConnectionString(nwcUri);
-      
+
       Logger.log.i('✅ NWC connected successfully!');
     } catch (e) {
       _isConnected = false;
@@ -80,7 +85,7 @@ class NwcService {
     try {
       Logger.log.d('📊 Getting NWC wallet budget...');
       final budgetResponse = await _ndk.nwc.getBudget(_nwcConnection!);
-      
+
       // Format budget information
       final budgetInfo = <String, dynamic>{
         'usedBudgetSats': budgetResponse.userBudgetSats,
@@ -88,8 +93,10 @@ class NwcService {
         'renewsAt': budgetResponse.renewsAt,
         'renewalPeriod': budgetResponse.renewalPeriod?.plaintext,
       };
-      
-      Logger.log.i('📊 NWC budget - Used: ${budgetResponse.userBudgetSats} sats, Total: ${budgetResponse.totalBudgetSats} sats');
+
+      Logger.log.i(
+        '📊 NWC budget - Used: ${budgetResponse.userBudgetSats} sats, Total: ${budgetResponse.totalBudgetSats} sats',
+      );
       return budgetInfo;
     } catch (e) {
       Logger.log.e('❌ Failed to get NWC budget: $e');
@@ -106,8 +113,13 @@ class NwcService {
 
     try {
       Logger.log.i('💸 Paying invoice via NWC...');
-      final paymentResponse = await _ndk.nwc.payInvoice(_nwcConnection!, invoice: invoice);
-      Logger.log.i('✅ Invoice paid successfully! Preimage: ${paymentResponse.preimage}');
+      final paymentResponse = await _ndk.nwc.payInvoice(
+        _nwcConnection!,
+        invoice: invoice,
+      );
+      Logger.log.i(
+        '✅ Invoice paid successfully! Preimage: ${paymentResponse.preimage}',
+      );
     } catch (e) {
       // Logger.log.e('❌ Failed to pay invoice via NWC: $e');
       rethrow;
@@ -118,14 +130,14 @@ class NwcService {
   Future<void> disconnect() async {
     try {
       Logger.log.i('🔗 Disconnecting NWC...');
-      
+
       // Clear the connection
       _nwcConnection = null;
       _isConnected = false;
-      
+
       // Delete the saved connection string
       await _keyService.deleteNwcConnectionString();
-      
+
       Logger.log.i('✅ NWC disconnected successfully!');
     } catch (e) {
       Logger.log.e('❌ Error disconnecting NWC: $e');

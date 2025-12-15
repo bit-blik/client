@@ -1273,6 +1273,8 @@ class _TranslationsNwcLabelsIt extends TranslationsNwcLabelsEn {
 	@override String get totalBudget => 'Totale';
 	@override String get renewsIn => 'Si rinnova tra';
 	@override String get renewalPeriod => 'Periodo di Rinnovo';
+	@override String get relay => 'Relay';
+	@override String get relays => 'Relay';
 }
 
 // Path: nwc.prompts
@@ -2363,6 +2365,8 @@ extension on TranslationsIt {
 			case 'nwc.labels.totalBudget': return 'Totale';
 			case 'nwc.labels.renewsIn': return 'Si rinnova tra';
 			case 'nwc.labels.renewalPeriod': return 'Periodo di Rinnovo';
+			case 'nwc.labels.relay': return 'Relay';
+			case 'nwc.labels.relays': return 'Relay';
 			case 'nwc.prompts.enter': return 'Inserisci la tua stringa di connessione NWC';
 			case 'nwc.prompts.connect': return 'Connetti Portafoglio';
 			case 'nwc.prompts.disconnect': return 'Disconnetti';

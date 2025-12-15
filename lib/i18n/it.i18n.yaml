@@ -731,6 +731,8 @@ nwc:
     totalBudget: "Totale"
     renewsIn: "Si rinnova tra"
     renewalPeriod: "Periodo di Rinnovo"
+    relay: "Relay"
+    relays: "Relay"
   prompts:
     enter: Inserisci la tua stringa di connessione NWC
     connect: Connetti Portafoglio

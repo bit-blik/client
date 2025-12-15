@@ -1941,6 +1941,12 @@ class TranslationsNwcLabelsEn {
 
 	/// en: 'Renewal Period'
 	String get renewalPeriod => 'Renewal Period';
+
+	/// en: 'Relay'
+	String get relay => 'Relay';
+
+	/// en: 'Relays'
+	String get relays => 'Relays';
 }
 
 // Path: nwc.prompts
@@ -3352,6 +3358,8 @@ extension on Translations {
 			case 'nwc.labels.totalBudget': return 'Total';
 			case 'nwc.labels.renewsIn': return 'Renews in';
 			case 'nwc.labels.renewalPeriod': return 'Renewal Period';
+			case 'nwc.labels.relay': return 'Relay';
+			case 'nwc.labels.relays': return 'Relays';
 			case 'nwc.prompts.enter': return 'Enter your NWC connection string';
 			case 'nwc.prompts.connect': return 'Connect Wallet';
 			case 'nwc.prompts.disconnect': return 'Disconnect';
