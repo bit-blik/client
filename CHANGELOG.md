@@ -1,7 +1,7 @@
 ## [0.4.5] - 2025-12-15
 - add relay connection indicator in app bar 
 - improve relay connection handling
-- Connect wallet popup with Alby Go 1-click connection
+- connect wallet popup with Alby Go 1-click connection
 - NWC connection QR scanner screen
 
 
