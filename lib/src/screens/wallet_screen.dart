@@ -252,12 +252,25 @@ class WalletScreen extends ConsumerWidget {
     dynamic keyService,
     Translations t,
   ) {
-    final nwcService = ref.watch(nwcServiceProvider);
+    final nwcServiceAsync = ref.watch(nwcServiceProvider);
     final isConnected = ref.watch(nwcConnectionStatusProvider);
     final balanceAsync = ref.watch(nwcBalanceProvider);
     final budgetAsync = ref.watch(nwcBudgetProvider);
 
-    return Card(
+    return nwcServiceAsync.when(
+      loading: () => const Card(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      ),
+      error: (error, _) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(child: Text('Error loading wallet: $error')),
+        ),
+      ),
+      data: (nwcService) => Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -530,6 +543,7 @@ class WalletScreen extends ConsumerWidget {
           ],
         ),
       ),
+    ),  // Close nwcServiceAsync.when
     );
   }
 

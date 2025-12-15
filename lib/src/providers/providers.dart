@@ -18,9 +18,12 @@ final keyServiceProvider = Provider<KeyService>((ref) {
   return service;
 });
 
-final nwcServiceProvider = Provider<NwcService>((ref) {
+/// Async provider for NwcService that waits for NDK to be initialized
+final nwcServiceProvider = FutureProvider<NwcService>((ref) async {
   final keyService = ref.watch(keyServiceProvider);
-  final ndk = ref.watch(ndkProvider);
+  // Wait for API service to be fully initialized before accessing NDK
+  final apiService = await ref.watch(initializedApiServiceProvider.future);
+  final ndk = apiService.ndk;
   if (ndk == null) {
     throw Exception('NDK instance not available');
   }
@@ -47,10 +50,13 @@ final nwcBudgetProvider = StateNotifierProvider<NwcBudgetNotifier, AsyncValue<Ma
 final nwcNotificationManagerProvider = Provider<void>((ref) {
   StreamSubscription? notificationSubscription;
   
-  void subscribeToNotifications() {
+  Future<void> subscribeToNotifications() async {
     notificationSubscription?.cancel();
     
-    final nwcService = ref.read(nwcServiceProvider);
+    final nwcServiceAsync = ref.read(nwcServiceProvider);
+    final nwcService = nwcServiceAsync.valueOrNull;
+    if (nwcService == null) return;
+    
     final connection = nwcService.connection;
     
     if (connection != null) {
@@ -111,7 +117,7 @@ class NwcBalanceNotifier extends StateNotifier<AsyncValue<int?>> {
   Future<void> loadBalance() async {
     state = const AsyncValue.loading();
     try {
-      final nwcService = _ref.read(nwcServiceProvider);
+      final nwcService = await _ref.read(nwcServiceProvider.future);
       final balance = await nwcService.getBalance();
       state = AsyncValue.data(balance);
     } catch (e, stack) {
@@ -147,7 +153,7 @@ class NwcBudgetNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>?>>
   Future<void> loadBudget() async {
     state = const AsyncValue.loading();
     try {
-      final nwcService = _ref.read(nwcServiceProvider);
+      final nwcService = await _ref.read(nwcServiceProvider.future);
       final budget = await nwcService.getBudget();
       state = AsyncValue.data(budget);
     } catch (e, stack) {
@@ -749,6 +755,7 @@ final errorProvider = StateProvider<String?>((ref) => null);
 
 // Provider to access NDK instance for connectivity management
 final ndkProvider = Provider((ref) {
+  // final apiService = await ref.read(initializedApiServiceProvider.future);
   final apiService = ref.watch(apiServiceProvider);
   return apiService.ndk;
 });
@@ -773,58 +780,79 @@ class RelayStatus {
 
 /// Provider that streams relay connectivity status
 /// Returns a Map of relay URL to connection status
-final relayConnectivityProvider = StreamProvider<Map<String, RelayStatus>>((ref) async* {
-  // Wait for API service to be fully initialized before accessing NDK
-  final apiService = await ref.watch(initializedApiServiceProvider.future);
-  final ndk = apiService.ndk;
-  
-  if (ndk == null) {
-    yield {};
-    return;
+final relayConnectivityProvider = StateNotifierProvider<RelayConnectivityNotifier, Map<String, RelayStatus>>((ref) {
+  return RelayConnectivityNotifier(ref);
+});
+
+/// Notifier that manages relay connectivity state
+class RelayConnectivityNotifier extends StateNotifier<Map<String, RelayStatus>> {
+  final Ref _ref;
+  StreamSubscription? _subscription;
+  bool _initialized = false;
+
+  RelayConnectivityNotifier(this._ref) : super({}) {
+    _init();
   }
 
-  // Yield an initial state from the current global state (using ndk.relays which is the RelayManager)
-  final initialRelays = ndk.relays.globalState.relays;
-  if (initialRelays.isNotEmpty) {
-    final initialResult = <String, RelayStatus>{};
-    for (final entry in initialRelays.entries) {
-      final relayConnectivity = entry.value;
-      initialResult[entry.key] = RelayStatus(
-        url: relayConnectivity.url,
-        state: _determineRelayState(relayConnectivity),
-      );
+  Future<void> _init() async {
+    if (_initialized) return;
+    
+    try {
+      // Wait for API service to be fully initialized before accessing NDK
+      final apiService = await _ref.read(initializedApiServiceProvider.future);
+      final ndk = apiService.ndk;
+      
+      if (ndk == null) {
+        return;
+      }
+
+      // Get initial state from the current global state
+      _updateFromRelays(ndk.relays.globalState.relays);
+
+      // Subscribe to the stream for updates
+      _subscription = ndk.connectivity.relayConnectivityChanges.listen((connectivityMap) {
+        _updateFromRelays(connectivityMap);
+      });
+
+      _initialized = true;
+    } catch (e) {
+      Logger.log.e('Error initializing relay connectivity: $e');
     }
-    yield initialResult;
   }
 
-  // Then listen to the stream for updates
-  await for (final connectivityMap in ndk.connectivity.relayConnectivityChanges) {
+  void _updateFromRelays(Map<String, dynamic> relays) {
     final result = <String, RelayStatus>{};
-    for (final entry in connectivityMap.entries) {
+    for (final entry in relays.entries) {
       final relayConnectivity = entry.value;
       result[entry.key] = RelayStatus(
         url: relayConnectivity.url,
         state: _determineRelayState(relayConnectivity),
       );
     }
-    yield result;
+    state = result;
   }
-});
 
-/// Helper function to determine relay connection state
-RelayConnectionState _determineRelayState(dynamic relayConnectivity) {
-  if (relayConnectivity.isConnected) {
-    return RelayConnectionState.connected;
-  } else if (relayConnectivity.relay.connecting) {
-    // If transport exists but not open, and relay is in connecting mode
-    if (relayConnectivity.relayTransport != null) {
-      // Has transport but not connected = reconnecting
-      return RelayConnectionState.reconnecting;
+  /// Helper function to determine relay connection state
+  RelayConnectionState _determineRelayState(dynamic relayConnectivity) {
+    if (relayConnectivity.isConnected) {
+      return RelayConnectionState.connected;
+    } else if (relayConnectivity.relay.connecting) {
+      // If transport exists but not open, and relay is in connecting mode
+      if (relayConnectivity.relayTransport != null) {
+        // Has transport but not connected = reconnecting
+        return RelayConnectionState.reconnecting;
+      } else {
+        return RelayConnectionState.connecting;
+      }
     } else {
-      return RelayConnectionState.connecting;
+      return RelayConnectionState.disconnected;
     }
-  } else {
-    return RelayConnectionState.disconnected;
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
   }
 }
 

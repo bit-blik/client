@@ -132,10 +132,10 @@ class NostrService {
   static const String _customWhitelistKey = 'coordinators.customWhitelist';
 
   static const List<String> _defaultRelayUrls = [
-    'wss://relay.damus.io',
-    'wss://relay.primal.net',
-    'wss://nos.lol',
     'wss://relay.mostro.network',
+    'wss://relay.primal.net',
+    'wss://relay.damus.io',
+    // 'wss://nos.lol',
   ];
 
   // Event kinds (matching coordinator)
@@ -224,7 +224,8 @@ class NostrService {
     _ndk = Ndk(
       NdkConfig(
         cache: MemCacheManager(),
-        eventVerifier: rustEventVerifier,//Bip340EventVerifier(),
+        // eventVerifier: rustEventVerifier,
+        eventVerifier: Bip340EventVerifier(),
         bootstrapRelays: _relayUrls,
         logLevel: kDebugMode?LogLevel.debug:LogLevel.warning,
       ),
