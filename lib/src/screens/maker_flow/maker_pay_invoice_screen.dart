@@ -212,7 +212,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
                 }
 
                 try {
-                  final nwcService = ref.read(nwcServiceProvider);
+                  final nwcService = await ref.read(nwcServiceProvider.future);
                   await nwcService.connect(controller.text.trim());
                   ref.read(nwcConnectionStatusProvider.notifier).state = true;
                   
@@ -245,9 +245,10 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
 
   Future<void> _payWithNwc(String invoice) async {
     final t = Translations.of(context);
-    final nwcService = ref.read(nwcServiceProvider);
+    final nwcServiceAsync = ref.read(nwcServiceProvider);
+    final nwcService = nwcServiceAsync.valueOrNull;
     
-    if (!nwcService.isConnected) {
+    if (nwcService == null || !nwcService.isConnected) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(t.maker.payInvoice.errors.nwcNotConnected),

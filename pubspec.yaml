@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 0.4.4+15
+version: 0.4.5+16
 environment:
   sdk: ^3.7.2
 
@@ -46,23 +46,21 @@ dependencies:
   pretty_qr_code: ^3.5.0
 
   bip340: ^0.3.0 # For secp256k1 key pair generation (alternative to dart_nostr)
-  flutter_secure_storage: ^9.2.4 # For secure key storage (Updated to latest)
-  ndk: 0.6.0
+  flutter_secure_storage: ^10.0.0 # For secure key storage (Updated to latest)
+  ndk: 0.6.1-dev.4
 #  ndk:
 #    path: ../../ndk/packages/ndk
 #    git:
 #      url: https://github.com/relaystr/ndk.git
 #      path: packages/ndk
-#      ref: f9bc035ce643b43d2c981fd3e66ccb66d7efadfc
-#      ref: master
+#      ref: fix/relay-reconnecting
   ndk_rust_verifier: 0.4.2
 #  ndk_rust_verifier:
 #    path: ../../ndk/packages/rust_verifier
 #    git:
 #      url: https://github.com/relaystr/ndk.git
-#      ref: 2714eef34f71a7dda95c749c15b7f58cfa9461cf
 #      path: packages/rust_verifier
-#      ref: master
+#      ref: fix/relay-reconnecting
   url_launcher: ^6.3.1 # For launching URLs/Intents
   android_intent_plus: ^6.0.0
   go_router: ^17.0.0  # For specific Android Intents

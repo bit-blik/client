@@ -12,7 +12,6 @@ import 'package:bitblik/src/screens/taker_flow/taker_invalid_blik_screen.dart';
 import 'package:bitblik/src/screens/taker_flow/taker_payment_failed_screen.dart';
 import 'package:bitblik/src/screens/taker_flow/taker_payment_process_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode; // Import kIsWeb
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart'; // Keep for GlobalMaterialLocalizations.delegates
@@ -50,21 +49,6 @@ final double kTakerFeePercentage = 0.5;
 final SharedPreferencesAsync asyncPrefs = SharedPreferencesAsync();
 late AppLocale appLocale;
 final rustEventVerifier = RustEventVerifier();
-
-/// Listen to connectivity changes and reconnect NDK when connectivity is restored
-StreamSubscription<List<ConnectivityResult>> listenToConnectivityChanges(WidgetRef ref) {
-  return Connectivity().onConnectivityChanged
-      .skip(1) // do not fire on app startup
-      .listen((List<ConnectivityResult> result) {
-        if (result.any((e) => e == ConnectivityResult.none)) {
-          return;
-        }
-        final ndkInstance = ref.read(ndkProvider);
-        if (ndkInstance != null) {
-          ndkInstance.connectivity.tryReconnect();
-        }
-      });
-}
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -235,7 +219,6 @@ class MyApp extends ConsumerStatefulWidget {
 
 class _MyAppState extends ConsumerState<MyApp> {
   StreamSubscription<Uri>? _sub;
-  StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
   final AppLinks _appLinks = AppLinks();
 
   @override
@@ -265,7 +248,7 @@ class _MyAppState extends ConsumerState<MyApp> {
 
         // Initialize NWC connection if saved
         try {
-          final nwcService = ref.read(nwcServiceProvider);
+          final nwcService = await ref.read(nwcServiceProvider.future);
           await nwcService.initAndConnect();
           if (nwcService.isConnected) {
             ref.read(nwcConnectionStatusProvider.notifier).state = true;
@@ -278,9 +261,6 @@ class _MyAppState extends ConsumerState<MyApp> {
         } catch (e) {
           Logger.log.w('⚠️ Error initializing NWC connection: $e');
         }
-
-        // Start listening to connectivity changes
-        _connectivitySubscription = listenToConnectivityChanges(ref);
 
         Logger.log.i('🚀 App initialized: API service and coordinator discovery started');
       } catch (e) {
@@ -312,7 +292,6 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   void dispose() {
     _sub?.cancel();
-    _connectivitySubscription?.cancel();
     super.dispose();
   }
 
@@ -503,6 +482,218 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
     );
   }
 
+  /// Get the color for a relay connection state
+  Color _getStateColor(RelayConnectionState state) {
+    switch (state) {
+      case RelayConnectionState.connected:
+        return Colors.green;
+      case RelayConnectionState.connecting:
+        return Colors.blue;
+      case RelayConnectionState.reconnecting:
+        return Colors.orange;
+      case RelayConnectionState.disconnected:
+        return Colors.red;
+    }
+  }
+
+  /// Get the state name for tooltip (i18n)
+  String _getStateName(RelayConnectionState state, Translations t) {
+    switch (state) {
+      case RelayConnectionState.connected:
+        return t.relays.status.connected;
+      case RelayConnectionState.connecting:
+        return t.relays.status.connecting;
+      case RelayConnectionState.reconnecting:
+        return t.relays.status.reconnecting;
+      case RelayConnectionState.disconnected:
+        return t.relays.status.disconnected;
+    }
+  }
+
+  /// Shows the relay status popup when tapped
+  void _showRelayStatusPopup(BuildContext context, Map<String, RelayStatus> relays) {
+    final t = Translations.of(context);
+    final connectedCount = relays.values.where((r) => r.isConnected).length;
+    final totalCount = relays.length;
+    
+    showDialog(
+      context: context,
+      barrierColor: Colors.transparent,
+      builder: (dialogContext) {
+        return Stack(
+          children: [
+            // Invisible barrier that closes the dialog when tapped
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: () => Navigator.of(dialogContext).pop(),
+                child: Container(color: Colors.transparent),
+              ),
+            ),
+            // The popup positioned near the top right
+            Positioned(
+              top: kToolbarHeight + MediaQuery.of(context).padding.top + 8,
+              right: 16,
+              child: Material(
+                elevation: 8,
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.white,
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  constraints: const BoxConstraints(maxWidth: 280),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        t.relays.popup.title(connected: connectedCount.toString(), total: totalCount.toString()),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ...relays.entries.map((e) {
+                        final shortUrl = e.key.replaceFirst('wss://', '').replaceFirst('ws://', '');
+                        final stateColor = _getStateColor(e.value.state);
+                        final stateName = _getStateName(e.value.state, t);
+                        final isConnecting = e.value.state == RelayConnectionState.connecting || 
+                                              e.value.state == RelayConnectionState.reconnecting;
+                        
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (isConnecting)
+                                SizedBox(
+                                  width: 12,
+                                  height: 12,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: stateColor,
+                                  ),
+                                )
+                              else
+                                Container(
+                                  width: 12,
+                                  height: 12,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: stateColor,
+                                  ),
+                                ),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: Text(
+                                  shortUrl,
+                                  style: const TextStyle(fontSize: 13),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                stateName,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: stateColor,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildRelayConnectivityIndicator() {
+    final relays = ref.watch(relayConnectivityProvider);
+    
+    if (relays.isEmpty) {
+      // No relay data yet, show loading/unknown state
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.grey),
+        ),
+      );
+    }
+    
+    final connectedCount = relays.values.where((r) => r.isConnected).length;
+    final totalCount = relays.length;
+    final allConnected = connectedCount == totalCount;
+    final someConnected = connectedCount > 0;
+    
+    // Determine overall icon color based on connectivity
+    final Color overallColor;
+    if (allConnected) {
+      overallColor = Colors.green;
+    } else if (someConnected) {
+      overallColor = Colors.orange;
+    } else {
+      overallColor = Colors.red;
+    }
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () => _showRelayStatusPopup(context, relays),
+        child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Show individual state indicators for each relay
+            ...relays.entries.map((e) {
+              final stateColor = _getStateColor(e.value.state);
+              final isConnecting = e.value.state == RelayConnectionState.connecting || 
+                                    e.value.state == RelayConnectionState.reconnecting;
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                child: isConnecting 
+                  ? SizedBox(
+                      width: 8,
+                      height: 8,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1.5,
+                        color: stateColor,
+                      ),
+                    )
+                  : Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: stateColor,
+                      ),
+                    ),
+              );
+            }),
+            const SizedBox(width: 4),
+            Text(
+              '$connectedCount/$totalCount',
+              style: TextStyle(
+                fontSize: 11,
+                color: overallColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final publicKeyAsync = ref.watch(publicKeyProvider);
@@ -545,6 +736,8 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
         // Add a divider at the bottom of the AppBar
         bottom: const PreferredSize(preferredSize: Size.fromHeight(1.0), child: Divider(height: 1.0, thickness: 1.0)),
         actions: [
+          // Relay Connectivity Indicator
+          _buildRelayConnectivityIndicator(),
           // Language Switcher Dropdown
           DropdownButtonHideUnderline(
             child: DropdownButton<AppLocale>(

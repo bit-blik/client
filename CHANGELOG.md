@@ -1,3 +1,8 @@
+## [0.4.5] - 2025-12-15
+### Fixed
+- add relay connection indicator in app bar 
+- improve relay connection handling
+
 ## [0.4.4] - 2025-12-13
 ### Fixed
 - fix reconnect to relays when app goes to background
