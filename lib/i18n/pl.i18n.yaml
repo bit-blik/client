@@ -757,3 +757,17 @@ nwc:
 
 nekoManagement:
   title: Neko
+
+# =============================================================================
+# RELAY CONNECTIVITY
+# =============================================================================
+relays:
+  title: Przekaźniki
+  status:
+    connected: Połączony
+    connecting: Łączenie
+    reconnecting: Ponowne łączenie
+    disconnected: Rozłączony
+  popup:
+    title: "Przekaźniki (${connected}/${total} połączonych)"
+    connectingMessage: Łączenie z przekaźnikami...

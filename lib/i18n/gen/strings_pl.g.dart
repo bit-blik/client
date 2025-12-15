@@ -60,6 +60,7 @@ class TranslationsPl extends Translations {
 	@override late final _TranslationsWalletPl wallet = _TranslationsWalletPl._(_root);
 	@override late final _TranslationsNwcPl nwc = _TranslationsNwcPl._(_root);
 	@override late final _TranslationsNekoManagementPl nekoManagement = _TranslationsNekoManagementPl._(_root);
+	@override late final _TranslationsRelaysPl relays = _TranslationsRelaysPl._(_root);
 }
 
 // Path: app
@@ -347,6 +348,18 @@ class _TranslationsNekoManagementPl extends TranslationsNekoManagementEn {
 
 	// Translations
 	@override String get title => 'Neko';
+}
+
+// Path: relays
+class _TranslationsRelaysPl extends TranslationsRelaysEn {
+	_TranslationsRelaysPl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Przekaźniki';
+	@override late final _TranslationsRelaysStatusPl status = _TranslationsRelaysStatusPl._(_root);
+	@override late final _TranslationsRelaysPopupPl popup = _TranslationsRelaysPopupPl._(_root);
 }
 
 // Path: common.buttons
@@ -1310,6 +1323,30 @@ class _TranslationsNwcTimePl extends TranslationsNwcTimeEn {
 	@override String hours({required Object count}) => '${count}h';
 	@override String days({required Object count}) => '${count}d';
 	@override String get justNow => 'teraz';
+}
+
+// Path: relays.status
+class _TranslationsRelaysStatusPl extends TranslationsRelaysStatusEn {
+	_TranslationsRelaysStatusPl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get connected => 'Połączony';
+	@override String get connecting => 'Łączenie';
+	@override String get reconnecting => 'Ponowne łączenie';
+	@override String get disconnected => 'Rozłączony';
+}
+
+// Path: relays.popup
+class _TranslationsRelaysPopupPl extends TranslationsRelaysPopupEn {
+	_TranslationsRelaysPopupPl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String title({required Object connected, required Object total}) => 'Przekaźniki (${connected}/${total} połączonych)';
+	@override String get connectingMessage => 'Łączenie z przekaźnikami...';
 }
 
 // Path: maker.amountForm.progress
@@ -2325,6 +2362,13 @@ extension on TranslationsPl {
 			case 'nwc.time.days': return ({required Object count}) => '${count}d';
 			case 'nwc.time.justNow': return 'teraz';
 			case 'nekoManagement.title': return 'Neko';
+			case 'relays.title': return 'Przekaźniki';
+			case 'relays.status.connected': return 'Połączony';
+			case 'relays.status.connecting': return 'Łączenie';
+			case 'relays.status.reconnecting': return 'Ponowne łączenie';
+			case 'relays.status.disconnected': return 'Rozłączony';
+			case 'relays.popup.title': return ({required Object connected, required Object total}) => 'Przekaźniki (${connected}/${total} połączonych)';
+			case 'relays.popup.connectingMessage': return 'Łączenie z przekaźnikami...';
 			default: return null;
 		}
 	}

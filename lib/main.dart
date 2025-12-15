@@ -496,22 +496,23 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
     }
   }
 
-  /// Get the state name for tooltip
-  String _getStateName(RelayConnectionState state) {
+  /// Get the state name for tooltip (i18n)
+  String _getStateName(RelayConnectionState state, Translations t) {
     switch (state) {
       case RelayConnectionState.connected:
-        return 'Connected';
+        return t.relays.status.connected;
       case RelayConnectionState.connecting:
-        return 'Connecting';
+        return t.relays.status.connecting;
       case RelayConnectionState.reconnecting:
-        return 'Reconnecting';
+        return t.relays.status.reconnecting;
       case RelayConnectionState.disconnected:
-        return 'Disconnected';
+        return t.relays.status.disconnected;
     }
   }
 
   /// Shows the relay status popup when tapped
   void _showRelayStatusPopup(BuildContext context, Map<String, RelayStatus> relays) {
+    final t = Translations.of(context);
     final connectedCount = relays.values.where((r) => r.isConnected).length;
     final totalCount = relays.length;
     
@@ -544,7 +545,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Relays ($connectedCount/$totalCount connected)',
+                        t.relays.popup.title(connected: connectedCount.toString(), total: totalCount.toString()),
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
@@ -554,7 +555,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                       ...relays.entries.map((e) {
                         final shortUrl = e.key.replaceFirst('wss://', '').replaceFirst('ws://', '');
                         final stateColor = _getStateColor(e.value.state);
-                        final stateName = _getStateName(e.value.state);
+                        final stateName = _getStateName(e.value.state, t);
                         final isConnecting = e.value.state == RelayConnectionState.connecting || 
                                               e.value.state == RelayConnectionState.reconnecting;
                         

@@ -755,3 +755,17 @@ nwc:
 
 nekoManagement:
   title: Neko
+
+# =============================================================================
+# RELAY CONNECTIVITY
+# =============================================================================
+relays:
+  title: Relay
+  status:
+    connected: Connesso
+    connecting: Connessione
+    reconnecting: Riconnessione
+    disconnected: Disconnesso
+  popup:
+    title: "Relay (${connected}/${total} connessi)"
+    connectingMessage: Connessione ai relay...

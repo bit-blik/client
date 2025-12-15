@@ -61,6 +61,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	late final TranslationsWalletEn wallet = TranslationsWalletEn.internal(_root);
 	late final TranslationsNwcEn nwc = TranslationsNwcEn.internal(_root);
 	late final TranslationsNekoManagementEn nekoManagement = TranslationsNekoManagementEn.internal(_root);
+	late final TranslationsRelaysEn relays = TranslationsRelaysEn.internal(_root);
 }
 
 // Path: app
@@ -399,6 +400,21 @@ class TranslationsNekoManagementEn {
 
 	/// en: 'Neko'
 	String get title => 'Neko';
+}
+
+// Path: relays
+class TranslationsRelaysEn {
+	TranslationsRelaysEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Relays'
+	String get title => 'Relays';
+
+	late final TranslationsRelaysStatusEn status = TranslationsRelaysStatusEn.internal(_root);
+	late final TranslationsRelaysPopupEn popup = TranslationsRelaysPopupEn.internal(_root);
 }
 
 // Path: common.buttons
@@ -2013,6 +2029,42 @@ class TranslationsNwcTimeEn {
 	String get justNow => 'just now';
 }
 
+// Path: relays.status
+class TranslationsRelaysStatusEn {
+	TranslationsRelaysStatusEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Connected'
+	String get connected => 'Connected';
+
+	/// en: 'Connecting'
+	String get connecting => 'Connecting';
+
+	/// en: 'Reconnecting'
+	String get reconnecting => 'Reconnecting';
+
+	/// en: 'Disconnected'
+	String get disconnected => 'Disconnected';
+}
+
+// Path: relays.popup
+class TranslationsRelaysPopupEn {
+	TranslationsRelaysPopupEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Relays (${connected}/${total} connected)'
+	String title({required Object connected, required Object total}) => 'Relays (${connected}/${total} connected)';
+
+	/// en: 'Connecting to relays...'
+	String get connectingMessage => 'Connecting to relays...';
+}
+
 // Path: maker.amountForm.progress
 class TranslationsMakerAmountFormProgressEn {
 	TranslationsMakerAmountFormProgressEn.internal(this._root);
@@ -3293,6 +3345,13 @@ extension on Translations {
 			case 'nwc.time.days': return ({required Object count}) => '${count}d';
 			case 'nwc.time.justNow': return 'just now';
 			case 'nekoManagement.title': return 'Neko';
+			case 'relays.title': return 'Relays';
+			case 'relays.status.connected': return 'Connected';
+			case 'relays.status.connecting': return 'Connecting';
+			case 'relays.status.reconnecting': return 'Reconnecting';
+			case 'relays.status.disconnected': return 'Disconnected';
+			case 'relays.popup.title': return ({required Object connected, required Object total}) => 'Relays (${connected}/${total} connected)';
+			case 'relays.popup.connectingMessage': return 'Connecting to relays...';
 			default: return null;
 		}
 	}

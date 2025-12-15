@@ -60,6 +60,7 @@ class TranslationsIt extends Translations {
 	@override late final _TranslationsWalletIt wallet = _TranslationsWalletIt._(_root);
 	@override late final _TranslationsNwcIt nwc = _TranslationsNwcIt._(_root);
 	@override late final _TranslationsNekoManagementIt nekoManagement = _TranslationsNekoManagementIt._(_root);
+	@override late final _TranslationsRelaysIt relays = _TranslationsRelaysIt._(_root);
 }
 
 // Path: app
@@ -347,6 +348,18 @@ class _TranslationsNekoManagementIt extends TranslationsNekoManagementEn {
 
 	// Translations
 	@override String get title => 'Neko';
+}
+
+// Path: relays
+class _TranslationsRelaysIt extends TranslationsRelaysEn {
+	_TranslationsRelaysIt._(TranslationsIt root) : this._root = root, super.internal(root);
+
+	final TranslationsIt _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Relay';
+	@override late final _TranslationsRelaysStatusIt status = _TranslationsRelaysStatusIt._(_root);
+	@override late final _TranslationsRelaysPopupIt popup = _TranslationsRelaysPopupIt._(_root);
 }
 
 // Path: common.buttons
@@ -1312,6 +1325,30 @@ class _TranslationsNwcTimeIt extends TranslationsNwcTimeEn {
 	@override String hours({required Object count}) => '${count}h';
 	@override String days({required Object count}) => '${count}g';
 	@override String get justNow => 'adesso';
+}
+
+// Path: relays.status
+class _TranslationsRelaysStatusIt extends TranslationsRelaysStatusEn {
+	_TranslationsRelaysStatusIt._(TranslationsIt root) : this._root = root, super.internal(root);
+
+	final TranslationsIt _root; // ignore: unused_field
+
+	// Translations
+	@override String get connected => 'Connesso';
+	@override String get connecting => 'Connessione';
+	@override String get reconnecting => 'Riconnessione';
+	@override String get disconnected => 'Disconnesso';
+}
+
+// Path: relays.popup
+class _TranslationsRelaysPopupIt extends TranslationsRelaysPopupEn {
+	_TranslationsRelaysPopupIt._(TranslationsIt root) : this._root = root, super.internal(root);
+
+	final TranslationsIt _root; // ignore: unused_field
+
+	// Translations
+	@override String title({required Object connected, required Object total}) => 'Relay (${connected}/${total} connessi)';
+	@override String get connectingMessage => 'Connessione ai relay...';
 }
 
 // Path: maker.amountForm.progress
@@ -2329,6 +2366,13 @@ extension on TranslationsIt {
 			case 'nwc.time.days': return ({required Object count}) => '${count}g';
 			case 'nwc.time.justNow': return 'adesso';
 			case 'nekoManagement.title': return 'Neko';
+			case 'relays.title': return 'Relay';
+			case 'relays.status.connected': return 'Connesso';
+			case 'relays.status.connecting': return 'Connessione';
+			case 'relays.status.reconnecting': return 'Riconnessione';
+			case 'relays.status.disconnected': return 'Disconnesso';
+			case 'relays.popup.title': return ({required Object connected, required Object total}) => 'Relay (${connected}/${total} connessi)';
+			case 'relays.popup.connectingMessage': return 'Connessione ai relay...';
 			default: return null;
 		}
 	}
