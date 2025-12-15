@@ -26,6 +26,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_html/flutter_html.dart';
+import 'package:markdown/markdown.dart' as md;
 
 import 'i18n/gen/strings.g.dart'; // Import Slang from new path
 import 'src/models/offer.dart'; // Needed for OfferStatus enum
@@ -495,6 +498,74 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  /// Shows the changelog in a dialog with rendered markdown
+  Future<void> _showChangelogDialog(BuildContext context) async {
+    final t = Translations.of(context);
+    try {
+      final changelogContent = await rootBundle.loadString('CHANGELOG.md');
+      if (!context.mounted) return;
+
+      // Convert Markdown to HTML
+      final htmlContent = md.markdownToHtml(
+        changelogContent,
+        inlineSyntaxes: [md.InlineHtmlSyntax()],
+      );
+
+      showDialog(
+        context: context,
+        builder:
+            (context) => Dialog(
+              child: Container(
+                constraints: const BoxConstraints(
+                  maxWidth: 500,
+                  maxHeight: 600,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        children: [
+                          Text(
+                            t.app.changelog,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(height: 1),
+                    Flexible(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Html(
+                          data: htmlContent,
+                          onLinkTap: (url, attributes, element) async {
+                            if (url != null) {
+                              await launchUrl(Uri.parse(url));
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+      );
+    } catch (e) {
+      Logger.log.e('Error loading changelog: $e');
+    }
   }
 
   Widget _buildNekoDrawer(
@@ -1079,10 +1150,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: InkWell(
-                            // onTap: () async {
-                            //   final Uri url = Uri.parse('https://github.com/bit-blik/client/releases');
-                            //   await launchUrl(url, mode: LaunchMode.externalApplication);
-                            // },
+                            onTap: () => _showChangelogDialog(context),
                             child: Text(
                               _clientVersion != null ? 'v$_clientVersion' : '',
                               style: const TextStyle(

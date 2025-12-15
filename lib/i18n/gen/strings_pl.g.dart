@@ -72,6 +72,7 @@ class _TranslationsAppPl extends TranslationsAppEn {
 	// Translations
 	@override String get title => 'BitBlik';
 	@override String get greeting => 'Cześć!';
+	@override String get changelog => 'Historia zmian';
 }
 
 // Path: common
@@ -1895,6 +1896,7 @@ extension on TranslationsPl {
 		switch (path) {
 			case 'app.title': return 'BitBlik';
 			case 'app.greeting': return 'Cześć!';
+			case 'app.changelog': return 'Historia zmian';
 			case 'common.buttons.cancel': return 'Anuluj';
 			case 'common.buttons.save': return 'Zapisz';
 			case 'common.buttons.done': return 'Gotowe';

@@ -4,6 +4,7 @@
 app:
   title: BitBlik
   greeting: Hello!
+  changelog: Changelog
 
 # =============================================================================
 # COMMON UI ELEMENTS

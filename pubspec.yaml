@@ -157,6 +157,7 @@ flutter:
     - assets/signal.png
     - assets/lang-switcher.png
     - assets/faq/ # Add the new FAQ directory
+    - CHANGELOG.md
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

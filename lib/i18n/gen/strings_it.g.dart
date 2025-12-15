@@ -72,6 +72,7 @@ class _TranslationsAppIt extends TranslationsAppEn {
 	// Translations
 	@override String get title => 'BitBlik';
 	@override String get greeting => 'Ciao!';
+	@override String get changelog => 'Registro modifiche';
 }
 
 // Path: common
@@ -1897,6 +1898,7 @@ extension on TranslationsIt {
 		switch (path) {
 			case 'app.title': return 'BitBlik';
 			case 'app.greeting': return 'Ciao!';
+			case 'app.changelog': return 'Registro modifiche';
 			case 'common.buttons.cancel': return 'Annulla';
 			case 'common.buttons.save': return 'Salva';
 			case 'common.buttons.done': return 'Fatto';

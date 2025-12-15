@@ -77,6 +77,9 @@ class TranslationsAppEn {
 
 	/// en: 'Hello!'
 	String get greeting => 'Hello!';
+
+	/// en: 'Changelog'
+	String get changelog => 'Changelog';
 }
 
 // Path: common
@@ -2878,6 +2881,7 @@ extension on Translations {
 		switch (path) {
 			case 'app.title': return 'BitBlik';
 			case 'app.greeting': return 'Hello!';
+			case 'app.changelog': return 'Changelog';
 			case 'common.buttons.cancel': return 'Cancel';
 			case 'common.buttons.save': return 'Save';
 			case 'common.buttons.done': return 'Done';
