@@ -62,6 +62,7 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	late final TranslationsNwcEn nwc = TranslationsNwcEn.internal(_root);
 	late final TranslationsNekoManagementEn nekoManagement = TranslationsNekoManagementEn.internal(_root);
 	late final TranslationsRelaysEn relays = TranslationsRelaysEn.internal(_root);
+	late final TranslationsAltstoreEn altstore = TranslationsAltstoreEn.internal(_root);
 }
 
 // Path: app
@@ -419,6 +420,33 @@ class TranslationsRelaysEn {
 
 	late final TranslationsRelaysStatusEn status = TranslationsRelaysStatusEn.internal(_root);
 	late final TranslationsRelaysPopupEn popup = TranslationsRelaysPopupEn.internal(_root);
+}
+
+// Path: altstore
+class TranslationsAltstoreEn {
+	TranslationsAltstoreEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'AltStore Not Installed'
+	String get dialogTitle => 'AltStore Not Installed';
+
+	/// en: 'Download and install AltStore PAL'
+	String get step1Title => 'Download and install AltStore PAL';
+
+	/// en: 'altstore.io/download'
+	String get step1Button => 'altstore.io/download';
+
+	/// en: 'You need Safari to install AltStore PAL!'
+	String get step1Warning => 'You need Safari to install AltStore PAL!';
+
+	/// en: 'Install BitBlik'
+	String get step2Title => 'Install BitBlik';
+
+	/// en: 'Install BitBlik'
+	String get step2Button => 'Install BitBlik';
 }
 
 // Path: common.buttons
@@ -3390,6 +3418,12 @@ extension on Translations {
 			case 'relays.status.disconnected': return 'Disconnected';
 			case 'relays.popup.title': return ({required Object connected, required Object total}) => 'Relays (${connected}/${total} connected)';
 			case 'relays.popup.connectingMessage': return 'Connecting to relays...';
+			case 'altstore.dialogTitle': return 'AltStore Not Installed';
+			case 'altstore.step1Title': return 'Download and install AltStore PAL';
+			case 'altstore.step1Button': return 'altstore.io/download';
+			case 'altstore.step1Warning': return 'You need Safari to install AltStore PAL!';
+			case 'altstore.step2Title': return 'Install BitBlik';
+			case 'altstore.step2Button': return 'Install BitBlik';
 			default: return null;
 		}
 	}

@@ -365,7 +365,8 @@ class _MyAppState extends ConsumerState<MyApp> {
     if (scheme == 'bitblik') {
       // Check if it's an NWC connection string passed via bitblik scheme
       final path = uri.host + uri.path;
-      if (path.startsWith('value') || uri.queryParameters.containsKey('value')) {
+      if (path.startsWith('value') ||
+          uri.queryParameters.containsKey('value')) {
         final nwcString = uri.queryParameters['value'];
         if (nwcString != null) {
           await _handleNwcDeepLink(nwcString);
@@ -565,6 +566,191 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
     } catch (e) {
       Logger.log.e('Error loading changelog: $e');
     }
+  }
+
+  /// Shows the AltStore installation dialog for iOS web users
+  void _showAltStoreDialog(BuildContext context) {
+    final t = Translations.of(context);
+    showDialog(
+      context: context,
+      builder:
+          (context) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 400),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Title with emoji
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        t.altstore.dialogTitle,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Text('🫣', style: TextStyle(fontSize: 22)),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Step 1
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '1',
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              t.altstore.step1Title,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  final Uri url = Uri.parse(
+                                    'https://altstore.io/download',
+                                  );
+                                  await launchUrl(
+                                    url,
+                                    mode: LaunchMode.externalApplication,
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFE8F5E9),
+                                  foregroundColor: Colors.black,
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                ),
+                                child: Text(
+                                  t.altstore.step1Button,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              t.altstore.step1Warning,
+                              style: const TextStyle(
+                                color: Colors.pink,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Step 2
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '2',
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              t.altstore.step2Title,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  final Uri url = Uri.parse(
+                                    'altstore://source?url=https://bitblik.app/.well-known/sources/alt-store-source.json',
+                                  );
+                                  await launchUrl(url);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFE3F2FD),
+                                  foregroundColor: Colors.blue,
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                ),
+                                child: Text(
+                                  t.altstore.step2Button,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Close button
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(
+                      t.common.buttons.close,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+    );
   }
 
   Widget _buildNekoDrawer(
@@ -1225,6 +1411,25 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                             },
                             child: Image.asset(
                               'assets/zapstore.png',
+                              width: 100,
+                              height: 31,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                      ),
+                    // AltStore button on the right (only when on web iOS)
+                    if (!PlatformDetection.isWebIOS)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Icon(Icons.apple),
+                          Text(" iOS app: "),
+                          InkWell(
+                            onTap: () => _showAltStoreDialog(context),
+                            child: Image.asset(
+                              'assets/altstore.png',
                               width: 100,
                               height: 31,
                               fit: BoxFit.contain,

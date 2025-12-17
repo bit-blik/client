@@ -61,6 +61,7 @@ class TranslationsIt extends Translations {
 	@override late final _TranslationsNwcIt nwc = _TranslationsNwcIt._(_root);
 	@override late final _TranslationsNekoManagementIt nekoManagement = _TranslationsNekoManagementIt._(_root);
 	@override late final _TranslationsRelaysIt relays = _TranslationsRelaysIt._(_root);
+	@override late final _TranslationsAltstoreIt altstore = _TranslationsAltstoreIt._(_root);
 }
 
 // Path: app
@@ -362,6 +363,21 @@ class _TranslationsRelaysIt extends TranslationsRelaysEn {
 	@override String get title => 'Relay';
 	@override late final _TranslationsRelaysStatusIt status = _TranslationsRelaysStatusIt._(_root);
 	@override late final _TranslationsRelaysPopupIt popup = _TranslationsRelaysPopupIt._(_root);
+}
+
+// Path: altstore
+class _TranslationsAltstoreIt extends TranslationsAltstoreEn {
+	_TranslationsAltstoreIt._(TranslationsIt root) : this._root = root, super.internal(root);
+
+	final TranslationsIt _root; // ignore: unused_field
+
+	// Translations
+	@override String get dialogTitle => 'AltStore Non Installato';
+	@override String get step1Title => 'Scarica e installa AltStore PAL';
+	@override String get step1Button => 'altstore.io/download';
+	@override String get step1Warning => 'Hai bisogno di Safari per installare AltStore PAL!';
+	@override String get step2Title => 'Installa BitBlik';
+	@override String get step2Button => 'Installa BitBlik';
 }
 
 // Path: common.buttons
@@ -2397,6 +2413,12 @@ extension on TranslationsIt {
 			case 'relays.status.disconnected': return 'Disconnesso';
 			case 'relays.popup.title': return ({required Object connected, required Object total}) => 'Relay (${connected}/${total} connessi)';
 			case 'relays.popup.connectingMessage': return 'Connessione ai relay...';
+			case 'altstore.dialogTitle': return 'AltStore Non Installato';
+			case 'altstore.step1Title': return 'Scarica e installa AltStore PAL';
+			case 'altstore.step1Button': return 'altstore.io/download';
+			case 'altstore.step1Warning': return 'Hai bisogno di Safari per installare AltStore PAL!';
+			case 'altstore.step2Title': return 'Installa BitBlik';
+			case 'altstore.step2Button': return 'Installa BitBlik';
 			default: return null;
 		}
 	}

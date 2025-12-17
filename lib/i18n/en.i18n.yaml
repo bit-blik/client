@@ -778,3 +778,14 @@ relays:
   popup:
     title: "Relays (${connected}/${total} connected)"
     connectingMessage: Connecting to relays...
+
+# =============================================================================
+# ALTSTORE INSTALLATION
+# =============================================================================
+altstore:
+  dialogTitle: "AltStore Not Installed"
+  step1Title: "Download and install AltStore PAL"
+  step1Button: "altstore.io/download"
+  step1Warning: "You need Safari to install AltStore PAL!"
+  step2Title: "Install BitBlik"
+  step2Button: "Install BitBlik"
