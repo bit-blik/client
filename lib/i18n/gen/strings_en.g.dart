@@ -447,6 +447,9 @@ class TranslationsAltstoreEn {
 
 	/// en: 'Install BitBlik'
 	String get step2Button => 'Install BitBlik';
+
+	/// en: 'Still not working? Paste the source into AltStore'
+	String get step2Fallback => 'Still not working? Paste the source into AltStore';
 }
 
 // Path: common.buttons
@@ -3424,6 +3427,7 @@ extension on Translations {
 			case 'altstore.step1Warning': return 'You need Safari to install AltStore PAL!';
 			case 'altstore.step2Title': return 'Install BitBlik';
 			case 'altstore.step2Button': return 'Install BitBlik';
+			case 'altstore.step2Fallback': return 'Still not working? Paste the source into AltStore';
 			default: return null;
 		}
 	}

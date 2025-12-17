@@ -790,3 +790,4 @@ altstore:
   step1Warning: "Potrzebujesz Safari, aby zainstalować AltStore PAL!"
   step2Title: "Zainstaluj BitBlik"
   step2Button: "Zainstaluj BitBlik"
+  step2Fallback: "Nie działa? Wklej źródło do AltStore"

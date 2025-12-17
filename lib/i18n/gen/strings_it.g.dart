@@ -378,6 +378,7 @@ class _TranslationsAltstoreIt extends TranslationsAltstoreEn {
 	@override String get step1Warning => 'Hai bisogno di Safari per installare AltStore PAL!';
 	@override String get step2Title => 'Installa BitBlik';
 	@override String get step2Button => 'Installa BitBlik';
+	@override String get step2Fallback => 'Non funziona? Incolla la sorgente in AltStore';
 }
 
 // Path: common.buttons
@@ -2419,6 +2420,7 @@ extension on TranslationsIt {
 			case 'altstore.step1Warning': return 'Hai bisogno di Safari per installare AltStore PAL!';
 			case 'altstore.step2Title': return 'Installa BitBlik';
 			case 'altstore.step2Button': return 'Installa BitBlik';
+			case 'altstore.step2Fallback': return 'Non funziona? Incolla la sorgente in AltStore';
 			default: return null;
 		}
 	}
