@@ -779,3 +779,15 @@ relays:
   popup:
     title: "Przekaźniki (${connected}/${total} połączonych)"
     connectingMessage: Łączenie z przekaźnikami...
+
+# =============================================================================
+# ALTSTORE INSTALLATION
+# =============================================================================
+altstore:
+  dialogTitle: "AltStore Nie Zainstalowany"
+  step1Title: "Pobierz i zainstaluj AltStore PAL"
+  step1Button: "altstore.io/download"
+  step1Warning: "Potrzebujesz Safari, aby zainstalować AltStore PAL!"
+  step2Title: "Zainstaluj BitBlik"
+  step2Button: "Zainstaluj BitBlik"
+  step2Fallback: "Nie działa? Wklej źródło do AltStore"

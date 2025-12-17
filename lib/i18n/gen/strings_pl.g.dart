@@ -61,6 +61,7 @@ class TranslationsPl extends Translations {
 	@override late final _TranslationsNwcPl nwc = _TranslationsNwcPl._(_root);
 	@override late final _TranslationsNekoManagementPl nekoManagement = _TranslationsNekoManagementPl._(_root);
 	@override late final _TranslationsRelaysPl relays = _TranslationsRelaysPl._(_root);
+	@override late final _TranslationsAltstorePl altstore = _TranslationsAltstorePl._(_root);
 }
 
 // Path: app
@@ -362,6 +363,22 @@ class _TranslationsRelaysPl extends TranslationsRelaysEn {
 	@override String get title => 'Przekaźniki';
 	@override late final _TranslationsRelaysStatusPl status = _TranslationsRelaysStatusPl._(_root);
 	@override late final _TranslationsRelaysPopupPl popup = _TranslationsRelaysPopupPl._(_root);
+}
+
+// Path: altstore
+class _TranslationsAltstorePl extends TranslationsAltstoreEn {
+	_TranslationsAltstorePl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get dialogTitle => 'AltStore Nie Zainstalowany';
+	@override String get step1Title => 'Pobierz i zainstaluj AltStore PAL';
+	@override String get step1Button => 'altstore.io/download';
+	@override String get step1Warning => 'Potrzebujesz Safari, aby zainstalować AltStore PAL!';
+	@override String get step2Title => 'Zainstaluj BitBlik';
+	@override String get step2Button => 'Zainstaluj BitBlik';
+	@override String get step2Fallback => 'Nie działa? Wklej źródło do AltStore';
 }
 
 // Path: common.buttons
@@ -2393,6 +2410,13 @@ extension on TranslationsPl {
 			case 'relays.status.disconnected': return 'Rozłączony';
 			case 'relays.popup.title': return ({required Object connected, required Object total}) => 'Przekaźniki (${connected}/${total} połączonych)';
 			case 'relays.popup.connectingMessage': return 'Łączenie z przekaźnikami...';
+			case 'altstore.dialogTitle': return 'AltStore Nie Zainstalowany';
+			case 'altstore.step1Title': return 'Pobierz i zainstaluj AltStore PAL';
+			case 'altstore.step1Button': return 'altstore.io/download';
+			case 'altstore.step1Warning': return 'Potrzebujesz Safari, aby zainstalować AltStore PAL!';
+			case 'altstore.step2Title': return 'Zainstaluj BitBlik';
+			case 'altstore.step2Button': return 'Zainstaluj BitBlik';
+			case 'altstore.step2Fallback': return 'Nie działa? Wklej źródło do AltStore';
 			default: return null;
 		}
 	}
