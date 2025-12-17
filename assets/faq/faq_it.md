@@ -142,3 +142,11 @@ Se il codice BLIK che hai provato a utilizzare al terminale di pagamento o al si
 #### Quale tipo di prova potrebbe essermi richiesta come Taker dal coordinatore?
 
 Se il Maker nega di aver ricevuto il tuo pagamento BLIK, dovresti fornire prova che il pagamento BLIK è stato effettivamente detratto dal tuo conto bancario. Questo sarà tipicamente una ricevuta di pagamento dalla tua app bancaria che mostra i dettagli della transazione BLIK, inclusi importo e timestamp.
+
+## Supporto
+Per bug/problemi lato client: 
+- [Github issues](https://github.com/bit-blik/client/issues)
+- [Telegram](https://t.me/bitblik)
+
+Per supporto del coordinatore o problemi con offerte o dispute, contatta direttamente l'operatore del coordinatore tramite DM Nostr, 
+il suo profilo è accessibile tramite il link dei termini di utilizzo nell'app client BitBlik.

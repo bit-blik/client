@@ -144,3 +144,11 @@ If the BLIK code you tried to use at the payment terminal or e-commerce site was
 #### What kind of evidence might be generally required from me as a Taker by the coordinator?
 
 If the Maker denies receiving your BLIK payment, you should provide evidence that the BLIK payment was successfully deducted from your bank account. This will typically be a payment receipt by your banking app showing the BLIK transaction details, including the amount & timestamp.
+
+## Support
+For client-side bugs/issues: 
+- [Github issues](https://github.com/bit-blik/client/issues)
+- [Telegram](https://t.me/bitblik)
+
+For coordinator support or issues with offers or disputes, contact the coordinator operator directly using Nostr DMs, 
+their profile is accessible by their terms of use link in the BitBlik client app.

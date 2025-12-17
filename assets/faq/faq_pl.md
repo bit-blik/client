@@ -108,3 +108,11 @@ Jeśli kod BLIK, którego próbowałeś użyć w terminalu płatniczym lub na st
 #### Jakie dowody mogą być ogólnie wymagane ode mnie jako Taker’a przez koordynatora?
 
 Jeśli Maker zaprzecza, że otrzymał Twoją płatność BLIK, powinieneś dostarczyć dowód, że płatność BLIK została skutecznie pobrana z Twojego konta bankowego. Zazwyczaj będzie to potwierdzenie płatności z aplikacji bankowej, zawierające szczegóły transakcji BLIK, w tym kwotę i znacznik czasu.
+
+## Wsparcie
+Dla błędów/problemów po stronie klienta: 
+- [Github issues](https://github.com/bit-blik/client/issues)
+- [Telegram](https://t.me/bitblik)
+
+W przypadku wsparcia koordynatora lub problemów z ofertami lub sporami, skontaktuj się bezpośrednio z operatorem koordynatora za pomocą wiadomości DM na Nostr, 
+jego profil jest dostępny poprzez link do warunków korzystania w aplikacji klienckiej BitBlik.
