@@ -1307,6 +1307,8 @@ class _TranslationsNwcPromptsIt extends TranslationsNwcPromptsEn {
 	@override String get confirmDisconnect => 'Sei sicuro di voler disconnettere il tuo portafoglio NWC?';
 	@override String get pasteConnection => 'Incolla stringa di connessione';
 	@override String get chooseMethod => 'Scegli come connettere il tuo portafoglio Lightning';
+	@override String get howToGet => 'Non hai ancora una connessione NWC? Scopri come ottenerla!';
+	@override String get learnMore => 'Scopri di più su NWC';
 }
 
 // Path: nwc.actions
@@ -2390,6 +2392,8 @@ extension on TranslationsIt {
 			case 'nwc.prompts.confirmDisconnect': return 'Sei sicuro di voler disconnettere il tuo portafoglio NWC?';
 			case 'nwc.prompts.pasteConnection': return 'Incolla stringa di connessione';
 			case 'nwc.prompts.chooseMethod': return 'Scegli come connettere il tuo portafoglio Lightning';
+			case 'nwc.prompts.howToGet': return 'Non hai ancora una connessione NWC? Scopri come ottenerla!';
+			case 'nwc.prompts.learnMore': return 'Scopri di più su NWC';
 			case 'nwc.actions.connectAlbyGo': return 'Connetti con Alby Go';
 			case 'nwc.actions.connectNwc': return 'Scansiona QR Code NWC';
 			case 'nwc.feedback.connected': return 'Portafoglio NWC connesso con successo!';

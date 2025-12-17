@@ -2005,6 +2005,12 @@ class TranslationsNwcPromptsEn {
 
 	/// en: 'Choose how to connect your Lightning wallet'
 	String get chooseMethod => 'Choose how to connect your Lightning wallet';
+
+	/// en: 'Don't have an NWC connection yet? Learn how to get one!'
+	String get howToGet => 'Don\'t have an NWC connection yet? Learn how to get one!';
+
+	/// en: 'Learn more about NWC'
+	String get learnMore => 'Learn more about NWC';
 }
 
 // Path: nwc.actions
@@ -3397,6 +3403,8 @@ extension on Translations {
 			case 'nwc.prompts.confirmDisconnect': return 'Are you sure you want to disconnect your NWC wallet?';
 			case 'nwc.prompts.pasteConnection': return 'Paste connection string';
 			case 'nwc.prompts.chooseMethod': return 'Choose how to connect your Lightning wallet';
+			case 'nwc.prompts.howToGet': return 'Don\'t have an NWC connection yet? Learn how to get one!';
+			case 'nwc.prompts.learnMore': return 'Learn more about NWC';
 			case 'nwc.actions.connectAlbyGo': return 'Connect with Alby Go';
 			case 'nwc.actions.connectNwc': return 'Scan NWC QR Code';
 			case 'nwc.feedback.connected': return 'NWC wallet connected successfully!';

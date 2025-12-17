@@ -335,12 +335,38 @@ class WalletScreen extends ConsumerWidget {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: Text(
-                              t.nwc.description,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: Colors.blue,
-                              ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  t.nwc.prompts.howToGet,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                InkWell(
+                                  onTap: () async {
+                                    final uri = Uri.parse('https://nwc.dev');
+                                    if (await canLaunchUrl(uri)) {
+                                      await launchUrl(
+                                        uri,
+                                        mode: LaunchMode.externalApplication,
+                                      );
+                                    }
+                                  },
+                                  child: Text(
+                                    t.nwc.prompts.learnMore,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.blue,
+                                      decoration: TextDecoration.underline,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],

@@ -742,6 +742,8 @@ nwc:
     confirmDisconnect: Czy na pewno chcesz rozłączyć portfel NWC?
     pasteConnection: Wklej ciąg połączenia
     chooseMethod: Wybierz sposób połączenia portfela Lightning
+    howToGet: "Nie masz jeszcze połączenia NWC? Dowiedz się, jak je uzyskać!"
+    learnMore: Dowiedz się więcej o NWC
   actions:
     connectAlbyGo: Połącz z Alby Go
     connectNwc: Skanuj kod QR NWC

@@ -741,6 +741,8 @@ nwc:
     confirmDisconnect: Are you sure you want to disconnect your NWC wallet?
     pasteConnection: Paste connection string
     chooseMethod: Choose how to connect your Lightning wallet
+    howToGet: "Don't have an NWC connection yet? Learn how to get one!"
+    learnMore: Learn more about NWC
   actions:
     connectAlbyGo: Connect with Alby Go
     connectNwc: Scan NWC QR Code

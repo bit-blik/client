@@ -740,6 +740,8 @@ nwc:
     confirmDisconnect: Sei sicuro di voler disconnettere il tuo portafoglio NWC?
     pasteConnection: Incolla stringa di connessione
     chooseMethod: Scegli come connettere il tuo portafoglio Lightning
+    howToGet: "Non hai ancora una connessione NWC? Scopri come ottenerla!"
+    learnMore: Scopri di più su NWC
   actions:
     connectAlbyGo: Connetti con Alby Go
     connectNwc: Scansiona QR Code NWC
