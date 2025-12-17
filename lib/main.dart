@@ -1496,7 +1496,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                         ],
                       ),
                     // AltStore button on the right (only when on web iOS)
-                    if (!PlatformDetection.isWebIOS)
+                    if (false &&  PlatformDetection.isWebIOS)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
