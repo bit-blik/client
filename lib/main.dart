@@ -1420,12 +1420,12 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                         ],
                       ),
                     // AltStore button on the right (only when on web iOS)
-                    if (!PlatformDetection.isWebIOS)
+                    // if (!PlatformDetection.isWebIOS)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Icon(Icons.apple),
-                          Text(" iOS app: "),
+                          Text(" iOS app ( isIOSUserAgent():${PlatformDetection.isWebIOS}: "),
                           InkWell(
                             onTap: () => _showAltStoreDialog(context),
                             child: Image.asset(
