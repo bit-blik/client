@@ -44,7 +44,7 @@
       "appPermissions": {
         "entitlements": [],
         "privacy": {
-          "NSCameraUsageDescription": "Camera access is used to add account profile, include pictures in posts",
+          "NSCameraUsageDescription": "Camera access is used to add account profile, include pictures in posts"
         }
       }
     }

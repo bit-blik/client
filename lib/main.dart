@@ -1500,8 +1500,6 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Icon(Icons.apple),
-                          Text(" iOS app: "),
                           Link(
                             uri: Uri.parse(
                               'altstore://source?url=https://bitblik.app/.well-known/sources/alt-store-source.json',
@@ -1509,17 +1507,15 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                             builder:
                                 (context, followLink) => InkWell(
                                   onTap: () async {
-                                    // Try to open AltStore, if it fails show the dialog
+                                    // Try to open AltStore URL first
                                     final uri = Uri.parse(
                                       'altstore://source?url=https://bitblik.app/.well-known/sources/alt-store-source.json',
                                     );
-                                    final canLaunch = await canLaunchUrl(uri);
-                                    if (canLaunch) {
-                                      await launchUrl(uri);
-                                    } else {
-                                      if (context.mounted) {
-                                        _showAltStoreDialog(context);
-                                      }
+                                    // Try to launch - this will open AltStore if installed
+                                    await launchUrl(uri);
+                                    // Always show the dialog as fallback instructions
+                                    if (context.mounted) {
+                                      _showAltStoreDialog(context);
                                     }
                                   },
                                   child: Image.asset(
