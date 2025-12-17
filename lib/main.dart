@@ -1500,6 +1500,8 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
+                          Icon(Icons.apple),
+                          Text(" iOS app: "),
                           Link(
                             uri: Uri.parse(
                               'altstore://source?url=https://bitblik.app/.well-known/sources/alt-store-source.json',
