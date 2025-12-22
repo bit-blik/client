@@ -4,12 +4,11 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:ndk/ndk.dart';
-import 'package:ndk/shared/logger/logger.dart';
-import 'package:ndk/shared/nips/nip19/nip19.dart';
 import 'package:ndk/shared/nips/nip44/nip44.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../main.dart';
+import 'package:ndk_rust_verifier/ndk_rust_verifier.dart' as web_rust_verifier;
+
 import '../models/coordinator_info.dart';
 import '../models/offer.dart';
 import 'key_service.dart';
@@ -149,6 +148,8 @@ class NostrService {
   final KeyService _keyService;
   Ndk? _ndk;
   Bip340EventSigner? _clientSigner;
+  final eventVerifier = kIsWeb? web_rust_verifier.RustEventVerifier() : RustEventVerifier();
+
   final Map<String, Completer<NostrResponse>> _pendingRequests = {};
   final Random _random = Random();
 
@@ -225,8 +226,7 @@ class NostrService {
     _ndk = Ndk(
       NdkConfig(
         cache: MemCacheManager(),
-        eventVerifier: rustEventVerifier,
-        // eventVerifier: Bip340EventVerifier(),
+        eventVerifier: eventVerifier,
         bootstrapRelays: _relayUrls,
         logLevel: kDebugMode?LogLevel.debug:LogLevel.warning,
       ),
@@ -385,11 +385,12 @@ class NostrService {
         createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       );
 
-      // Sign the event
-      await _clientSigner!.sign(event);
-
       // Publish the event
-      _ndk!.broadcast.broadcast(nostrEvent: event, specificRelays: _relayUrls);
+      _ndk!.broadcast.broadcast(
+          nostrEvent: event,
+          customSigner: _clientSigner,
+          specificRelays: _relayUrls
+      );
 
       Logger.log.d(
         '📤 Sent request: ${request.method} (ID: $requestId) to $coordinatorPubkey',

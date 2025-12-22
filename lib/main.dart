@@ -20,7 +20,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ndk/shared/logger/logger.dart';
-import 'package:ndk_rust_verifier/data_layer/repositories/verifiers/rust_event_verifier.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -54,7 +53,6 @@ final double kMakerFeePercentage = 0.5;
 final double kTakerFeePercentage = 0.5;
 final SharedPreferencesAsync asyncPrefs = SharedPreferencesAsync();
 late AppLocale appLocale;
-final rustEventVerifier = RustEventVerifier();
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(

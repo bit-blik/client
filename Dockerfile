@@ -1,6 +1,6 @@
 # Stage 1: Build the Flutter web application
 # Use an official Flutter image that includes the SDK
-FROM instrumentisto/flutter:3.38.3 AS build
+FROM instrumentisto/flutter:3.38.5 AS build
 
 # Build mode argument: can be "release" or "debug"
 ARG BUILD_MODE=release
