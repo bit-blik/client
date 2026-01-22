@@ -677,28 +677,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.17.4"
-  native_toolchain_rust:
-    dependency: transitive
-    description:
-      name: native_toolchain_rust
-      sha256: b0e0a60c847db5ebc20939b78df5f17bcb63b2ff7fe75f437affeeab3dfed09d
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
   ndk:
     dependency: "direct main"
     description:
-      path: "../../ndk/packages/ndk"
-      relative: true
-    source: path
-    version: "0.6.1-dev.4"
+      name: ndk
+      sha256: cb72cf29475ec0a1e0e7b7c41299e5e18b77c816d35c96c85c0b0389bd272059
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.0"
   ndk_rust_verifier:
     dependency: "direct main"
     description:
-      path: "../../ndk/packages/rust_verifier"
-      relative: true
-    source: path
-    version: "0.4.2-dev.5"
+      name: ndk_rust_verifier
+      sha256: d45eff27d79dbd37104bf8c5a197f4bed0a4d50698355fb2e6c9c0aaf59407f8
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.0"
   nm:
     dependency: transitive
     description:
@@ -895,10 +889,10 @@ packages:
     dependency: transitive
     description:
       name: rust_lib_ndk
-      sha256: f06a1a47c6fbadf25250eac796b65b91ea99797b6377304abb152f06205c28ff
+      sha256: "26df8806fe09800a7430549d2372c6a89c290962900029afca9b2db1fdb19aea"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.7"
+    version: "0.1.7+1"
   rxdart:
     dependency: transitive
     description:
@@ -1120,14 +1114,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.7"
-  toml:
-    dependency: transitive
-    description:
-      name: toml
-      sha256: "35cd2a1351c14bd213f130f8efcbd3e0c18181bff0c8ca7a08f6822a2bede786"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.17.0"
   typed_data:
     dependency: transitive
     description:

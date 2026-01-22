@@ -148,7 +148,7 @@ class NostrService {
   final KeyService _keyService;
   Ndk? _ndk;
   Bip340EventSigner? _clientSigner;
-  final eventVerifier = kIsWeb? web_rust_verifier.RustEventVerifier() : RustEventVerifier();
+  final eventVerifier = web_rust_verifier.RustEventVerifier(); //kIsWeb? web_rust_verifier.RustEventVerifier() : RustEventVerifier();
 
   final Map<String, Completer<NostrResponse>> _pendingRequests = {};
   final Random _random = Random();
