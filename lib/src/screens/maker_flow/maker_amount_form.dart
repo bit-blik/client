@@ -509,8 +509,8 @@ class _MakerAmountFormState extends ConsumerState<MakerAmountForm> {
     final t = Translations.of(context);
 
     // Auto-select coordinator when they become available (only once)
-    if (coordinatorsAsync is AsyncData<List<DiscoveredCoordinator>> && 
-        !_hasTriedAutoSelect && 
+    if (coordinatorsAsync is AsyncData<List<DiscoveredCoordinator>> &&
+        !_hasTriedAutoSelect &&
         _selectedCoordinatorPubkey == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && _selectedCoordinatorPubkey == null) {
@@ -527,10 +527,15 @@ class _MakerAmountFormState extends ConsumerState<MakerAmountForm> {
       return Center(child: Text(_coordinatorInfoError!));
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: SingleChildScrollView(
-        child: Column(
+    return GestureDetector(
+      onTap: () {
+        // Dismiss keyboard when tapping outside of text field
+        FocusScope.of(context).unfocus();
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
@@ -886,6 +891,7 @@ class _MakerAmountFormState extends ConsumerState<MakerAmountForm> {
             ),
           ],
         ),
+      ),
       ),
     );
   }
