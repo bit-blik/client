@@ -595,7 +595,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                             Text(
                               t.altstore.dialogTitle,
                               style: const TextStyle(
-                                fontSize: 22,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -1494,7 +1494,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                         ],
                       ),
                     // AltStore button on the right (only when on web iOS)
-                    if (PlatformDetection.isWebIOS)
+                    if (true || PlatformDetection.isWebIOS)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
