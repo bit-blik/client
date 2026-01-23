@@ -62,6 +62,7 @@
 				<array>
 					<string>bitblik</string>
 					<string>nostr+walletconnect</string>
+					<string>https</string>
 				</array>
 			</dict>
 		</array>
