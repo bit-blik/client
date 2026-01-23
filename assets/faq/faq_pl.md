@@ -112,8 +112,6 @@ Jeśli Maker zaprzecza, że otrzymał Twoją płatność BLIK, powinieneś dosta
 ## Wsparcie
 Dla błędów/problemów po stronie klienta: 
 - [Github issues](https://github.com/bit-blik/client/issues)
-- [Telegram](https://t.me/bitblik)
-- mailto: bitblik@atomicmail.io
 
 W przypadku wsparcia koordynatora lub problemów z ofertami lub sporami, skontaktuj się bezpośrednio z operatorem koordynatora za pomocą wiadomości DM na Nostr, 
 jego profil jest dostępny poprzez link do warunków korzystania w aplikacji klienckiej BitBlik.

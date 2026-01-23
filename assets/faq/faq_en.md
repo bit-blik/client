@@ -148,8 +148,6 @@ If the Maker denies receiving your BLIK payment, you should provide evidence tha
 ## Support
 For client-side bugs/issues: 
 - [Github issues](https://github.com/bit-blik/client/issues)
-- [Telegram](https://t.me/bitblik)
-- mailto: bitblik@atomicmail.io
 
 For coordinator support or issues with offers or disputes, contact the coordinator operator directly using Nostr DMs, 
 their profile is accessible by their terms of use link in the BitBlik client app.

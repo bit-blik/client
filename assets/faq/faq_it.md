@@ -146,8 +146,6 @@ Se il Maker nega di aver ricevuto il tuo pagamento BLIK, dovresti fornire prova 
 ## Supporto
 Per bug/problemi lato client: 
 - [Github issues](https://github.com/bit-blik/client/issues)
-- [Telegram](https://t.me/bitblik)
-- mailto: bitblik@atomicmail.io
 
 Per supporto del coordinatore o problemi con offerte o dispute, contatta direttamente l'operatore del coordinatore tramite DM Nostr, 
 il suo profilo è accessibile tramite il link dei termini di utilizzo nell'app client BitBlik.
