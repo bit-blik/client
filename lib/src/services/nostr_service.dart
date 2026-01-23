@@ -4,10 +4,11 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:ndk/ndk.dart';
+import 'package:ndk/shared/isolates/isolate_manager.dart';
 import 'package:ndk/shared/nips/nip44/nip44.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:ndk_rust_verifier/ndk_rust_verifier.dart' as web_rust_verifier;
+// import 'package:ndk_rust_verifier/ndk_rust_verifier.dart' as web_rust_verifier;
 
 import '../models/coordinator_info.dart';
 import '../models/offer.dart';
@@ -231,6 +232,8 @@ class NostrService {
         logLevel: kDebugMode?LogLevel.debug:LogLevel.warning,
       ),
     );
+
+    await IsolateManager.instance.ready;
 
     ndk!.connectivity.relayConnectivityChanges.listen((data) {
       print("🔗 Relay connectivity change: ${data}");

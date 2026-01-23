@@ -561,11 +561,14 @@ class _MakerAmountFormState extends ConsumerState<MakerAmountForm> {
                 children: [
                   Expanded(
                     child: TextField(
+
                       focusNode: _amountFocusNode,
                       controller: _fiatController,
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
+                      keyboardType: TextInputType.phone,
+                      // keyboardType: const TextInputType.numberWithOptions(
+                      //   decimal: true,
+                      //   signed: false
+                      // ),
                       style: const TextStyle(
                         fontSize: 38,
                         fontWeight: FontWeight.w400,

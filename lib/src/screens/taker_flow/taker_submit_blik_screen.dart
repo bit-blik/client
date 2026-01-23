@@ -416,9 +416,14 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
 
     // --- Main UI Build ---
     return Scaffold(
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
+      body: GestureDetector(
+        onTap: () {
+          // Dismiss keyboard when tapping outside of text field
+          FocusScope.of(context).unfocus();
+        },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             // 3-Step Progress Indicator
@@ -473,7 +478,8 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
                 controller: _blikController,
                 focusNode: _blikFocusNode,
                 autofocus: true,
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.phone,
+                // keyboardType: TextInputType.number,
                 maxLength: 6,
                 textAlign: TextAlign.left,
                 style: const TextStyle(fontSize: 46, fontWeight: FontWeight.w500, letterSpacing: 16),
@@ -665,6 +671,7 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );
