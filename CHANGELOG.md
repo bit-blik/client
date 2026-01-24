@@ -1,3 +1,7 @@
+## [0.4.6] - 2026-01-24
+- fix: numeric keyboard not hiding on un-focus
+- fix: apple app links support
+
 ## [0.4.5] - 2025-12-15
 - add relay connection indicator in app bar 
 - improve relay connection handling
