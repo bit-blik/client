@@ -134,7 +134,6 @@ class NostrService {
   static const List<String> _defaultRelayUrls = [
     'wss://relay.mostro.network',
     'wss://relay.primal.net',
-    'wss://relay.dwadziesciajeden.pl',
     // 'wss://relay.damus.io',
     // 'wss://nos.lol',
   ];
