@@ -201,7 +201,8 @@ class NostrService {
     final prefs = await SharedPreferences.getInstance();
 
     _relayUrls =
-        prefs.getStringList(_relayUrlsKey) ?? List.from(_defaultRelayUrls);
+        // prefs.getStringList(_relayUrlsKey) ??
+            List.from(_defaultRelayUrls);
     _blacklistedCoordinators = prefs.getStringList(_blacklistKey) ?? [];
     _customWhitelistedCoordinators = prefs.getStringList(_customWhitelistKey) ?? [];
 
