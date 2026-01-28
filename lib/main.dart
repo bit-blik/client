@@ -712,6 +712,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                                   SizedBox(
                                     width: double.infinity,
                                     child: Link(
+
                                       uri: Uri.parse(
                                         'altstore://source?url=https://bitblik.app/.well-known/sources/alt-store-source.json',
                                       ),
@@ -1494,39 +1495,46 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                         ],
                       ),
                     // AltStore button on the right (only when on web iOS)
-                    if (PlatformDetection.isWebIOS)
+                    if (true || PlatformDetection.isWebIOS)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Icon(Icons.apple),
                           Text(" iOS app: "),
-                          Link(
-                            uri: Uri.parse(
-                              'altstore://source?url=https://bitblik.app/.well-known/sources/alt-store-source.json',
+                          InkWell(
+                            onTap: () async {
+                              final uri = Uri.parse(
+                                'altstore://source?url=https://bitblik.app/.well-known/sources/alt-store-source.json',
+                              );
+
+                              try {
+                                // Try to launch with externalNonBrowserApplication mode
+                                // This prevents opening in Safari and only tries to open the app
+                                await launchUrl(
+                                  uri,
+                                  // mode: LaunchMode.externalNonBrowserApplication,
+                                  mode: LaunchMode.platformDefault,
+                                  webOnlyWindowName: '_self',
+                                );
+
+                                // If launch failed or always show dialog
+                                if (context.mounted) {
+                                  _showAltStoreDialog(context);
+                                }
+                              } catch (e) {
+                                // If the URL scheme is not supported, show the dialog
+                                if (context.mounted) {
+                                  _showAltStoreDialog(context);
+                                }
+                              }
+                            },
+                            child: Image.asset(
+                              'assets/altstore.png',
+                              width: 100,
+                              height: 31,
+                              fit: BoxFit.contain,
                             ),
-                            builder:
-                                (context, followLink) => InkWell(
-                                  onTap: () async {
-                                    // Try to open AltStore URL first
-                                    final uri = Uri.parse(
-                                      'altstore://source?url=https://bitblik.app/.well-known/sources/alt-store-source.json',
-                                    );
-                                    // Try to launch - this will open AltStore if installed
-                                    await launchUrl(uri);
-                                    // Always show the dialog as fallback instructions
-                                    if (context.mounted) {
-                                      _showAltStoreDialog(context);
-                                    }
-                                  },
-                                  child: Image.asset(
-                                    'assets/altstore.png',
-                                    width: 100,
-                                    height: 31,
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
-                          ),
-                          const SizedBox(width: 8),
+                          ),                          const SizedBox(width: 8),
                         ],
                       ),
                   ],
