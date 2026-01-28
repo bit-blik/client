@@ -716,6 +716,20 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                                       uri: Uri.parse(
                                         'altstore://source?url=https://bitblik.app/.well-known/sources/alt-store-source.json',
                                       ),
+                                      // builder:
+                                      //     (context, followLink) => InkWell(
+                                      //   onTap: () {
+                                      //     showFallback = true;
+                                      //     followLink?.call();
+                                      //   },
+                                      //   child: Image.asset(
+                                      //     'assets/apk.png',
+                                      //     width: 100,
+                                      //     height: 31,
+                                      //     fit: BoxFit.contain,
+                                      //   ),
+                                      // ),
+                                      //
                                       builder:
                                           (
                                             context,
@@ -723,8 +737,12 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                                           ) => ElevatedButton(
                                             onPressed: () {
                                               followLink?.call();
-                                              setState(() {
-                                                showFallback = true;
+                                              Future.delayed(const Duration(milliseconds: 3000)).then((_) {
+                                                if (mounted) {
+                                                  setState(() {
+                                                    showFallback = true;
+                                                  });
+                                                }
                                               });
                                             },
                                             style: ElevatedButton.styleFrom(
@@ -1495,7 +1513,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                         ],
                       ),
                     // AltStore button on the right (only when on web iOS)
-                    if (true || PlatformDetection.isWebIOS)
+                    if (PlatformDetection.isWebIOS)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
