@@ -109,7 +109,7 @@ offers:
     coordinator: "Koordynator"
   
   tooltips:
-    takerFeeInfo: "Koordynator pobiera ${feePercent}% opłaty dla kupującego. Ta opłata jest odejmowana od kwoty, którą otrzymasz."
+    takerFeeInfo: "Koordynator pobiera ${feePercent}% opłaty dla kupującego. To obejmuje opłaty za routing Lightning i jest potrącane z kwoty, którą otrzymujesz."
   
   actions:
     take: WEŹ

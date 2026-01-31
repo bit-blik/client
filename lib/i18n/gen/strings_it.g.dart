@@ -548,7 +548,7 @@ class _TranslationsOffersTooltipsIt extends TranslationsOffersTooltipsEn {
 	final TranslationsIt _root; // ignore: unused_field
 
 	// Translations
-	@override String takerFeeInfo({required Object feePercent}) => 'Il coordinatore applica una commissione taker del ${feePercent}%. Questa commissione viene detratta dall\'importo che ricevi.';
+	@override String takerFeeInfo({required Object feePercent}) => 'Il coordinatore applica una commissione taker del ${feePercent}%. Questo include le commissioni di routing Lightning ed è detratto dall\'importo che ricevi';
 }
 
 // Path: offers.actions
@@ -2003,7 +2003,7 @@ extension on TranslationsIt {
 			case 'offers.details.statusLabel': return 'Stato';
 			case 'offers.details.youllReceive': return 'Riceverai';
 			case 'offers.details.coordinator': return 'Coordinatore';
-			case 'offers.tooltips.takerFeeInfo': return ({required Object feePercent}) => 'Il coordinatore applica una commissione taker del ${feePercent}%. Questa commissione viene detratta dall\'importo che ricevi.';
+			case 'offers.tooltips.takerFeeInfo': return ({required Object feePercent}) => 'Il coordinatore applica una commissione taker del ${feePercent}%. Questo include le commissioni di routing Lightning ed è detratto dall\'importo che ricevi';
 			case 'offers.actions.take': return 'ACCETTA';
 			case 'offers.actions.takeOffer': return 'Accetta Offerta';
 			case 'offers.actions.resume': return 'INSERISCI BLIK';

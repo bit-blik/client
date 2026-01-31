@@ -110,7 +110,7 @@ offers:
     coordinator: "Coordinatore"
 
   tooltips:
-    takerFeeInfo: "Il coordinatore applica una commissione taker del ${feePercent}%. Questa commissione viene detratta dall'importo che ricevi."
+    takerFeeInfo: "Il coordinatore applica una commissione taker del ${feePercent}%. Questo include le commissioni di routing Lightning ed è detratto dall'importo che ricevi"
 
   actions:
     take: ACCETTA

@@ -760,8 +760,8 @@ class TranslationsOffersTooltipsEn {
 
 	// Translations
 
-	/// en: 'Coordinator charges a ${feePercent}% taker fee. This fee is deducted from the amount you receive.'
-	String takerFeeInfo({required Object feePercent}) => 'Coordinator charges a ${feePercent}% taker fee. This fee is deducted from the amount you receive.';
+	/// en: 'Coordinator charges a ${feePercent}% taker fee. This includes Lightning routing fees and is deducted from the amount you receive.'
+	String takerFeeInfo({required Object feePercent}) => 'Coordinator charges a ${feePercent}% taker fee. This includes Lightning routing fees and is deducted from the amount you receive.';
 }
 
 // Path: offers.actions
@@ -3014,7 +3014,7 @@ extension on Translations {
 			case 'offers.details.statusLabel': return 'Status';
 			case 'offers.details.youllReceive': return 'You\'ll receive';
 			case 'offers.details.coordinator': return 'Coordinator';
-			case 'offers.tooltips.takerFeeInfo': return ({required Object feePercent}) => 'Coordinator charges a ${feePercent}% taker fee. This fee is deducted from the amount you receive.';
+			case 'offers.tooltips.takerFeeInfo': return ({required Object feePercent}) => 'Coordinator charges a ${feePercent}% taker fee. This includes Lightning routing fees and is deducted from the amount you receive.';
 			case 'offers.actions.take': return 'TAKE';
 			case 'offers.actions.takeOffer': return 'Take Offer';
 			case 'offers.actions.resume': return 'ENTER BLIK';

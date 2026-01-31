@@ -547,7 +547,7 @@ class _TranslationsOffersTooltipsPl extends TranslationsOffersTooltipsEn {
 	final TranslationsPl _root; // ignore: unused_field
 
 	// Translations
-	@override String takerFeeInfo({required Object feePercent}) => 'Koordynator pobiera ${feePercent}% opłaty dla kupującego. Ta opłata jest odejmowana od kwoty, którą otrzymasz.';
+	@override String takerFeeInfo({required Object feePercent}) => 'Koordynator pobiera ${feePercent}% opłaty dla kupującego. To obejmuje opłaty za routing Lightning i jest potrącane z kwoty, którą otrzymujesz.';
 }
 
 // Path: offers.actions
@@ -2000,7 +2000,7 @@ extension on TranslationsPl {
 			case 'offers.details.statusLabel': return 'Status';
 			case 'offers.details.youllReceive': return 'Otrzymasz';
 			case 'offers.details.coordinator': return 'Koordynator';
-			case 'offers.tooltips.takerFeeInfo': return ({required Object feePercent}) => 'Koordynator pobiera ${feePercent}% opłaty dla kupującego. Ta opłata jest odejmowana od kwoty, którą otrzymasz.';
+			case 'offers.tooltips.takerFeeInfo': return ({required Object feePercent}) => 'Koordynator pobiera ${feePercent}% opłaty dla kupującego. To obejmuje opłaty za routing Lightning i jest potrącane z kwoty, którą otrzymujesz.';
 			case 'offers.actions.take': return 'WEŹ';
 			case 'offers.actions.takeOffer': return 'Weź ofertę';
 			case 'offers.actions.resume': return 'Wprowadź BLIK';
