@@ -107,6 +107,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
       if (mounted) {
         context.go("/wait-taker");
       }
+      _isPayingWithNwc = false;
     } else {
       Logger.log.d(
         '[MakerPayInvoiceScreen] Offer status: $status. No action needed yet.',
@@ -197,8 +198,81 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
 
     try {
       await nwcService.payInvoice(invoice);
+      Logger.log.i('[MakerPayInvoiceScreen] Invoice accepted');
+      // todo check offer status
+      if (mounted) {
+        context.go("/wait-taker");
+      }
     } catch (e) {
-      // TODO
+      // When paying a hold invoice, NWC will timeout because the invoice
+      // remains pending until the end of the offer. Check if the offer
+      // is funded and proceed to wait-taker screen if so.
+      Logger.log.w(
+        '[MakerPayInvoiceScreen] NWC payment returned (likely timeout for hold invoice): $e',
+      );
+
+      // Poll offer status every 5s for up to 2 minutes until funded or stopped
+      const maxAttempts = 24; // 24 * 5s = 120s = 2 minutes
+      const pollInterval = Duration(seconds: 5);
+
+      for (int attempt = 0; attempt < maxAttempts; attempt++) {
+        // Stop polling if _isPayingWithNwc becomes false (e.g., via _handleStatusUpdate)
+        if (!_isPayingWithNwc) {
+          Logger.log.i(
+            '[MakerPayInvoiceScreen] Polling stopped: _isPayingWithNwc is false',
+          );
+          break;
+        }
+
+        try {
+          final offer = ref.read(activeOfferProvider);
+          final offerId = offer?.id;
+
+          if (offerId != null && offerId != "empty") {
+            final refreshedOffer = await ref.read(offerDetailsProvider(offerId).future);
+
+            if (refreshedOffer != null) {
+              final offerStatus = refreshedOffer.statusEnum;
+
+              // If offer is funded or beyond, the payment was accepted
+              if (offerStatus.index >= OfferStatus.funded.index) {
+                Logger.log.i(
+                  '[MakerPayInvoiceScreen] Offer is funded ($offerStatus) after ${attempt + 1} attempts, proceeding to wait-taker screen.',
+                );
+                if (mounted) {
+                  context.go("/wait-taker");
+                  return;
+                }
+              } else {
+                Logger.log.d(
+                  '[MakerPayInvoiceScreen] Offer status: $offerStatus (attempt ${attempt + 1}/$maxAttempts)',
+                );
+              }
+            }
+          }
+        } catch (statusCheckError) {
+          Logger.log.e(
+            '[MakerPayInvoiceScreen] Error checking offer status (attempt ${attempt + 1}): $statusCheckError',
+          );
+        }
+
+        // Wait before next attempt (unless this is the last one)
+        if (attempt < maxAttempts - 1) {
+          await Future.delayed(pollInterval);
+        }
+      }
+
+      // Max attempts reached or polling stopped without finding funded status
+      Logger.log.w(
+        '[MakerPayInvoiceScreen] Polling completed without offer being funded',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(t.maker.payInvoice.errors.nwcPaymentFailed(details: "Offer not funded")),
+          ),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() {

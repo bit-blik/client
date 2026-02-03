@@ -116,11 +116,14 @@ class NwcService {
       final paymentResponse = await _ndk.nwc.payInvoice(
         _nwcConnection!,
         invoice: invoice,
+        timeout: Duration(seconds: 3),
       );
       Logger.log.i(
         '✅ Invoice paid successfully! Preimage: ${paymentResponse.preimage}',
       );
     } catch (e) {
+      // This is expected, since the hold invoice will not typically settle in less than the timeout
+      // todo check the offer status
       // Logger.log.e('❌ Failed to pay invoice via NWC: $e');
       rethrow;
     }

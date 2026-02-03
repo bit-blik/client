@@ -455,8 +455,14 @@ class _OfferListScreenState extends ConsumerState<OfferListScreen> {
                   OfferStatus.expired.name,
                   OfferStatus.cancelled.name,
                 ];
+                final conflictStatuses = [
+                  OfferStatus.conflict.name,
+                  OfferStatus.invalidBlik.name,
+                  OfferStatus.dispute.name
+                ];
                 final finishedOffers = offers.where((offer) => finishedStatuses.contains(offer.status)).toList();
-                final activeOffers = offers.where((offer) => !finishedStatuses.contains(offer.status)).toList();
+                final activeOffers = offers.where((offer) =>
+                  !finishedStatuses.contains(offer.status) && !conflictStatuses.contains(offer.status)).toList();
 
                 final bool showActiveOffersList = activeOffers.isNotEmpty;
 
@@ -481,8 +487,8 @@ class _OfferListScreenState extends ConsumerState<OfferListScreen> {
                                     final bool isFunded = offer.status == OfferStatus.funded.name;
                                     final bool isReserved = offer.status == OfferStatus.reserved.name;
                                     final bool isBlikReceived = offer.status == OfferStatus.blikReceived.name;
-                                    final bool isConflict = offer.status == OfferStatus.conflict.name;
-                                    final bool isInvalidBlik = offer.status == OfferStatus.invalidBlik.name;
+                                    // final bool isConflict = offer.status == OfferStatus.conflict.name;
+                                    // final bool isInvalidBlik = offer.status == OfferStatus.invalidBlik.name;
                                     final publicKey = publicKeyAsyncValue.value;
                                     Widget? trailingWidget;
 

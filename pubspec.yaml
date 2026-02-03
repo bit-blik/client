@@ -44,7 +44,7 @@ dependencies:
 
   bip340: ^0.3.0 # For secp256k1 key pair generation (alternative to dart_nostr)
   flutter_secure_storage: ^10.0.0 # For secure key storage (Updated to latest)
-  ndk: 0.7.0
+  ndk: 0.7.1-dev.5
 #  ndk:
 #    path: ../../ndk/packages/ndk
 #    git:
