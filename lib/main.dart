@@ -712,7 +712,6 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                                   SizedBox(
                                     width: double.infinity,
                                     child: Link(
-
                                       uri: Uri.parse(
                                         'altstore://source?url=https://bitblik.app/.well-known/sources/alt-store-source.json',
                                       ),
@@ -737,7 +736,11 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                                           ) => ElevatedButton(
                                             onPressed: () {
                                               followLink?.call();
-                                              Future.delayed(const Duration(milliseconds: 3000)).then((_) {
+                                              Future.delayed(
+                                                const Duration(
+                                                  milliseconds: 3000,
+                                                ),
+                                              ).then((_) {
                                                 if (mounted) {
                                                   setState(() {
                                                     showFallback = true;
@@ -1474,51 +1477,12 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                         ),
                       ],
                     ),
-                    // Download buttons on the right (only when on web Android)
-                    if (PlatformDetection.isWebAndroid)
+                    // Download buttons on the right (only when on web)
+                    if (kIsWeb)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Link(
-                            uri: Uri.parse(
-                              'https://github.com/bit-blik/client/releases',
-                            ),
-                            target: LinkTarget.blank,
-                            builder:
-                                (context, followLink) => InkWell(
-                                  onTap: followLink,
-                                  child: Image.asset(
-                                    'assets/apk.png',
-                                    width: 100,
-                                    height: 31,
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
-                          ),
-                          const SizedBox(width: 16),
-                          Link(
-                            uri: Uri.parse('zapstore://app.bitblik'),
-                            builder:
-                                (context, followLink) => InkWell(
-                                  onTap: followLink,
-                                  child: Image.asset(
-                                    'assets/zapstore.png',
-                                    width: 100,
-                                    height: 31,
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
-                          ),
-                          const SizedBox(width: 8),
-                        ],
-                      ),
-                    // AltStore button on the right (only when on web iOS)
-                    if (PlatformDetection.isWebIOS)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Icon(Icons.apple),
-                          Text(" iOS app: "),
+                          // iOS section with icon, text, and AltStore button
                           InkWell(
                             onTap: () async {
                               final uri = Uri.parse(
@@ -1548,11 +1512,45 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                             },
                             child: Image.asset(
                               'assets/altstore.png',
-                              width: 100,
-                              height: 31,
+                              width: 80,
+                              height: 25,
                               fit: BoxFit.contain,
                             ),
-                          ),                          const SizedBox(width: 8),
+                          ),
+                          const SizedBox(width: 8),
+                          // Android GitHub APK button
+                          Link(
+                            uri: Uri.parse(
+                              'https://github.com/bit-blik/client/releases',
+                            ),
+                            target: LinkTarget.blank,
+                            builder:
+                                (context, followLink) => InkWell(
+                                  onTap: followLink,
+                                  child: Image.asset(
+                                    'assets/apk.png',
+                                    width: 80,
+                                    height: 25,
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                          ),
+                          const SizedBox(width: 8),
+                          // Android Zapstore button
+                          Link(
+                            uri: Uri.parse('zapstore://app.bitblik'),
+                            builder:
+                                (context, followLink) => InkWell(
+                                  onTap: followLink,
+                                  child: Image.asset(
+                                    'assets/zapstore.png',
+                                    width: 80,
+                                    height: 25,
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                          ),
+                          const SizedBox(width: 8),
                         ],
                       ),
                   ],
