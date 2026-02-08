@@ -844,16 +844,21 @@ class WalletScreen extends ConsumerWidget {
                     ? t.lightningAddress.prompts.add
                     : t.lightningAddress.prompts.edit,
               ),
-              content: Form(
-                key: editFormKey,
-                child: TextFormField(
-                  controller: editController,
-                  focusNode: editFocusNode,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    hintText: t.lightningAddress.labels.hint,
-                    labelText: t.lightningAddress.labels.address,
-                  ),
+              content: GestureDetector(
+                onTap: () {
+                  // Dismiss keyboard when tapping outside of text field
+                  FocusScope.of(context).unfocus();
+                },
+                child: Form(
+                  key: editFormKey,
+                  child: TextFormField(
+                    controller: editController,
+                    focusNode: editFocusNode,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      hintText: t.lightningAddress.labels.hint,
+                      labelText: t.lightningAddress.labels.address,
+                    ),
                   validator: (value) {
                     if (value == null ||
                         value.isEmpty ||
@@ -959,6 +964,7 @@ class WalletScreen extends ConsumerWidget {
                       );
                     }
                   },
+                  ),
                 ),
               ),
               actions: [

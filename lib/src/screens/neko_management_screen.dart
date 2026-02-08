@@ -73,7 +73,12 @@ class _NekoManagementScreenState extends ConsumerState<NekoManagementScreen> {
           return Column(
             children: [
               Expanded(
-                child: SingleChildScrollView(
+                child: GestureDetector(
+                  onTap: () {
+                    // Dismiss keyboard when tapping outside of text field
+                    FocusScope.of(context).unfocus();
+                  },
+                  child: SingleChildScrollView(
                   padding: const EdgeInsets.all(16.0),
                   child: selectedAction == null
                       ? Column(
@@ -463,9 +468,10 @@ class _NekoManagementScreenState extends ConsumerState<NekoManagementScreen> {
                                       ),
                                     ],
                                   ],
+                                  ),
                                 ),
-                ),
-              ),
+                              ),
+                            ),
               // Backup warning at the bottom - only show when no action is selected
               if (selectedAction == null)
                 Container(
