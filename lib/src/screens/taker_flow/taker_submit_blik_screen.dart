@@ -569,7 +569,10 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
                   controller: _blikController,
                   focusNode: _blikFocusNode,
                   autofocus: true,
-                  keyboardType: TextInputType.phone,
+                  keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                      signed: false
+                  ),
                   // keyboardType: TextInputType.number,
                   maxLength: 6,
                   textAlign: TextAlign.left,
