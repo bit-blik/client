@@ -29,7 +29,7 @@ The process generally follows these steps:
 
 #### How do takers are made aware of new offers?
 
-Takers can register on several messenger channels ([SimpleX](https://simplex.chat/contact#/?v=2-7&smp=smp%3A%2F%2Fu2dS9sG8nMNURyZwqASV4yROM28Er0luVTx5X1CsMrU%3D%40smp4.simplex.im%2FjwS8YtivATVUtHogkN2QdhVkw2H6XmfX%23%2F%3Fv%3D1-3%26dh%3DMCowBQYDK2VuAyEAsNpGcPiALZKbKfIXTQdJAuFxOmvsuuxMLR9rwMIBUWY%253D%26srv%3Do5vmywmrnaxalvz6wi3zicyftgio6psuvyniis6gco6bp6ekl4cqj4id.onion&data=%7B%22groupLinkId%22%3A%22hCkt5Ph057tSeJdyEI0uug%3D%3D%22%7D), [Matrix](https://matrix.to/#/#bitblik-offers:matrix.org)) to receive notifications about new offers.
+Takers can register on several messenger channels ([SimpleX](https://simplex.chat/contact#/?v=2-7&smp=smp%3A%2F%2Fu2dS9sG8nMNURyZwqASV4yROM28Er0luVTx5X1CsMrU%3D%40smp4.simplex.im%2FjwS8YtivATVUtHogkN2QdhVkw2H6XmfX%23%2F%3Fv%3D1-3%26dh%3DMCowBQYDK2VuAyEAsNpGcPiALZKbKfIXTQdJAuFxOmvsuuxMLR9rwMIBUWY%253D%26srv%3Do5vmywmrnaxalvz6wi3zicyftgio6psuvyniis6gco6bp6ekl4cqj4id.onion&data=%7B%22groupLinkId%22%3A%22hCkt5Ph057tSeJdyEI0uug%3D%3D%22%7D), [Matrix](https://matrix.to/#/#bitblik-offers:matrix.org), [Telegram](https://t.me/+xSktv2JukXUxYmEx), [Signal](https://signal.group/#CjQKIGcFyMrwHN1UPB57IhdkGmz23_64AhyIU5oBaZufe2hcEhCltosTHbc9ROywT0KETJbk)) to receive notifications about new offers.
 Whenever a Maker pays the hold invoice to create a new offer, the coordinator will send a message to all notification channels with the offer details and a link to the BitBlik app where they can accept the offer.
 
 #### What is BLIK?
@@ -82,15 +82,30 @@ The coordinator is non-custodial in the traditional sense for the *final* Bitcoi
 
 #### What motivates the Maker to act honestly?
 
+The Maker has already locked their Bitcoin in a Lightning Network hold invoice before receiving the BLIK code. This creates a strong incentive to complete the trade honestly:
+
+- **If the Maker confirms receipt of a valid BLIK payment:** The coordinator settles the hold invoice, releasing the Bitcoin to the Taker. The Maker receives their fiat—everyone is satisfied.
+- **If the Maker falsely denies receiving a valid BLIK payment:** The Taker can open a dispute and provide bank evidence proving the payment was made. If the coordinator finds in favor of the Taker, the hold invoice is settled anyway, and the Maker loses their Bitcoin without recourse.
+- **If the Maker abandons the trade or becomes unresponsive:** The coordinator can settle the invoice in favor of the Taker (if payment evidence exists) or, in ambiguous cases, keep the funds locked until the dispute is resolved.
+
+Since hold invoices have a limited validity window (typically a few hours), the Maker cannot indefinitely stall. They must either complete the trade honestly or risk losing their Bitcoin through the dispute resolution process.
+
 Since the Bitcoin are held in a Lightning Network hold invoice, the Maker (seller) is incentivized to act honestly. Without evidence to contrary the invoice will not be released back to the Maker.
 Since hold invoices should only be held for a short period (typically few hours), the invoice will settle and the funds will be kept by coordinator until the Taker provides evidence to resolve the dispute.
 
 
 #### What motivates the Taker to act honestly?
 
-If both parties signal a conflict, the Taker must provide evidence that the BLIK payment was deducted from their bank account, this will be resolved manually by a person in charge of the coordinator. Failure to provide such evidence will result in the Taker not receiving the Bitcoin, and after 48h the sats will return to the Maker.
-Currently there is no bond system in place to incentivize the Taker to not waste the coordinator's time trying to resolve the dispute, but this will be implemented in the near future.
+The Taker only enters the trade after the Maker has already locked Bitcoin in a hold invoice. While this protects the Taker from a Maker who might not have funds, the Taker also faces strong incentives to act honestly:
 
+- **If the Taker provides a valid BLIK code and confirms the payment:** The Maker receives the fiat, confirms receipt, and the coordinator releases the Bitcoin to the Taker. Everyone is satisfied.
+- **If the Taker provides an invalid or expired BLIK code:** The Maker cannot complete the payment and will not confirm receipt. The trade fails, and the Maker's Bitcoin is returned via hold invoice cancellation. The Taker receives nothing.
+- **If the Taker falsely claims to have paid:** In a dispute, the Taker must provide bank evidence proving the BLIK payment was deducted from their account. Without such evidence, the coordinator will cancel the hold invoice after 48 hours, returning the Bitcoin to the Maker. The Taker gains nothing and wastes everyone's time.
+- **If the Taker abandons the trade after reserving an offer:** The offer eventually expires or is cancelled, and the Maker's Bitcoin is returned. The Taker gains nothing.
+
+Since the Taker must provide verifiable evidence in any dispute, there is no viable path to fraudulently obtain Bitcoin. A dishonest Taker only succeeds in wasting time—their own, the Maker's, and the coordinator's.
+
+> **Note:** A bond system for Takers is planned for future implementation, which will add a financial penalty for Takers who waste coordinator time with frivolous disputes or abandoned trades.
 
 #### What motivates the coordinator to act honestly?
 
@@ -129,3 +144,10 @@ If the BLIK code you tried to use at the payment terminal or e-commerce site was
 #### What kind of evidence might be generally required from me as a Taker by the coordinator?
 
 If the Maker denies receiving your BLIK payment, you should provide evidence that the BLIK payment was successfully deducted from your bank account. This will typically be a payment receipt by your banking app showing the BLIK transaction details, including the amount & timestamp.
+
+## Support
+For client-side bugs/issues: 
+- [Github issues](https://github.com/bit-blik/client/issues)
+
+For coordinator support or issues with offers or disputes, contact the coordinator operator directly using Nostr DMs, 
+their profile is accessible by their terms of use link in the BitBlik client app.

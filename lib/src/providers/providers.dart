@@ -99,7 +99,7 @@ class DiscoveredCoordinatorsNotifier
         final apiService = await _ref.read(
           initializedApiServiceProvider.future,
         );
-        await apiService.startCoordinatorDiscovery();
+        // await apiService.startCoordinatorDiscovery();
         await _loadCoordinators();
       } catch (e) {
         Logger.log.e('Error during periodic coordinator refresh: $e');
@@ -280,7 +280,7 @@ class DiscoveredCoordinatorsNotifier
 
       // After starting discovery, start periodic refresh and load coordinators
       _startPeriodicRefresh();
-      await _loadCoordinators();
+      await _loadCoordinators(skipHealthChecks: true);
     } catch (e, stack) {
       Logger.log.e('Error in _startDiscovery: $e');
       state = AsyncValue.error(e, stack);
@@ -652,9 +652,107 @@ final errorProvider = StateProvider<String?>((ref) => null);
 
 // Provider to access NDK instance for connectivity management
 final ndkProvider = Provider((ref) {
+  // final apiService = await ref.read(initializedApiServiceProvider.future);
   final apiService = ref.watch(apiServiceProvider);
   return apiService.ndk;
 });
+
+/// Connection state enum for relay websocket
+enum RelayConnectionState { connected, connecting, reconnecting, disconnected }
+
+/// Relay connectivity data for UI display
+class RelayStatus {
+  final String url;
+  final RelayConnectionState state;
+
+  RelayStatus({required this.url, required this.state});
+
+  bool get isConnected => state == RelayConnectionState.connected;
+}
+
+/// Provider that streams relay connectivity status
+/// Returns a Map of relay URL to connection status
+final relayConnectivityProvider =
+    StateNotifierProvider<RelayConnectivityNotifier, Map<String, RelayStatus>>((
+      ref,
+    ) {
+      return RelayConnectivityNotifier(ref);
+    });
+
+/// Notifier that manages relay connectivity state
+class RelayConnectivityNotifier
+    extends StateNotifier<Map<String, RelayStatus>> {
+  final Ref _ref;
+  StreamSubscription? _subscription;
+  bool _initialized = false;
+
+  RelayConnectivityNotifier(this._ref) : super({}) {
+    _init();
+  }
+
+  Future<void> _init() async {
+    if (_initialized) return;
+
+    try {
+      // Wait for API service to be fully initialized before accessing NDK
+      final apiService = await _ref.read(initializedApiServiceProvider.future);
+      final ndk = apiService.ndk;
+
+      if (ndk == null) {
+        return;
+      }
+
+      // Get initial state from the current global state
+      _updateFromRelays(ndk.relays.globalState.relays);
+
+      // Subscribe to the stream for updates
+      _subscription = ndk.connectivity.relayConnectivityChanges.listen((
+        connectivityMap,
+      ) {
+        _updateFromRelays(connectivityMap);
+      });
+
+      _initialized = true;
+    } catch (e) {
+      Logger.log.e('Error initializing relay connectivity: $e');
+    }
+  }
+
+  void _updateFromRelays(Map<String, dynamic> relays) {
+    final result = <String, RelayStatus>{};
+    for (final entry in relays.entries) {
+      final relayConnectivity = entry.value;
+      result[entry.key] = RelayStatus(
+        url: relayConnectivity.url,
+        state: _determineRelayState(relayConnectivity),
+      );
+    }
+    state = result;
+  }
+
+  /// Helper function to determine relay connection state
+  RelayConnectionState _determineRelayState(dynamic relayConnectivity) {
+    if (relayConnectivity.isConnected) {
+      return RelayConnectionState.connected;
+    } else if (relayConnectivity.relay.connecting) {
+      // If transport exists but not open, and relay is in connecting mode
+      if (relayConnectivity.relayTransport != null) {
+        // Has transport but not connected = reconnecting
+        return RelayConnectionState.reconnecting;
+      } else {
+        return RelayConnectionState.connecting;
+      }
+    } else {
+      return RelayConnectionState.disconnected;
+    }
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+}
 
 // Provider for app lifecycle management
 final appLifecycleProvider = Provider<AppLifecycleNotifier>((ref) {
@@ -694,7 +792,7 @@ class AppLifecycleNotifier with WidgetsBindingObserver {
         final ndkInstance = _ref.read(ndkProvider);
         // faster reconnects
         if (ndkInstance != null) {
-          ndkInstance.connectivity.tryReconnect();
+          // ndkInstance.connectivity.do();
         }
         break;
       case AppLifecycleState.inactive:

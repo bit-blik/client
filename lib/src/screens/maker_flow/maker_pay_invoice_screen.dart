@@ -108,6 +108,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
       if (mounted) {
         context.go("/wait-taker");
       }
+      _isPayingWithNwc = false;
     } else {
       Logger.log.d(
         '[MakerPayInvoiceScreen] Offer status: $status. No action needed yet.',
@@ -129,7 +130,8 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
         webLnSuccess = false;
       });
       if (webLnSuccess) {
-        return; }
+        return;
+      }
     }
 
     final link = 'lightning:$invoice';
@@ -144,7 +146,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
       } else {
         final url = Uri.parse(link);
         // if (await canLaunchUrl(url)) {
-          await launchUrl(url, mode: LaunchMode.externalApplication);
+        await launchUrl(url, mode: LaunchMode.externalApplication);
         // } else {
         //   if (kDebugMode) {
         //     Logger.log.w('Could not launch $link');
@@ -176,7 +178,6 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
     final t = Translations.of(context);
     final controller = TextEditingController();
     final formKey = GlobalKey<FormState>();
-    final ndk = ref.read(ndkProvider);
 
     final result = await showDialog<bool>(
       context: context,
@@ -215,26 +216,9 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
                 }
 
                 try {
-                  if (ndk == null) {
-                    throw Exception('NDK not available');
-                  }
-
-                  // Create NWC wallet
-                  final nwcWallet = NwcWallet(
-                    id: kNwcWalletId,
-                    name: "NWC Wallet",
-                    supportedUnits: {'sat'},
-                    nwcUrl: controller.text.trim(),
-                  );
-                  
-                  // Add wallet
-                  await ndk.wallets.addWallet(nwcWallet);
-                  
-                  // Set as default
-                  ndk.wallets.setDefaultWallet(kNwcWalletId);
-                  
-                  // Refresh wallet state
-                  ref.read(defaultWalletProvider.notifier).refresh();
+                  final nwcService = ref.read(nwcServiceProvider);
+                  await nwcService.connect(controller.text.trim());
+                  ref.read(nwcConnectionStatusProvider.notifier).state = true;
                   
                   if (!context.mounted) return;
                   Navigator.of(context).pop(true);
@@ -286,6 +270,11 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
       // TODO: Implement payment through ndk.wallets when the API is available
       // For now, this is a placeholder
       throw UnimplementedError('Payment through ndk.wallets not yet implemented');
+      Logger.log.i('[MakerPayInvoiceScreen] Invoice accepted');
+      // todo check offer status
+      if (mounted) {
+        context.go("/wait-taker");
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -304,10 +293,14 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
     }
   }
 
-  Widget _buildNwcButtons(BuildContext context, WidgetRef ref, String holdInvoice, Translations t) {
+  Widget _buildNwcButtons(
+    BuildContext context,
+    WidgetRef ref,
+    String holdInvoice,
+    Translations t,
+  ) {
     final defaultWallet = ref.watch(defaultWalletProvider);
     final isConnected = defaultWallet != null;
-    
     if (!isConnected) {
       return SizedBox(
         width: double.infinity,
@@ -327,22 +320,23 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
-        icon: _isPayingWithNwc
-            ? const SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
-              )
-            : const Icon(Icons.bolt),
+        icon:
+            _isPayingWithNwc
+                ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+                : const Icon(Icons.bolt),
         label: Text(
           _isPayingWithNwc
               ? t.maker.payInvoice.actions.paying
               : isConnected
-                  ? t.maker.payInvoice.actions.payWithNwc
-                  : t.maker.payInvoice.actions.connectWallet,
+              ? t.maker.payInvoice.actions.payWithNwc
+              : t.maker.payInvoice.actions.connectWallet,
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.orange[700],

@@ -6,6 +6,7 @@ import '../../i18n/gen/strings.g.dart';
 import '../providers/providers.dart';
 import '../utils/ln.dart';
 import 'package:ndk/shared/logger/logger.dart';
+import '../widgets/nwc_connect_dialog.dart';
 
 const String kNwcWalletId = 'bitblik_nwc_wallet';
 
@@ -261,10 +262,10 @@ class WalletScreen extends ConsumerWidget {
     final ndk = ref.watch(ndkProvider);
     final defaultWallet = ref.watch(defaultWalletProvider);
     final isConnected = defaultWallet != null;
-    
+
     // Watch balance stream for this specific wallet
     final balancesAsync = ref.watch(walletBalancesProvider(kNwcWalletId));
-    
+
     // Extract balance in sats for this wallet from the stream
     final balance = balancesAsync.when(
       data: (balances) {
@@ -454,15 +455,15 @@ class WalletScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _showNwcConnectDialog(
+  /// Builds the NWC relay status indicator for multiple relays
+  Widget _buildNwcRelayStatus(
     BuildContext context,
     WidgetRef ref,
     dynamic ndk,
     Translations t,
-  ) async {
-    final controller = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-    final focusNode = FocusNode();
+  ) {
+    final nwcRelayUrls = ref.watch(nwcRelayUrlsProvider);
+    final globalRelays = ref.watch(relayConnectivityProvider);
 
     final result = await showDialog<bool>(
       context: context,
@@ -523,10 +524,10 @@ class WalletScreen extends ConsumerWidget {
 
                   // Set as default
                   ndk.wallets.setDefaultWallet(kNwcWalletId);
-                  
+
                   // Refresh wallet state
                   ref.read(defaultWalletProvider.notifier).refresh();
-                  
+
                   if (!context.mounted) return;
                   Navigator.of(context).pop(true);
 
@@ -537,16 +538,38 @@ class WalletScreen extends ConsumerWidget {
                       content: Text(
                         t.nwc.errors.connecting(details: e.toString()),
                       ),
-                      backgroundColor: Colors.red,
                     ),
-                  );
-                }
-              },
-              child: Text(t.nwc.prompts.connect),
-            ),
-          ],
-        );
-      },
+                  const SizedBox(width: 8),
+                  // Relay URL
+                  Expanded(
+                    child: Text(
+                      shortUrl,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 13,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  // Status text
+                  Text(
+                    isRelayConnected
+                        ? t.relays.status.connected
+                        : isConnecting
+                        ? t.relays.status.connecting
+                        : t.relays.status.disconnected,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: stateColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
     );
   }
 
@@ -583,10 +606,10 @@ class WalletScreen extends ConsumerWidget {
           throw Exception('NDK not available');
         }
         await ndk.wallets.removeWallet(kNwcWalletId);
-        
+
         // Refresh wallet state
         ref.read(defaultWalletProvider.notifier).refresh();
-        
+
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
@@ -631,16 +654,21 @@ class WalletScreen extends ConsumerWidget {
                     ? t.lightningAddress.prompts.add
                     : t.lightningAddress.prompts.edit,
               ),
-              content: Form(
-                key: editFormKey,
-                child: TextFormField(
-                  controller: editController,
-                  focusNode: editFocusNode,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    hintText: t.lightningAddress.labels.hint,
-                    labelText: t.lightningAddress.labels.address,
-                  ),
+              content: GestureDetector(
+                onTap: () {
+                  // Dismiss keyboard when tapping outside of text field
+                  FocusScope.of(context).unfocus();
+                },
+                child: Form(
+                  key: editFormKey,
+                  child: TextFormField(
+                    controller: editController,
+                    focusNode: editFocusNode,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      hintText: t.lightningAddress.labels.hint,
+                      labelText: t.lightningAddress.labels.address,
+                    ),
                   validator: (value) {
                     if (value == null ||
                         value.isEmpty ||
@@ -746,6 +774,7 @@ class WalletScreen extends ConsumerWidget {
                       );
                     }
                   },
+                  ),
                 ),
               ),
               actions: [

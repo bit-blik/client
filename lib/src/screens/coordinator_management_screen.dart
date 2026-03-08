@@ -164,13 +164,18 @@ class _CoordinatorManagementScreenState
         // ),
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Text(t.coordinator.management.availableCoordinators, style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
+      body: GestureDetector(
+        onTap: () {
+          // Dismiss keyboard when tapping outside of text field
+          FocusScope.of(context).unfocus();
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Text(t.coordinator.management.availableCoordinators, style: const TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
             Expanded(
               child: coordinatorsAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
@@ -382,8 +387,9 @@ class _CoordinatorManagementScreenState
                           : Text(t.coordinator.management.add),
                 ),
               ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );

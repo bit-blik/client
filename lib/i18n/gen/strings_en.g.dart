@@ -61,6 +61,8 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	late final TranslationsWalletEn wallet = TranslationsWalletEn.internal(_root);
 	late final TranslationsNwcEn nwc = TranslationsNwcEn.internal(_root);
 	late final TranslationsNekoManagementEn nekoManagement = TranslationsNekoManagementEn.internal(_root);
+	late final TranslationsRelaysEn relays = TranslationsRelaysEn.internal(_root);
+	late final TranslationsAltstoreEn altstore = TranslationsAltstoreEn.internal(_root);
 }
 
 // Path: app
@@ -76,6 +78,9 @@ class TranslationsAppEn {
 
 	/// en: 'Hello!'
 	String get greeting => 'Hello!';
+
+	/// en: 'Changelog'
+	String get changelog => 'Changelog';
 }
 
 // Path: common
@@ -384,6 +389,7 @@ class TranslationsNwcEn {
 
 	late final TranslationsNwcLabelsEn labels = TranslationsNwcLabelsEn.internal(_root);
 	late final TranslationsNwcPromptsEn prompts = TranslationsNwcPromptsEn.internal(_root);
+	late final TranslationsNwcActionsEn actions = TranslationsNwcActionsEn.internal(_root);
 	late final TranslationsNwcFeedbackEn feedback = TranslationsNwcFeedbackEn.internal(_root);
 	late final TranslationsNwcErrorsEn errors = TranslationsNwcErrorsEn.internal(_root);
 	late final TranslationsNwcTimeEn time = TranslationsNwcTimeEn.internal(_root);
@@ -399,6 +405,51 @@ class TranslationsNekoManagementEn {
 
 	/// en: 'Neko'
 	String get title => 'Neko';
+}
+
+// Path: relays
+class TranslationsRelaysEn {
+	TranslationsRelaysEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Relays'
+	String get title => 'Relays';
+
+	late final TranslationsRelaysStatusEn status = TranslationsRelaysStatusEn.internal(_root);
+	late final TranslationsRelaysPopupEn popup = TranslationsRelaysPopupEn.internal(_root);
+}
+
+// Path: altstore
+class TranslationsAltstoreEn {
+	TranslationsAltstoreEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'AltStore Not Installed'
+	String get dialogTitle => 'AltStore Not Installed';
+
+	/// en: 'Download and install AltStore PAL'
+	String get step1Title => 'Download and install AltStore PAL';
+
+	/// en: 'altstore.io/download'
+	String get step1Button => 'altstore.io/download';
+
+	/// en: 'You need Safari to install AltStore PAL!'
+	String get step1Warning => 'You need Safari to install AltStore PAL!';
+
+	/// en: 'Install BitBlik'
+	String get step2Title => 'Install BitBlik';
+
+	/// en: 'Install BitBlik'
+	String get step2Button => 'Install BitBlik';
+
+	/// en: 'Still not working? Paste the source into AltStore'
+	String get step2Fallback => 'Still not working? Paste the source into AltStore';
 }
 
 // Path: common.buttons
@@ -709,8 +760,8 @@ class TranslationsOffersTooltipsEn {
 
 	// Translations
 
-	/// en: 'Coordinator charges a ${feePercent}% taker fee. This fee is deducted from the amount you receive.'
-	String takerFeeInfo({required Object feePercent}) => 'Coordinator charges a ${feePercent}% taker fee. This fee is deducted from the amount you receive.';
+	/// en: 'Coordinator charges a ${feePercent}% taker fee. This includes Lightning routing fees and is deducted from the amount you receive.'
+	String takerFeeInfo({required Object feePercent}) => 'Coordinator charges a ${feePercent}% taker fee. This includes Lightning routing fees and is deducted from the amount you receive.';
 }
 
 // Path: offers.actions
@@ -1901,6 +1952,9 @@ class TranslationsNwcLabelsEn {
 	/// en: 'Disconnected'
 	String get disconnected => 'Disconnected';
 
+	/// en: 'Scan QR code with your NWC connection'
+	String get scanQrCode => 'Scan QR code with your NWC connection';
+
 	/// en: 'Balance'
 	String get balance => 'Balance';
 
@@ -1918,6 +1972,12 @@ class TranslationsNwcLabelsEn {
 
 	/// en: 'Renewal Period'
 	String get renewalPeriod => 'Renewal Period';
+
+	/// en: 'Relay'
+	String get relay => 'Relay';
+
+	/// en: 'Relays'
+	String get relays => 'Relays';
 }
 
 // Path: nwc.prompts
@@ -1931,8 +1991,8 @@ class TranslationsNwcPromptsEn {
 	/// en: 'Enter your NWC connection string'
 	String get enter => 'Enter your NWC connection string';
 
-	/// en: 'Connect'
-	String get connect => 'Connect';
+	/// en: 'Connect Wallet'
+	String get connect => 'Connect Wallet';
 
 	/// en: 'Disconnect'
 	String get disconnect => 'Disconnect';
@@ -1942,6 +2002,30 @@ class TranslationsNwcPromptsEn {
 
 	/// en: 'Paste connection string'
 	String get pasteConnection => 'Paste connection string';
+
+	/// en: 'Choose how to connect your Lightning wallet'
+	String get chooseMethod => 'Choose how to connect your Lightning wallet';
+
+	/// en: 'Don't have an NWC connection yet? Learn how to get one!'
+	String get howToGet => 'Don\'t have an NWC connection yet? Learn how to get one!';
+
+	/// en: 'Learn more about NWC'
+	String get learnMore => 'Learn more about NWC';
+}
+
+// Path: nwc.actions
+class TranslationsNwcActionsEn {
+	TranslationsNwcActionsEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Connect with Alby Go'
+	String get connectAlbyGo => 'Connect with Alby Go';
+
+	/// en: 'Scan NWC QR Code'
+	String get connectNwc => 'Scan NWC QR Code';
 }
 
 // Path: nwc.feedback
@@ -2011,6 +2095,42 @@ class TranslationsNwcTimeEn {
 
 	/// en: 'just now'
 	String get justNow => 'just now';
+}
+
+// Path: relays.status
+class TranslationsRelaysStatusEn {
+	TranslationsRelaysStatusEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Connected'
+	String get connected => 'Connected';
+
+	/// en: 'Connecting'
+	String get connecting => 'Connecting';
+
+	/// en: 'Reconnecting'
+	String get reconnecting => 'Reconnecting';
+
+	/// en: 'Disconnected'
+	String get disconnected => 'Disconnected';
+}
+
+// Path: relays.popup
+class TranslationsRelaysPopupEn {
+	TranslationsRelaysPopupEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Relays (${connected}/${total} connected)'
+	String title({required Object connected, required Object total}) => 'Relays (${connected}/${total} connected)';
+
+	/// en: 'Connecting to relays...'
+	String get connectingMessage => 'Connecting to relays...';
 }
 
 // Path: maker.amountForm.progress
@@ -2823,6 +2943,7 @@ extension on Translations {
 		switch (path) {
 			case 'app.title': return 'BitBlik';
 			case 'app.greeting': return 'Hello!';
+			case 'app.changelog': return 'Changelog';
 			case 'common.buttons.cancel': return 'Cancel';
 			case 'common.buttons.save': return 'Save';
 			case 'common.buttons.done': return 'Done';
@@ -2893,7 +3014,7 @@ extension on Translations {
 			case 'offers.details.statusLabel': return 'Status';
 			case 'offers.details.youllReceive': return 'You\'ll receive';
 			case 'offers.details.coordinator': return 'Coordinator';
-			case 'offers.tooltips.takerFeeInfo': return ({required Object feePercent}) => 'Coordinator charges a ${feePercent}% taker fee. This fee is deducted from the amount you receive.';
+			case 'offers.tooltips.takerFeeInfo': return ({required Object feePercent}) => 'Coordinator charges a ${feePercent}% taker fee. This includes Lightning routing fees and is deducted from the amount you receive.';
 			case 'offers.actions.take': return 'TAKE';
 			case 'offers.actions.takeOffer': return 'Take Offer';
 			case 'offers.actions.resume': return 'ENTER BLIK';
@@ -3267,17 +3388,25 @@ extension on Translations {
 			case 'nwc.labels.status': return 'Connection Status';
 			case 'nwc.labels.connected': return 'Connected';
 			case 'nwc.labels.disconnected': return 'Disconnected';
+			case 'nwc.labels.scanQrCode': return 'Scan QR code with your NWC connection';
 			case 'nwc.labels.balance': return 'Balance';
 			case 'nwc.labels.budget': return 'Budget';
 			case 'nwc.labels.usedBudget': return 'Used';
 			case 'nwc.labels.totalBudget': return 'Total';
 			case 'nwc.labels.renewsIn': return 'Renews in';
 			case 'nwc.labels.renewalPeriod': return 'Renewal Period';
+			case 'nwc.labels.relay': return 'Relay';
+			case 'nwc.labels.relays': return 'Relays';
 			case 'nwc.prompts.enter': return 'Enter your NWC connection string';
-			case 'nwc.prompts.connect': return 'Connect';
+			case 'nwc.prompts.connect': return 'Connect Wallet';
 			case 'nwc.prompts.disconnect': return 'Disconnect';
 			case 'nwc.prompts.confirmDisconnect': return 'Are you sure you want to disconnect your NWC wallet?';
 			case 'nwc.prompts.pasteConnection': return 'Paste connection string';
+			case 'nwc.prompts.chooseMethod': return 'Choose how to connect your Lightning wallet';
+			case 'nwc.prompts.howToGet': return 'Don\'t have an NWC connection yet? Learn how to get one!';
+			case 'nwc.prompts.learnMore': return 'Learn more about NWC';
+			case 'nwc.actions.connectAlbyGo': return 'Connect with Alby Go';
+			case 'nwc.actions.connectNwc': return 'Scan NWC QR Code';
 			case 'nwc.feedback.connected': return 'NWC wallet connected successfully!';
 			case 'nwc.feedback.disconnected': return 'NWC wallet disconnected';
 			case 'nwc.feedback.connecting': return 'Connecting to NWC wallet...';
@@ -3293,6 +3422,20 @@ extension on Translations {
 			case 'nwc.time.days': return ({required Object count}) => '${count}d';
 			case 'nwc.time.justNow': return 'just now';
 			case 'nekoManagement.title': return 'Neko';
+			case 'relays.title': return 'Relays';
+			case 'relays.status.connected': return 'Connected';
+			case 'relays.status.connecting': return 'Connecting';
+			case 'relays.status.reconnecting': return 'Reconnecting';
+			case 'relays.status.disconnected': return 'Disconnected';
+			case 'relays.popup.title': return ({required Object connected, required Object total}) => 'Relays (${connected}/${total} connected)';
+			case 'relays.popup.connectingMessage': return 'Connecting to relays...';
+			case 'altstore.dialogTitle': return 'AltStore Not Installed';
+			case 'altstore.step1Title': return 'Download and install AltStore PAL';
+			case 'altstore.step1Button': return 'altstore.io/download';
+			case 'altstore.step1Warning': return 'You need Safari to install AltStore PAL!';
+			case 'altstore.step2Title': return 'Install BitBlik';
+			case 'altstore.step2Button': return 'Install BitBlik';
+			case 'altstore.step2Fallback': return 'Still not working? Paste the source into AltStore';
 			default: return null;
 		}
 	}

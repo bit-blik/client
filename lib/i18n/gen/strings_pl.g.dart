@@ -60,6 +60,8 @@ class TranslationsPl extends Translations {
 	@override late final _TranslationsWalletPl wallet = _TranslationsWalletPl._(_root);
 	@override late final _TranslationsNwcPl nwc = _TranslationsNwcPl._(_root);
 	@override late final _TranslationsNekoManagementPl nekoManagement = _TranslationsNekoManagementPl._(_root);
+	@override late final _TranslationsRelaysPl relays = _TranslationsRelaysPl._(_root);
+	@override late final _TranslationsAltstorePl altstore = _TranslationsAltstorePl._(_root);
 }
 
 // Path: app
@@ -71,6 +73,7 @@ class _TranslationsAppPl extends TranslationsAppEn {
 	// Translations
 	@override String get title => 'BitBlik';
 	@override String get greeting => 'Cześć!';
+	@override String get changelog => 'Historia zmian';
 }
 
 // Path: common
@@ -334,6 +337,7 @@ class _TranslationsNwcPl extends TranslationsNwcEn {
 	@override String get description => 'Połącz swój portfel Lightning przez NWC';
 	@override late final _TranslationsNwcLabelsPl labels = _TranslationsNwcLabelsPl._(_root);
 	@override late final _TranslationsNwcPromptsPl prompts = _TranslationsNwcPromptsPl._(_root);
+	@override late final _TranslationsNwcActionsPl actions = _TranslationsNwcActionsPl._(_root);
 	@override late final _TranslationsNwcFeedbackPl feedback = _TranslationsNwcFeedbackPl._(_root);
 	@override late final _TranslationsNwcErrorsPl errors = _TranslationsNwcErrorsPl._(_root);
 	@override late final _TranslationsNwcTimePl time = _TranslationsNwcTimePl._(_root);
@@ -347,6 +351,34 @@ class _TranslationsNekoManagementPl extends TranslationsNekoManagementEn {
 
 	// Translations
 	@override String get title => 'Neko';
+}
+
+// Path: relays
+class _TranslationsRelaysPl extends TranslationsRelaysEn {
+	_TranslationsRelaysPl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Przekaźniki';
+	@override late final _TranslationsRelaysStatusPl status = _TranslationsRelaysStatusPl._(_root);
+	@override late final _TranslationsRelaysPopupPl popup = _TranslationsRelaysPopupPl._(_root);
+}
+
+// Path: altstore
+class _TranslationsAltstorePl extends TranslationsAltstoreEn {
+	_TranslationsAltstorePl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get dialogTitle => 'AltStore Nie Zainstalowany';
+	@override String get step1Title => 'Pobierz i zainstaluj AltStore PAL';
+	@override String get step1Button => 'altstore.io/download';
+	@override String get step1Warning => 'Potrzebujesz Safari, aby zainstalować AltStore PAL!';
+	@override String get step2Title => 'Zainstaluj BitBlik';
+	@override String get step2Button => 'Zainstaluj BitBlik';
+	@override String get step2Fallback => 'Nie działa? Wklej źródło do AltStore';
 }
 
 // Path: common.buttons
@@ -515,7 +547,7 @@ class _TranslationsOffersTooltipsPl extends TranslationsOffersTooltipsEn {
 	final TranslationsPl _root; // ignore: unused_field
 
 	// Translations
-	@override String takerFeeInfo({required Object feePercent}) => 'Koordynator pobiera ${feePercent}% opłaty dla kupującego. Ta opłata jest odejmowana od kwoty, którą otrzymasz.';
+	@override String takerFeeInfo({required Object feePercent}) => 'Koordynator pobiera ${feePercent}% opłaty dla kupującego. To obejmuje opłaty za routing Lightning i jest potrącane z kwoty, którą otrzymujesz.';
 }
 
 // Path: offers.actions
@@ -1249,12 +1281,15 @@ class _TranslationsNwcLabelsPl extends TranslationsNwcLabelsEn {
 	@override String get status => 'Status połączenia';
 	@override String get connected => 'Połączono';
 	@override String get disconnected => 'Rozłączono';
+	@override String get scanQrCode => 'Zeskanuj kod QR z połączeniem NWC';
 	@override String get balance => 'Saldo';
 	@override String get budget => 'Budżet';
 	@override String get usedBudget => 'Wykorzystano';
 	@override String get totalBudget => 'Łącznie';
 	@override String get renewsIn => 'Odnowienie za';
 	@override String get renewalPeriod => 'Okres odnowienia';
+	@override String get relay => 'Przekaźnik';
+	@override String get relays => 'Przekaźniki';
 }
 
 // Path: nwc.prompts
@@ -1265,10 +1300,24 @@ class _TranslationsNwcPromptsPl extends TranslationsNwcPromptsEn {
 
 	// Translations
 	@override String get enter => 'Wprowadź swój ciąg połączenia NWC';
-	@override String get connect => 'Połącz';
+	@override String get connect => 'Połącz portfel';
 	@override String get disconnect => 'Rozłącz';
 	@override String get confirmDisconnect => 'Czy na pewno chcesz rozłączyć portfel NWC?';
 	@override String get pasteConnection => 'Wklej ciąg połączenia';
+	@override String get chooseMethod => 'Wybierz sposób połączenia portfela Lightning';
+	@override String get howToGet => 'Nie masz jeszcze połączenia NWC? Dowiedz się, jak je uzyskać!';
+	@override String get learnMore => 'Dowiedz się więcej o NWC';
+}
+
+// Path: nwc.actions
+class _TranslationsNwcActionsPl extends TranslationsNwcActionsEn {
+	_TranslationsNwcActionsPl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get connectAlbyGo => 'Połącz z Alby Go';
+	@override String get connectNwc => 'Skanuj kod QR NWC';
 }
 
 // Path: nwc.feedback
@@ -1310,6 +1359,30 @@ class _TranslationsNwcTimePl extends TranslationsNwcTimeEn {
 	@override String hours({required Object count}) => '${count}h';
 	@override String days({required Object count}) => '${count}d';
 	@override String get justNow => 'teraz';
+}
+
+// Path: relays.status
+class _TranslationsRelaysStatusPl extends TranslationsRelaysStatusEn {
+	_TranslationsRelaysStatusPl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get connected => 'Połączony';
+	@override String get connecting => 'Łączenie';
+	@override String get reconnecting => 'Ponowne łączenie';
+	@override String get disconnected => 'Rozłączony';
+}
+
+// Path: relays.popup
+class _TranslationsRelaysPopupPl extends TranslationsRelaysPopupEn {
+	_TranslationsRelaysPopupPl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String title({required Object connected, required Object total}) => 'Przekaźniki (${connected}/${total} połączonych)';
+	@override String get connectingMessage => 'Łączenie z przekaźnikami...';
 }
 
 // Path: maker.amountForm.progress
@@ -1857,6 +1930,7 @@ extension on TranslationsPl {
 		switch (path) {
 			case 'app.title': return 'BitBlik';
 			case 'app.greeting': return 'Cześć!';
+			case 'app.changelog': return 'Historia zmian';
 			case 'common.buttons.cancel': return 'Anuluj';
 			case 'common.buttons.save': return 'Zapisz';
 			case 'common.buttons.done': return 'Gotowe';
@@ -1926,7 +2000,7 @@ extension on TranslationsPl {
 			case 'offers.details.statusLabel': return 'Status';
 			case 'offers.details.youllReceive': return 'Otrzymasz';
 			case 'offers.details.coordinator': return 'Koordynator';
-			case 'offers.tooltips.takerFeeInfo': return ({required Object feePercent}) => 'Koordynator pobiera ${feePercent}% opłaty dla kupującego. Ta opłata jest odejmowana od kwoty, którą otrzymasz.';
+			case 'offers.tooltips.takerFeeInfo': return ({required Object feePercent}) => 'Koordynator pobiera ${feePercent}% opłaty dla kupującego. To obejmuje opłaty za routing Lightning i jest potrącane z kwoty, którą otrzymujesz.';
 			case 'offers.actions.take': return 'WEŹ';
 			case 'offers.actions.takeOffer': return 'Weź ofertę';
 			case 'offers.actions.resume': return 'Wprowadź BLIK';
@@ -2299,17 +2373,25 @@ extension on TranslationsPl {
 			case 'nwc.labels.status': return 'Status połączenia';
 			case 'nwc.labels.connected': return 'Połączono';
 			case 'nwc.labels.disconnected': return 'Rozłączono';
+			case 'nwc.labels.scanQrCode': return 'Zeskanuj kod QR z połączeniem NWC';
 			case 'nwc.labels.balance': return 'Saldo';
 			case 'nwc.labels.budget': return 'Budżet';
 			case 'nwc.labels.usedBudget': return 'Wykorzystano';
 			case 'nwc.labels.totalBudget': return 'Łącznie';
 			case 'nwc.labels.renewsIn': return 'Odnowienie za';
 			case 'nwc.labels.renewalPeriod': return 'Okres odnowienia';
+			case 'nwc.labels.relay': return 'Przekaźnik';
+			case 'nwc.labels.relays': return 'Przekaźniki';
 			case 'nwc.prompts.enter': return 'Wprowadź swój ciąg połączenia NWC';
-			case 'nwc.prompts.connect': return 'Połącz';
+			case 'nwc.prompts.connect': return 'Połącz portfel';
 			case 'nwc.prompts.disconnect': return 'Rozłącz';
 			case 'nwc.prompts.confirmDisconnect': return 'Czy na pewno chcesz rozłączyć portfel NWC?';
 			case 'nwc.prompts.pasteConnection': return 'Wklej ciąg połączenia';
+			case 'nwc.prompts.chooseMethod': return 'Wybierz sposób połączenia portfela Lightning';
+			case 'nwc.prompts.howToGet': return 'Nie masz jeszcze połączenia NWC? Dowiedz się, jak je uzyskać!';
+			case 'nwc.prompts.learnMore': return 'Dowiedz się więcej o NWC';
+			case 'nwc.actions.connectAlbyGo': return 'Połącz z Alby Go';
+			case 'nwc.actions.connectNwc': return 'Skanuj kod QR NWC';
 			case 'nwc.feedback.connected': return 'Portfel NWC połączony pomyślnie!';
 			case 'nwc.feedback.disconnected': return 'Portfel NWC rozłączony';
 			case 'nwc.feedback.connecting': return 'Łączenie z portfelem NWC...';
@@ -2325,6 +2407,20 @@ extension on TranslationsPl {
 			case 'nwc.time.days': return ({required Object count}) => '${count}d';
 			case 'nwc.time.justNow': return 'teraz';
 			case 'nekoManagement.title': return 'Neko';
+			case 'relays.title': return 'Przekaźniki';
+			case 'relays.status.connected': return 'Połączony';
+			case 'relays.status.connecting': return 'Łączenie';
+			case 'relays.status.reconnecting': return 'Ponowne łączenie';
+			case 'relays.status.disconnected': return 'Rozłączony';
+			case 'relays.popup.title': return ({required Object connected, required Object total}) => 'Przekaźniki (${connected}/${total} połączonych)';
+			case 'relays.popup.connectingMessage': return 'Łączenie z przekaźnikami...';
+			case 'altstore.dialogTitle': return 'AltStore Nie Zainstalowany';
+			case 'altstore.step1Title': return 'Pobierz i zainstaluj AltStore PAL';
+			case 'altstore.step1Button': return 'altstore.io/download';
+			case 'altstore.step1Warning': return 'Potrzebujesz Safari, aby zainstalować AltStore PAL!';
+			case 'altstore.step2Title': return 'Zainstaluj BitBlik';
+			case 'altstore.step2Button': return 'Zainstaluj BitBlik';
+			case 'altstore.step2Fallback': return 'Nie działa? Wklej źródło do AltStore';
 			default: return null;
 		}
 	}

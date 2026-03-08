@@ -4,6 +4,7 @@
 app:
   title: BitBlik
   greeting: Cześć!
+  changelog: Historia zmian
 
 # =============================================================================
 # COMMON UI ELEMENTS
@@ -108,7 +109,7 @@ offers:
     coordinator: "Koordynator"
   
   tooltips:
-    takerFeeInfo: "Koordynator pobiera ${feePercent}% opłaty dla kupującego. Ta opłata jest odejmowana od kwoty, którą otrzymasz."
+    takerFeeInfo: "Koordynator pobiera ${feePercent}% opłaty dla kupującego. To obejmuje opłaty za routing Lightning i jest potrącane z kwoty, którą otrzymujesz."
   
   actions:
     take: WEŹ
@@ -725,18 +726,27 @@ nwc:
     status: Status połączenia
     connected: Połączono
     disconnected: Rozłączono
+    scanQrCode: Zeskanuj kod QR z połączeniem NWC
     balance: "Saldo"
     budget: "Budżet"
     usedBudget: "Wykorzystano"
     totalBudget: "Łącznie"
     renewsIn: "Odnowienie za"
     renewalPeriod: "Okres odnowienia"
+    relay: "Przekaźnik"
+    relays: "Przekaźniki"
   prompts:
     enter: Wprowadź swój ciąg połączenia NWC
-    connect: Połącz
+    connect: Połącz portfel
     disconnect: Rozłącz
     confirmDisconnect: Czy na pewno chcesz rozłączyć portfel NWC?
     pasteConnection: Wklej ciąg połączenia
+    chooseMethod: Wybierz sposób połączenia portfela Lightning
+    howToGet: "Nie masz jeszcze połączenia NWC? Dowiedz się, jak je uzyskać!"
+    learnMore: Dowiedz się więcej o NWC
+  actions:
+    connectAlbyGo: Połącz z Alby Go
+    connectNwc: Skanuj kod QR NWC
   feedback:
     connected: Portfel NWC połączony pomyślnie!
     disconnected: Portfel NWC rozłączony
@@ -757,3 +767,29 @@ nwc:
 
 nekoManagement:
   title: Neko
+
+# =============================================================================
+# RELAY CONNECTIVITY
+# =============================================================================
+relays:
+  title: Przekaźniki
+  status:
+    connected: Połączony
+    connecting: Łączenie
+    reconnecting: Ponowne łączenie
+    disconnected: Rozłączony
+  popup:
+    title: "Przekaźniki (${connected}/${total} połączonych)"
+    connectingMessage: Łączenie z przekaźnikami...
+
+# =============================================================================
+# ALTSTORE INSTALLATION
+# =============================================================================
+altstore:
+  dialogTitle: "AltStore Nie Zainstalowany"
+  step1Title: "Pobierz i zainstaluj AltStore PAL"
+  step1Button: "altstore.io/download"
+  step1Warning: "Potrzebujesz Safari, aby zainstalować AltStore PAL!"
+  step2Title: "Zainstaluj BitBlik"
+  step2Button: "Zainstaluj BitBlik"
+  step2Fallback: "Nie działa? Wklej źródło do AltStore"

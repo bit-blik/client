@@ -4,13 +4,13 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:ndk/ndk.dart';
-import 'package:ndk/shared/logger/logger.dart';
-import 'package:ndk/shared/nips/nip19/nip19.dart';
+import 'package:ndk/shared/isolates/isolate_manager.dart';
 import 'package:ndk/shared/nips/nip44/nip44.dart';
 import 'package:ndk_objectbox/data_layer/db/object_box/db_object_box.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../main.dart';
+// import 'package:ndk_rust_verifier/ndk_rust_verifier.dart' as web_rust_verifier;
+
 import '../models/coordinator_info.dart';
 import '../models/offer.dart';
 import 'key_service.dart';
@@ -133,10 +133,10 @@ class NostrService {
   static const String _customWhitelistKey = 'coordinators.customWhitelist';
 
   static const List<String> _defaultRelayUrls = [
-    // 'wss://relay.damus.io',
-    'wss://relay.primal.net',
-    // 'wss://nos.lol',
     'wss://relay.mostro.network',
+    'wss://relay.primal.net',
+    // 'wss://relay.damus.io',
+    // 'wss://nos.lol',
   ];
 
   // Event kinds (matching coordinator)
@@ -149,6 +149,8 @@ class NostrService {
   final KeyService _keyService;
   Ndk? _ndk;
   Bip340EventSigner? _clientSigner;
+  final eventVerifier = Bip340EventVerifier();// web_rust_verifier.RustEventVerifier(); //kIsWeb? web_rust_verifier.RustEventVerifier() : RustEventVerifier();
+
   final Map<String, Completer<NostrResponse>> _pendingRequests = {};
   final Random _random = Random();
 
@@ -200,7 +202,8 @@ class NostrService {
     final prefs = await SharedPreferences.getInstance();
 
     _relayUrls =
-        prefs.getStringList(_relayUrlsKey) ?? List.from(_defaultRelayUrls);
+        // prefs.getStringList(_relayUrlsKey) ??
+            List.from(_defaultRelayUrls);
     _blacklistedCoordinators = prefs.getStringList(_blacklistKey) ?? [];
     _customWhitelistedCoordinators = prefs.getStringList(_customWhitelistKey) ?? [];
 
@@ -225,11 +228,17 @@ class NostrService {
     _ndk = Ndk(
       NdkConfig(
         cache: DbObjectBox(),
-        eventVerifier: rustEventVerifier,//Bip340EventVerifier(),
+        eventVerifier: eventVerifier,
         bootstrapRelays: _relayUrls,
         logLevel: kDebugMode?LogLevel.debug:LogLevel.warning,
       ),
     );
+
+    await IsolateManager.instance.ready;
+
+    ndk!.connectivity.relayConnectivityChanges.listen((data) {
+      print("🔗 Relay connectivity change: ${data}");
+    });
 
     // _ndk!.connectivity.relayConnectivityChanges.listen((data) {
     //   print('🔗 Relay connectivity change: $data');
@@ -380,11 +389,12 @@ class NostrService {
         createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       );
 
-      // Sign the event
-      await _clientSigner!.sign(event);
-
       // Publish the event
-      _ndk!.broadcast.broadcast(nostrEvent: event, specificRelays: _relayUrls);
+      _ndk!.broadcast.broadcast(
+          nostrEvent: event,
+          customSigner: _clientSigner,
+          specificRelays: _relayUrls
+      );
 
       Logger.log.d(
         '📤 Sent request: ${request.method} (ID: $requestId) to $coordinatorPubkey',
@@ -1176,6 +1186,7 @@ class NostrService {
       
       if (isDefaultWhitelisted || _shouldIncludeCoordinator(pubkey)) {
         _discoveredCoordinators[pubkey] = coordinator;
+        _discoveredCoordinators[pubkey]!.responsive = true;
         // Cache coordinator info immediately when discovered
         final coordinatorInfo = coordinator.toCoordinatorInfo();
         _coordinatorInfoCache[pubkey] = coordinatorInfo;

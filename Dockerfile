@@ -1,6 +1,6 @@
 # Stage 1: Build the Flutter web application
 # Use an official Flutter image that includes the SDK
-FROM instrumentisto/flutter:3.38.3 AS build
+FROM instrumentisto/flutter:3.38.5 AS build
 
 # Build mode argument: can be "release" or "debug"
 ARG BUILD_MODE=release
@@ -33,11 +33,10 @@ COPY --from=build /app/build/web /usr/share/nginx/html
 # Copy the default config.js (can be overridden by mounting a volume or using entrypoint)
 COPY --from=build /app/web/config.js /usr/share/nginx/html/config.js
 
-# Copy the custom Nginx configuration (from the client directory)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Copy entrypoint script for generating config.js from environment variables
+COPY robots.txt /usr/share/nginx/html/robots.txt
 COPY docker-entrypoint.sh /docker-entrypoint.sh
+
 RUN chmod +x /docker-entrypoint.sh
 
 # Expose port 80
