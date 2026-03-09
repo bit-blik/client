@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:ndk/entities.dart';
 import '../../i18n/gen/strings.g.dart';
 import '../providers/providers.dart';
 
@@ -56,61 +57,65 @@ class _NwcConnectScreenState extends ConsumerState<NwcConnectScreen> {
     });
 
     final t = Translations.of(context);
-    final nwcServiceAsync = ref.read(nwcServiceProvider);
+    final ndk = ref.read(ndkProvider);
 
-    await nwcServiceAsync.when(
-      data: (nwcService) async {
-        try {
-          if (!mounted) return;
+    if (ndk == null) {
+      setState(() {
+        _isProcessing = false;
+        _hasScanned = false;
+        _errorMessage = 'NDK not available';
+      });
+      return;
+    }
 
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(t.nwc.feedback.connecting)));
+    try {
+      if (!mounted) return;
 
-          await nwcService.connect(trimmed);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(t.nwc.feedback.connecting)));
 
-          if (!mounted) return;
-          ref.read(nwcConnectionStatusProvider.notifier).state = true;
+      // Create NWC wallet using NDK
+      final nwcWallet = NwcWallet(
+        id: 'bitblik_nwc_wallet',
+        name: "NWC Wallet",
+        supportedUnits: {'sat'},
+        nwcUrl: trimmed,
+      );
 
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(t.nwc.feedback.connected)));
+      // Add wallet
+      await ndk.wallets.addWallet(nwcWallet);
 
-          // Trigger balance and budget loading
-          ref.read(nwcBalanceProvider.notifier).loadBalance();
-          ref.read(nwcBudgetProvider.notifier).loadBudget();
+      // Set as default
+      ndk.wallets.setDefaultWallet('bitblik_nwc_wallet');
 
-          Navigator.of(context).pop(true);
-        } catch (e) {
-          if (!mounted) return;
-          setState(() {
-            _isProcessing = false;
-            _hasScanned = false;
-            _errorMessage = t.nwc.errors.connecting(details: e.toString());
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(t.nwc.errors.connecting(details: e.toString())),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      },
-      loading: () async {
-        setState(() {
-          _isProcessing = false;
-          _hasScanned = false;
-        });
-      },
-      error: (error, _) async {
-        if (!mounted) return;
-        setState(() {
-          _isProcessing = false;
-          _hasScanned = false;
-          _errorMessage = error.toString();
-        });
-      },
-    );
+      // Initialize balance stream (required for combinedBalances to work)
+      ndk.wallets.getBalance('bitblik_nwc_wallet', "sat");
+
+      // Refresh wallet state
+      ref.read(defaultWalletProvider.notifier).refresh();
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(t.nwc.feedback.connected)));
+
+      Navigator.of(context).pop(true);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isProcessing = false;
+        _hasScanned = false;
+        _errorMessage = t.nwc.errors.connecting(details: e.toString());
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(t.nwc.errors.connecting(details: e.toString())),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Future<void> _pasteFromClipboard() async {
@@ -164,7 +169,7 @@ class _NwcConnectScreenState extends ConsumerState<NwcConnectScreen> {
               onDetect: _onBarcodeDetected,
             )
           else
-            // Web fallback - just show paste option
+          // Web fallback - just show paste option
             Container(
               color: Colors.black,
               child: Center(

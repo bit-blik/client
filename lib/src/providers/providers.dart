@@ -48,15 +48,33 @@ class DefaultWalletNotifier extends StateNotifier<Wallet?> {
 }
 
 // Provider for wallet balances - streams list of WalletBalance updates for a specific wallet
-final walletBalancesProvider = StreamProvider.family<List<WalletBalance>, String>((ref, walletId) async* {
+// IMPORTANT: This provider calls getBalancesStream which initializes the stream and immediately
+// fetches the current balance from NWC, then continues listening for updates
+final walletBalancesProvider =
+    StreamProvider.family<List<WalletBalance>, String>((ref, walletId) async* {
+      final ndk = ref.watch(ndkProvider);
+      if (ndk == null) {
+        yield [];
+        return;
+      }
+
+      await for (final balances in ndk.wallets.getBalancesStream(walletId)) {
+        yield balances;
+      }
+    });
+
+/// Provider to explicitly trigger balance stream initialization for a specific wallet
+/// Use this to ensure the balance stream is initialized and emitting values
+final walletBalanceInitProvider = Provider.family<void, String>((
+  ref,
+  walletId,
+) {
   final ndk = ref.watch(ndkProvider);
-  if (ndk == null) {
-    yield [];
-    return;
-  }
-  
-  await for (final balances in ndk.wallets.getBalancesStream(walletId)) {
-    yield balances;
+
+  if (ndk != null) {
+    // Calling getBalance initializes the internal balance stream for this wallet
+    // This ensures the stream starts emitting values
+    ndk.wallets.getBalance(walletId, "sat");
   }
 });
 

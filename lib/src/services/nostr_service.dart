@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:ndk/ndk.dart';
 import 'package:ndk/shared/isolates/isolate_manager.dart';
 import 'package:ndk/shared/nips/nip44/nip44.dart';
-import 'package:ndk_objectbox/data_layer/db/object_box/db_object_box.dart';
+// import 'package:ndk_objectbox/data_layer/db/object_box/db_object_box.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sembast_cache_manager/sembast_cache_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:ndk_rust_verifier/ndk_rust_verifier.dart' as web_rust_verifier;
@@ -223,11 +226,14 @@ class NostrService {
         Logger.log.w('⚠️ Error destroying previous NDK instance: $e');
       }
     }
+    // Create cache manager
+    final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
+    final cacheManager = await SembastCacheManager.create(databasePath: appDocumentsDir.path);
 
     // Initialize NDK with bootstrap relays config
     _ndk = Ndk(
       NdkConfig(
-        cache: DbObjectBox(),
+        cache: cacheManager,//DbObjectBox(),
         eventVerifier: eventVerifier,
         bootstrapRelays: _relayUrls,
         logLevel: kDebugMode?LogLevel.debug:LogLevel.warning,

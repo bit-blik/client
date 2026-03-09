@@ -263,6 +263,9 @@ class WalletScreen extends ConsumerWidget {
     final defaultWallet = ref.watch(defaultWalletProvider);
     final isConnected = defaultWallet != null;
 
+    // Initialize balance stream for this wallet (ensures it starts emitting)
+    ref.watch(walletBalanceInitProvider(kNwcWalletId));
+
     // Watch balance stream for this specific wallet
     final balancesAsync = ref.watch(walletBalancesProvider(kNwcWalletId));
 
@@ -354,7 +357,7 @@ class WalletScreen extends ConsumerWidget {
               Center(
                 child: ElevatedButton.icon(
                   onPressed: () async {
-                    await _showNwcConnectDialog(context, ref, ndk, t);
+                    await showNwcConnectDialog(context);
                   },
                   icon: const Icon(Icons.add_link),
                   label: Text(t.nwc.prompts.connect),
@@ -455,124 +458,6 @@ class WalletScreen extends ConsumerWidget {
     }
   }
 
-  /// Builds the NWC relay status indicator for multiple relays
-  Widget _buildNwcRelayStatus(
-    BuildContext context,
-    WidgetRef ref,
-    dynamic ndk,
-    Translations t,
-  ) {
-    final nwcRelayUrls = ref.watch(nwcRelayUrlsProvider);
-    final globalRelays = ref.watch(relayConnectivityProvider);
-
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          focusNode.requestFocus();
-        });
-        return AlertDialog(
-          title: Text(t.nwc.prompts.connect),
-          content: Form(
-            key: formKey,
-            child: TextFormField(
-              controller: controller,
-              focusNode: focusNode,
-              decoration: InputDecoration(
-                hintText: t.nwc.labels.hint,
-                labelText: t.nwc.labels.connectionString,
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return t.nwc.errors.required;
-                }
-                if (!value.startsWith('nostr+walletconnect://')) {
-                  return t.nwc.errors.invalid;
-                }
-                return null;
-              },
-              maxLines: 3,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(t.common.buttons.cancel),
-            ),
-            TextButton(
-              onPressed: () async {
-                if (!formKey.currentState!.validate()) {
-                  return;
-                }
-
-                try {
-                  if (!context.mounted) return;
-                  if (ndk == null) {
-                    throw Exception('NDK not available');
-                  }
-
-                  // Create NWC wallet
-                  final nwcWallet = NwcWallet(
-                    id: kNwcWalletId,
-                    name: "NWC Wallet",
-                    supportedUnits: {'sat'},
-                    nwcUrl: controller.text.trim(),
-                  );
-
-                  // Add wallet
-                  await ndk.wallets.addWallet(nwcWallet);
-
-                  // Set as default
-                  ndk.wallets.setDefaultWallet(kNwcWalletId);
-
-                  // Refresh wallet state
-                  ref.read(defaultWalletProvider.notifier).refresh();
-
-                  if (!context.mounted) return;
-                  Navigator.of(context).pop(true);
-
-                } catch (e) {
-                  if (!context.mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        t.nwc.errors.connecting(details: e.toString()),
-                      ),
-                    ),
-                  const SizedBox(width: 8),
-                  // Relay URL
-                  Expanded(
-                    child: Text(
-                      shortUrl,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 13,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  // Status text
-                  Text(
-                    isRelayConnected
-                        ? t.relays.status.connected
-                        : isConnecting
-                        ? t.relays.status.connecting
-                        : t.relays.status.disconnected,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: stateColor,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
-        ],
-      ),
-    );
-  }
-
   Future<void> _showNwcDisconnectDialog(
     BuildContext context,
     WidgetRef ref,
@@ -669,111 +554,114 @@ class WalletScreen extends ConsumerWidget {
                       hintText: t.lightningAddress.labels.hint,
                       labelText: t.lightningAddress.labels.address,
                     ),
-                  validator: (value) {
-                    if (value == null ||
-                        value.isEmpty ||
-                        !value.contains('@')) {
-                      return t.lightningAddress.prompts.invalid;
-                    }
-                    return editValidationError;
-                  },
-                  onChanged: (value) async {
-                    if (value.isNotEmpty && value.contains('@')) {
-                      final error = await validateLightningAddress(value, t);
-                      setState(() {
-                        editValidationError = error;
-                      });
-                    } else {
-                      setState(() {
-                        editValidationError = null;
-                      });
-                    }
-                  },
-                  onFieldSubmitted: (value) async {
-                    Logger.log.d(
-                      '[Wallet Screen] onFieldSubmitted called with: $value',
-                    );
-
-                    // First validate the form format
-                    if (!editFormKey.currentState!.validate()) {
-                      Logger.log.d('[Wallet Screen] Form validation failed');
-                      return;
-                    }
-
-                    // Then perform async validation
-                    if (value.isNotEmpty && value.contains('@')) {
-                      Logger.log.d(
-                        '[Wallet Screen] Starting async validation...',
-                      );
-                      try {
+                    validator: (value) {
+                      if (value == null ||
+                          value.isEmpty ||
+                          !value.contains('@')) {
+                        return t.lightningAddress.prompts.invalid;
+                      }
+                      return editValidationError;
+                    },
+                    onChanged: (value) async {
+                      if (value.isNotEmpty && value.contains('@')) {
                         final error = await validateLightningAddress(value, t);
-                        Logger.log.d(
-                          '[Wallet Screen] Validation result: ${error ?? "SUCCESS"}',
-                        );
-                        if (!context.mounted) return;
                         setState(() {
                           editValidationError = error;
                         });
+                      } else {
+                        setState(() {
+                          editValidationError = null;
+                        });
+                      }
+                    },
+                    onFieldSubmitted: (value) async {
+                      Logger.log.d(
+                        '[Wallet Screen] onFieldSubmitted called with: $value',
+                      );
 
-                        // If there's a validation error, show it and return
-                        if (error != null) {
-                          Logger.log.d(
-                            '[Wallet Screen] Validation failed, showing error',
+                      // First validate the form format
+                      if (!editFormKey.currentState!.validate()) {
+                        Logger.log.d('[Wallet Screen] Form validation failed');
+                        return;
+                      }
+
+                      // Then perform async validation
+                      if (value.isNotEmpty && value.contains('@')) {
+                        Logger.log.d(
+                          '[Wallet Screen] Starting async validation...',
+                        );
+                        try {
+                          final error = await validateLightningAddress(
+                            value,
+                            t,
                           );
+                          Logger.log.d(
+                            '[Wallet Screen] Validation result: ${error ?? "SUCCESS"}',
+                          );
+                          if (!context.mounted) return;
+                          setState(() {
+                            editValidationError = error;
+                          });
+
+                          // If there's a validation error, show it and return
+                          if (error != null) {
+                            Logger.log.d(
+                              '[Wallet Screen] Validation failed, showing error',
+                            );
+                            editFormKey.currentState!.validate();
+                            return;
+                          }
+                        } catch (e) {
+                          Logger.log.d(
+                            '[Wallet Screen] Validation threw exception: $e',
+                          );
+                          if (!context.mounted) return;
+                          setState(() {
+                            editValidationError =
+                                t.lightningAddress.prompts.invalid;
+                          });
                           editFormKey.currentState!.validate();
                           return;
                         }
-                      } catch (e) {
+                      }
+
+                      // Save the address
+                      Logger.log.d(
+                        '[Wallet Screen] Attempting to save address...',
+                      );
+                      try {
+                        await keyService.saveLightningAddress(
+                          editController.text,
+                        );
                         Logger.log.d(
-                          '[Wallet Screen] Validation threw exception: $e',
+                          '[Wallet Screen] Address saved successfully',
                         );
                         if (!context.mounted) return;
-                        setState(() {
-                          editValidationError =
-                              t.lightningAddress.prompts.invalid;
-                        });
-                        editFormKey.currentState!.validate();
-                        return;
-                      }
-                    }
-
-                    // Save the address
-                    Logger.log.d(
-                      '[Wallet Screen] Attempting to save address...',
-                    );
-                    try {
-                      await keyService.saveLightningAddress(
-                        editController.text,
-                      );
-                      Logger.log.d(
-                        '[Wallet Screen] Address saved successfully',
-                      );
-                      if (!context.mounted) return;
-                      ref.invalidate(lightningAddressProvider);
-                      Navigator.of(context).pop(editController.text);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            currentAddress == null
-                                ? t.lightningAddress.feedback.saved
-                                : t.lightningAddress.feedback.updated,
-                          ),
-                        ),
-                      );
-                    } catch (e) {
-                      Logger.log.d('[Wallet Screen] Save failed: $e');
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            t.lightningAddress.errors.saving(
-                              details: e.toString(),
+                        ref.invalidate(lightningAddressProvider);
+                        Navigator.of(context).pop(editController.text);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              currentAddress == null
+                                  ? t.lightningAddress.feedback.saved
+                                  : t.lightningAddress.feedback.updated,
                             ),
                           ),
-                        ),
-                      );
-                    }
-                  },
+                        );
+                      } catch (e) {
+                        Logger.log.d('[Wallet Screen] Save failed: $e');
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              t.lightningAddress.errors.saving(
+                                details: e.toString(),
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                    },
                   ),
                 ),
               ),

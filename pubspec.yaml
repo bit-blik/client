@@ -54,14 +54,17 @@ dependencies:
 #  ndk_rust_verifier: 0.5.0
   ndk_rust_verifier:
     path: ../../ndk/packages/rust_verifier
-  ndk_objectbox:
-    path: ../../ndk/packages/objectbox
+#  ndk_objectbox:
+#    path: ../../ndk/packages/objectbox
+  sembast_cache_manager:
+    path: ../../ndk/packages/sembast_cache_manager
 #    git:
 #      url: https://github.com/relaystr/ndk.git
-#      path: packages/rust_verifier
+#      path: packages/objectbox
 #      ref: 2b469e91e41e0c155fdac2cd44d7180bcdefd147
   url_launcher: ^6.3.1 # For launching URLs/Intents
   android_intent_plus: ^6.0.0
+  path_provider: 2.1.5
   go_router: ^17.0.0  # For specific Android Intents
   memory_cache: ^1.2.0 # For in-memory caching
   shared_preferences: ^2.5.3 # For storing user preferences

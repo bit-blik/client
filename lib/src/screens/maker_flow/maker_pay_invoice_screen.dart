@@ -176,10 +176,22 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
 
   Future<void> _showNwcConnectDialog() async {
     final t = Translations.of(context);
+    final ndk = ref.read(ndkProvider);
+
+    if (ndk == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(t.maker.payInvoice.errors.nwcNotConnected),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     final controller = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
-    final result = await showDialog<bool>(
+    await showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -216,17 +228,31 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
                 }
 
                 try {
-                  final nwcService = ref.read(nwcServiceProvider);
-                  await nwcService.connect(controller.text.trim());
-                  ref.read(nwcConnectionStatusProvider.notifier).state = true;
-                  
-                  if (!context.mounted) return;
-                  Navigator.of(context).pop(true);
-                  
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(t.maker.payInvoice.feedback.nwcConnected)),
+                  // Create NWC wallet using NDK
+                  final nwcWallet = NwcWallet(
+                    id: kNwcWalletId,
+                    name: "NWC Wallet",
+                    supportedUnits: {'sat'},
+                    nwcUrl: controller.text.trim(),
                   );
 
+                  // Add wallet
+                  await ndk.wallets.addWallet(nwcWallet);
+
+                  // Set as default
+                  ndk.wallets.setDefaultWallet(kNwcWalletId);
+
+                  // Refresh wallet state
+                  ref.read(defaultWalletProvider.notifier).refresh();
+
+                  if (!context.mounted) return;
+                  Navigator.of(context).pop(true);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(t.maker.payInvoice.feedback.nwcConnected),
+                    ),
+                  );
                 } catch (e) {
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -251,7 +277,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
     final t = Translations.of(context);
     final ndk = ref.read(ndkProvider);
     final defaultWallet = ref.read(defaultWalletProvider);
-    
+
     if (ndk == null || defaultWallet == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -269,12 +295,14 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
     try {
       // TODO: Implement payment through ndk.wallets when the API is available
       // For now, this is a placeholder
-      throw UnimplementedError('Payment through ndk.wallets not yet implemented');
-      Logger.log.i('[MakerPayInvoiceScreen] Invoice accepted');
-      // todo check offer status
-      if (mounted) {
-        context.go("/wait-taker");
-      }
+      throw UnimplementedError(
+        'Payment through ndk.wallets not yet implemented',
+      );
+      // Note: Code below is unreachable until payment is implemented
+      // Logger.log.i('[MakerPayInvoiceScreen] Invoice accepted');
+      // if (mounted) {
+      //   context.go("/wait-taker");
+      // }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
