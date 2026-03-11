@@ -575,19 +575,19 @@ class WalletScreen extends ConsumerWidget {
                       }
                     },
                     onFieldSubmitted: (value) async {
-                      Logger.log.d(
+                      Logger.log.d(() => 
                         '[Wallet Screen] onFieldSubmitted called with: $value',
                       );
 
                       // First validate the form format
                       if (!editFormKey.currentState!.validate()) {
-                        Logger.log.d('[Wallet Screen] Form validation failed');
+                        Logger.log.d(() => '[Wallet Screen] Form validation failed');
                         return;
                       }
 
                       // Then perform async validation
                       if (value.isNotEmpty && value.contains('@')) {
-                        Logger.log.d(
+                        Logger.log.d(() => 
                           '[Wallet Screen] Starting async validation...',
                         );
                         try {
@@ -595,7 +595,7 @@ class WalletScreen extends ConsumerWidget {
                             value,
                             t,
                           );
-                          Logger.log.d(
+                          Logger.log.d(() => 
                             '[Wallet Screen] Validation result: ${error ?? "SUCCESS"}',
                           );
                           if (!context.mounted) return;
@@ -605,14 +605,14 @@ class WalletScreen extends ConsumerWidget {
 
                           // If there's a validation error, show it and return
                           if (error != null) {
-                            Logger.log.d(
+                            Logger.log.d(() => 
                               '[Wallet Screen] Validation failed, showing error',
                             );
                             editFormKey.currentState!.validate();
                             return;
                           }
                         } catch (e) {
-                          Logger.log.d(
+                          Logger.log.d(() => 
                             '[Wallet Screen] Validation threw exception: $e',
                           );
                           if (!context.mounted) return;
@@ -626,14 +626,14 @@ class WalletScreen extends ConsumerWidget {
                       }
 
                       // Save the address
-                      Logger.log.d(
+                      Logger.log.d(() => 
                         '[Wallet Screen] Attempting to save address...',
                       );
                       try {
                         await keyService.saveLightningAddress(
                           editController.text,
                         );
-                        Logger.log.d(
+                        Logger.log.d(() => 
                           '[Wallet Screen] Address saved successfully',
                         );
                         if (!context.mounted) return;
@@ -649,7 +649,7 @@ class WalletScreen extends ConsumerWidget {
                           ),
                         );
                       } catch (e) {
-                        Logger.log.d('[Wallet Screen] Save failed: $e');
+                        Logger.log.d(() => '[Wallet Screen] Save failed: $e');
                         if (!context.mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

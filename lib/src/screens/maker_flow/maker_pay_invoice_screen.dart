@@ -70,7 +70,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
   ) async {
     if (status == null || !mounted) return;
 
-    Logger.log.d('[MakerPayInvoiceScreen] Status update received: $status');
+    Logger.log.d(() => '[MakerPayInvoiceScreen] Status update received: $status');
 
     // final publicKey = ref.read(publicKeyProvider).value;
     // if (publicKey == null) {
@@ -102,7 +102,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
     // await ref.read(activeOfferProvider.notifier).setActiveOffer(updatedOffer);
 
     if (status.index >= OfferStatus.funded.index) {
-      Logger.log.i(
+      Logger.log.i(() => 
         '[MakerPayInvoiceScreen] Invoice paid! Offer status: $status. Moving to next step.',
       );
       if (mounted) {
@@ -110,7 +110,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
       }
       _isPayingWithNwc = false;
     } else {
-      Logger.log.d(
+      Logger.log.d(() => 
         '[MakerPayInvoiceScreen] Offer status: $status. No action needed yet.',
       );
     }
@@ -119,7 +119,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
   // --- Intent/URL Launching ---
   Future<void> _launchLightningUrl(String invoice) async {
     if (kIsWeb) {
-      Logger.log.d("!! launch lightning URL -> sending invoice");
+      Logger.log.d(() => "!! launch lightning URL -> sending invoice");
       bool webLnSuccess = true;
       await sendWeblnPayment(invoice).then((_) {}).catchError((e) {
         // if (mounted) {
@@ -149,7 +149,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
         await launchUrl(url, mode: LaunchMode.externalApplication);
         // } else {
         //   if (kDebugMode) {
-        //     Logger.log.w('Could not launch $link');
+        //     Logger.log.w(() => 'Could not launch $link');
         //   }
         //   if (mounted) {
         //     ScaffoldMessenger.of(context).showSnackBar(
@@ -161,7 +161,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
         // }
       }
     } catch (e) {
-      Logger.log.e('Error launching lightning URL: $e');
+      Logger.log.e(() => 'Error launching lightning URL: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -293,13 +293,9 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
     });
 
     try {
-      // TODO: Implement payment through ndk.wallets when the API is available
-      // For now, this is a placeholder
-      throw UnimplementedError(
-        'Payment through ndk.wallets not yet implemented',
-      );
+      await ndk.wallets.payInvoice(ndk.wallets.defaultWallet!.id, invoice);
       // Note: Code below is unreachable until payment is implemented
-      // Logger.log.i('[MakerPayInvoiceScreen] Invoice accepted');
+      // Logger.log.i(() => '[MakerPayInvoiceScreen] Invoice accepted');
       // if (mounted) {
       //   context.go("/wait-taker");
       // }
@@ -393,7 +389,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
 
     // WebLN auto-pay logic
     if (isWallet && holdInvoice != null && !_sentWeblnPayment) {
-      Logger.log.d(
+      Logger.log.d(() => 
         "isWallet: $isWallet, _sentWeblnPayment: $_sentWeblnPayment",
       );
       sendWeblnPayment(holdInvoice)

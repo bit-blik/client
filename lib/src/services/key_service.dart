@@ -57,9 +57,9 @@ class KeyService {
           _publicKeyHex = bip340.getPublicKey(
             _privateKeyHex!,
           ); // Pass hex string
-          Logger.log.i('✅ Loaded existing key pair. Public key: $_publicKeyHex');
+          Logger.log.i(() => '✅ Loaded existing key pair. Public key: $_publicKeyHex');
         } else {
-          Logger.log.w(
+          Logger.log.w(() => 
             '⚠️ Stored private key hex is invalid ($storedPrivateKeyHex). Generating new key pair.',
           );
           await generateNewKeyPair();
@@ -67,12 +67,12 @@ class KeyService {
       } else {
         // Generate new key pair
         await generateNewKeyPair();
-        Logger.log.i(
+        Logger.log.i(() => 
           '🔑 Generated and stored new key pair. Public key: $_publicKeyHex',
         );
       }
     } catch (e) {
-      Logger.log.e('❌ Error initializing KeyService: $e');
+      Logger.log.e(() => '❌ Error initializing KeyService: $e');
       _publicKeyHex = null;
       _privateKeyHex = null;
       // Consider attempting to generate fresh keys on error?
@@ -113,7 +113,7 @@ class KeyService {
 
     // Store the new private key securely, overwriting the old one
     await _storage.write(key: _privateKeyStorageKey, value: _privateKeyHex);
-    Logger.log.i('✅ Restored and saved new key pair. Public key: $_publicKeyHex');
+    Logger.log.i(() => '✅ Restored and saved new key pair. Public key: $_publicKeyHex');
   }
 
   // Optional: Method to delete keys (for testing or user request)
@@ -121,10 +121,10 @@ class KeyService {
     await _storage.delete(key: _privateKeyStorageKey);
     _publicKeyHex = null;
     _privateKeyHex = null;
-    Logger.log.i('🔑 Deleted stored key pair.');
+    Logger.log.i(() => '🔑 Deleted stored key pair.');
     // Also delete lightning address
     await _storage.delete(key: _lightningAddressStorageKey);
-    Logger.log.i('⚡️ Deleted stored Lightning Address.');
+    Logger.log.i(() => '⚡️ Deleted stored Lightning Address.');
   }
 
   // --- Lightning Address Methods ---
@@ -133,9 +133,9 @@ class KeyService {
   Future<void> saveLightningAddress(String address) async {
     try {
       await _storage.write(key: _lightningAddressStorageKey, value: address);
-      Logger.log.i('⚡️ Saved Lightning Address.');
+      Logger.log.i(() => '⚡️ Saved Lightning Address.');
     } catch (e) {
-      Logger.log.e('❌ Error saving Lightning Address: $e');
+      Logger.log.e(() => '❌ Error saving Lightning Address: $e');
       rethrow; // Allow calling code to handle error
     }
   }
@@ -144,10 +144,10 @@ class KeyService {
   Future<String?> getLightningAddress() async {
     try {
       final address = await _storage.read(key: _lightningAddressStorageKey);
-      Logger.log.i('⚡️ Retrieved Lightning Address: $address');
+      Logger.log.i(() => '⚡️ Retrieved Lightning Address: $address');
       return address;
     } catch (e) {
-      Logger.log.e('❌ Error retrieving Lightning Address: $e');
+      Logger.log.e(() => '❌ Error retrieving Lightning Address: $e');
       return null; // Return null on error
     }
   }

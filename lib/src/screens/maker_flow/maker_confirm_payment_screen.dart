@@ -135,7 +135,7 @@ class _MakerConfirmPaymentScreenState
       //   );
       // }
 
-      Logger.log.i(
+      Logger.log.i(() => 
         "[MakerConfirmPaymentScreen] Confirming payment for offer $offerId by maker $makerId",
       );
       await apiService.confirmMakerPayment(
@@ -187,7 +187,7 @@ class _MakerConfirmPaymentScreenState
 
     try {
       final apiService = ref.read(apiServiceProvider);
-      Logger.log.i(
+      Logger.log.i(() => 
         "[MakerConfirmPaymentScreen] Marking BLIK invalid for offer ${offer.id} by maker $makerId",
       );
       await apiService.markBlikInvalid(
@@ -656,7 +656,7 @@ class _MakerConfirmPaymentScreenState
         statusEnum == OfferStatus.takerCharged
     ) {
       // No special action needed, UI will update accordingly
-      Logger.log.i(
+      Logger.log.i(() => 
         "[MakerConfirmPaymentScreen] Offer status updated to expired. UI will reflect this.",
       );
       setState(() {

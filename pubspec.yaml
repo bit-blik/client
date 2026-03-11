@@ -38,24 +38,27 @@ dependencies:
   intl: 0.20.2
 
   cupertino_icons: ^1.0.8
-  http: ^1.2.1
+  http: ^1.6.0
   flutter_riverpod: ^2.6.1
   pretty_qr_code: ^3.5.0
 
   bip340: ^0.3.0 # For secp256k1 key pair generation (alternative to dart_nostr)
   flutter_secure_storage: ^10.0.0 # For secure key storage (Updated to latest)
-#  ndk: 0.7.1-dev.5
-  ndk:
-    path: ../../ndk/packages/ndk
+  ndk: 0.7.1-dev.5
+  ndk_flutter: 0.0.2
 #    git:
 #      url: https://github.com/relaystr/ndk.git
 #      path: packages/ndk
 #      ref: 2b469e91e41e0c155fdac2cd44d7180bcdefd147
 #  ndk_rust_verifier: 0.5.0
-  ndk_rust_verifier:
-    path: ../../ndk/packages/rust_verifier
-#  ndk_objectbox:
-#    path: ../../ndk/packages/objectbox
+#  ndk_flutter:
+#    path: ../../ndk/packages/ndk_flutter
+#  ndk_rust_verifier:
+#    path: ../../ndk/packages/rust_verifier
+  ndk_objectbox:
+    path: ../../ndk/packages/objectbox
+  drift_cache_manager:
+    path: ../../ndk/packages/drift_cache_manager
   sembast_cache_manager:
     path: ../../ndk/packages/sembast_cache_manager
 #    git:
@@ -83,8 +86,11 @@ dependencies:
   sqflite_common_ffi_web: ^1.0.1+1
   cached_network_image: ^3.4.1
   connectivity_plus: ^7.0.0
-  web: ^1.1.1
   mobile_scanner: ^7.1.4
+
+dependency_overrides:
+  ndk:
+    path: ../../ndk/packages/ndk
 
 dev_dependencies:
   #build_runner: 2.4.15

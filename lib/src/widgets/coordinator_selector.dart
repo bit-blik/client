@@ -257,25 +257,25 @@ class _CoordinatorSelectorState extends ConsumerState<CoordinatorSelector> {
       final coordinators = coordinatorsAsync.value;
 
       // Debug logging
-      Logger.log.d('🔍 CoordinatorSelector: Found ${coordinators.length} coordinators');
+      Logger.log.d(() => '🔍 CoordinatorSelector: Found ${coordinators.length} coordinators');
       for (final coordinator in coordinators) {
-        Logger.log.d('  - ${coordinator.name}: responsive=${coordinator.responsive}');
+        Logger.log.d(() => '  - ${coordinator.name}: responsive=${coordinator.responsive}');
       }
 
       // Find the first responsive coordinator for auto-selection
       final responsiveCoordinators = coordinators.where((c) => c.responsive == true).toList();
       final firstResponsiveCoordinator = responsiveCoordinators.isNotEmpty ? responsiveCoordinators.first : null;
 
-      Logger.log.d('🔍 CoordinatorSelector: Found ${responsiveCoordinators.length} responsive coordinators');
+      Logger.log.d(() => '🔍 CoordinatorSelector: Found ${responsiveCoordinators.length} responsive coordinators');
       if (firstResponsiveCoordinator != null) {
-        Logger.log.d('  - First responsive: ${firstResponsiveCoordinator.name}');
+        Logger.log.d(() => '  - First responsive: ${firstResponsiveCoordinator.name}');
       } else {
-        Logger.log.d('  - No responsive coordinators found');
+        Logger.log.d(() => '  - No responsive coordinators found');
       }
 
       // Auto-select the first responsive coordinator if none is selected
       if (selectedCoordinator == null && firstResponsiveCoordinator != null && widget.onCoordinatorSelected != null) {
-        Logger.log.d('🔍 CoordinatorSelector: Auto-selecting ${firstResponsiveCoordinator.name}');
+        Logger.log.d(() => '🔍 CoordinatorSelector: Auto-selecting ${firstResponsiveCoordinator.name}');
         // Use WidgetsBinding to call the callback after the current build is complete
         WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.onCoordinatorSelected!(firstResponsiveCoordinator);
@@ -284,7 +284,7 @@ class _CoordinatorSelectorState extends ConsumerState<CoordinatorSelector> {
 
       // Use selected coordinator if available, otherwise use the first responsive one
       final displayCoordinator = selectedCoordinator ?? firstResponsiveCoordinator;
-      Logger.log.d('🔍 CoordinatorSelector: Display coordinator: ${displayCoordinator?.name ?? 'none'}');
+      Logger.log.d(() => '🔍 CoordinatorSelector: Display coordinator: ${displayCoordinator?.name ?? 'none'}');
 
       if (displayCoordinator != null) {
         // Compose details for min/max PLN and maker fee

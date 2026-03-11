@@ -305,7 +305,7 @@ class _OfferListScreenState extends ConsumerState<OfferListScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      Logger.log.e("[OfferListScreen] Error loading coordinator info: ${e.toString()}");
+      Logger.log.e(() => "[OfferListScreen] Error loading coordinator info: ${e.toString()}");
       setState(() {
         _isLoadingCoordinatorConfig = false;
         _coordinatorConfigError = t.system.errors.loadingCoordinatorConfig;
@@ -472,7 +472,7 @@ class _OfferListScreenState extends ConsumerState<OfferListScreen> {
                     Expanded(
                       child: RefreshIndicator(
                         onRefresh: () async {
-                          Logger.log.d("[OfferListScreen] Manual refresh triggered.");
+                          Logger.log.d(() => "[OfferListScreen] Manual refresh triggered.");
                           ref.invalidate(availableOffersProvider);
                           ref.invalidate(activeOfferProvider);
                           await ref.read(availableOffersProvider.future);
@@ -631,7 +631,7 @@ class _OfferListScreenState extends ConsumerState<OfferListScreen> {
                                                 myActiveOffer.status == OfferStatus.makerConfirmed.name) {
                                               destinationScreen = TakerWaitConfirmationScreen(offer: myActiveOffer);
                                             } else {
-                                              Logger.log.e(
+                                              Logger.log.e(() => 
                                                 "[OfferListScreen] Error: Resuming offer in unexpected state: ${myActiveOffer.status}",
                                               );
                                               ScaffoldMessenger.of(

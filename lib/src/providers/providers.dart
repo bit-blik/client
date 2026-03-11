@@ -120,7 +120,7 @@ class DiscoveredCoordinatorsNotifier
         // await apiService.startCoordinatorDiscovery();
         await _loadCoordinators();
       } catch (e) {
-        Logger.log.e('Error during periodic coordinator refresh: $e');
+        Logger.log.e(() => 'Error during periodic coordinator refresh: $e');
       }
     });
   }
@@ -137,7 +137,7 @@ class DiscoveredCoordinatorsNotifier
       final apiService = await _ref.read(initializedApiServiceProvider.future);
       final coordinators = apiService.discoveredCoordinators;
 
-      Logger.log.d(
+      Logger.log.d(() => 
         '🔍 Provider: Loading ${coordinators.length} coordinators for health check',
       );
 
@@ -147,7 +147,7 @@ class DiscoveredCoordinatorsNotifier
         // Perform health checks for all discovered coordinators
         final healthCheckFutures = <Future<void>>[];
         for (final coordinator in coordinators) {
-          Logger.log.d(
+          Logger.log.d(() => 
             '🔍 Provider: Starting health check for ${coordinator.name}',
           );
           healthCheckFutures.add(
@@ -160,27 +160,27 @@ class DiscoveredCoordinatorsNotifier
           await Future.wait(
             healthCheckFutures,
           ).timeout(const Duration(seconds: 20));
-          Logger.log.d('🔍 Provider: All health checks completed');
+          Logger.log.d(() => '🔍 Provider: All health checks completed');
         } catch (e) {
-          Logger.log.w('Some health checks timed out or failed: $e');
+          Logger.log.w(() => 'Some health checks timed out or failed: $e');
           // Continue anyway - some coordinators may have been checked successfully
         }
       }
 
       // Now get the updated list with health check results and set the state
       final updatedCoordinators = apiService.discoveredCoordinators;
-      Logger.log.d(
+      Logger.log.d(() => 
         '🔍 Provider: Final coordinator list (${updatedCoordinators.length}):',
       );
       for (final coordinator in updatedCoordinators) {
-        Logger.log.d(
+        Logger.log.d(() => 
           '  - ${coordinator.name}: responsive=${coordinator.responsive}',
         );
       }
 
       state = AsyncValue.data(updatedCoordinators);
     } catch (e, stack) {
-      Logger.log.e('Error in _loadCoordinators: $e');
+      Logger.log.e(() => 'Error in _loadCoordinators: $e');
       state = AsyncValue.error(e, stack);
     }
   }
@@ -198,7 +198,7 @@ class DiscoveredCoordinatorsNotifier
   /// This will restart the discovery process and reload the coordinator list
   Future<void> refreshDiscovery() async {
     try {
-      Logger.log.i(
+      Logger.log.i(() => 
         '🔍 Provider: Manual refresh triggered, starting coordinator discovery...',
       );
 
@@ -211,7 +211,7 @@ class DiscoveredCoordinatorsNotifier
       // Reload coordinators with health checks
       await _loadCoordinators(skipHealthChecks: false);
     } catch (e, stack) {
-      Logger.log.e('Error in refreshDiscovery: $e');
+      Logger.log.e(() => 'Error in refreshDiscovery: $e');
       state = AsyncValue.error(e, stack);
     }
   }
@@ -232,14 +232,14 @@ class DiscoveredCoordinatorsNotifier
             refreshList(runHealthChecks: false);
           })
           .catchError((error) {
-            Logger.log.w(
+            Logger.log.w(() => 
               '⚠️ Error during health check for $coordinatorPubkey: $error',
             );
             // Still refresh the list to update status
             refreshList(runHealthChecks: false);
           });
     } catch (e) {
-      Logger.log.e('Error checking coordinator health: $e');
+      Logger.log.e(() => 'Error checking coordinator health: $e');
     }
   }
 
@@ -258,7 +258,7 @@ class DiscoveredCoordinatorsNotifier
                 (pubkey) => apiService
                     .checkCoordinatorHealth(pubkey)
                     .catchError((error) {
-                      Logger.log.w(
+                      Logger.log.w(() => 
                         '⚠️ Error during health check for $pubkey: $error',
                       );
                     }),
@@ -272,25 +272,25 @@ class DiscoveredCoordinatorsNotifier
             refreshList(runHealthChecks: false);
           })
           .catchError((error) {
-            Logger.log.e('Error during health checks: $error');
+            Logger.log.e(() => 'Error during health checks: $error');
             // Still refresh the list
             refreshList(runHealthChecks: false);
           });
     } catch (e) {
-      Logger.log.e('Error checking coordinators health: $e');
+      Logger.log.e(() => 'Error checking coordinators health: $e');
     }
   }
 
   Future<void> _startDiscovery() async {
     try {
       state = const AsyncValue.loading();
-      Logger.log.d(
+      Logger.log.d(() => 
         '🔍 Provider: Starting coordinator discovery, waiting for API service initialization...',
       );
 
       // Wait for API service to be fully initialized (this ensures KeyService is ready)
       final apiService = await _ref.read(initializedApiServiceProvider.future);
-      Logger.log.d(
+      Logger.log.d(() => 
         '🔍 Provider: API service initialized, starting coordinator discovery...',
       );
 
@@ -300,7 +300,7 @@ class DiscoveredCoordinatorsNotifier
       _startPeriodicRefresh();
       await _loadCoordinators(skipHealthChecks: true);
     } catch (e, stack) {
-      Logger.log.e('Error in _startDiscovery: $e');
+      Logger.log.e(() => 'Error in _startDiscovery: $e');
       state = AsyncValue.error(e, stack);
     }
   }
@@ -349,7 +349,7 @@ class CoordinatorInfoNotifier
             await Future.delayed(const Duration(milliseconds: 500));
             coordinatorInfo = apiService.getCoordinatorInfoByPubkey(pubkey);
           } catch (e) {
-            Logger.log.e('Error during coordinator discovery for $pubkey: $e');
+            Logger.log.e(() => 'Error during coordinator discovery for $pubkey: $e');
           }
         }
       },
@@ -359,7 +359,7 @@ class CoordinatorInfoNotifier
         coordinatorInfo = apiService.getCoordinatorInfoByPubkey(pubkey);
       },
       error: (error, stack) async {
-        Logger.log.e('Error in coordinator discovery: $error');
+        Logger.log.e(() => 'Error in coordinator discovery: $error');
         // Still try to get from cache even if discovery failed
         coordinatorInfo = apiService.getCoordinatorInfoByPubkey(pubkey);
       },
@@ -438,12 +438,12 @@ class ActiveOfferNotifier extends StateNotifier<Offer?> {
 
   Future<void> setActiveOffer(Offer? offer) async {
     if (offer != null) {
-      Logger.log.d(
+      Logger.log.d(() => 
         '[ActiveOfferNotifier] Setting active offer: ${offer.toJson()}',
       );
       await OfferDbService().upsertActiveOffer(offer);
     } else {
-      Logger.log.d('[ActiveOfferNotifier] Clearing active offer');
+      Logger.log.d(() => '[ActiveOfferNotifier] Clearing active offer');
       await OfferDbService().deleteActiveOffer();
     }
     state = offer;
@@ -492,13 +492,13 @@ final finishedOffersProvider = FutureProvider<List<Offer>>((ref) async {
     data: (coordinators) async {
       // Only proceed if we have discovered coordinators
       if (coordinators.isEmpty) {
-        Logger.log.d(
+        Logger.log.d(() => 
           'No coordinators discovered yet, returning empty finished offers list',
         );
         return <Offer>[];
       }
 
-      Logger.log.d(
+      Logger.log.d(() => 
         'Found ${coordinators.length} coordinators, loading finished offers',
       );
       // Use initialized API service to ensure KeyService is ready
@@ -517,7 +517,7 @@ final finishedOffersProvider = FutureProvider<List<Offer>>((ref) async {
     },
     loading: () => <Offer>[], // Return empty list while loading coordinators
     error: (error, stack) {
-      Logger.log.e('Error loading coordinators for finished offers: $error');
+      Logger.log.e(() => 'Error loading coordinators for finished offers: $error');
       return <Offer>[]; // Return empty list on error
     },
   );
@@ -548,7 +548,7 @@ final offerStatusSubscriptionManagerProvider = Provider<void>((ref) {
     statusSubscription?.cancel();
 
     if (current != null) {
-      Logger.log.d(
+      Logger.log.d(() => 
         "[SubscriptionManager] Active offer changed to ${current.id}. Starting new status subscription.",
       );
       final apiService = ref.read(apiServiceProvider);
@@ -573,13 +573,13 @@ final offerStatusSubscriptionManagerProvider = Provider<void>((ref) {
           try {
             newStatus = OfferStatus.values.byName(statusUpdate.status);
           } catch (e) {
-            Logger.log.e(
+            Logger.log.e(() => 
               "Error parsing status string '${statusUpdate.status}': $e",
             );
           }
 
           if (newStatus != null) {
-            Logger.log.d(
+            Logger.log.d(() => 
               "Offer ${current.id} status updated to: $newStatus. Updating active offer provider.",
             );
             activeOfferNotifier.updateOfferStatus(statusUpdate);
@@ -587,7 +587,7 @@ final offerStatusSubscriptionManagerProvider = Provider<void>((ref) {
         }
       });
     } else {
-      Logger.log.d(
+      Logger.log.d(() => 
         "[SubscriptionManager] Active offer cleared. Subscription stopped.",
       );
       _currentOfferId = null;
@@ -621,19 +621,19 @@ final successfulOffersStatsProvider = FutureProvider<Map<String, dynamic>>((
   await coordinatorsAsync.when(
     data: (coordinators) async {
       // Coordinators are loaded, we can proceed
-      Logger.log.d(
+      Logger.log.d(() => 
         '📊 Stats Provider: Found ${coordinators.length} coordinators for stats',
       );
     },
     loading: () async {
       // Wait a bit for coordinators to load
-      Logger.log.d(
+      Logger.log.d(() => 
         '📊 Stats Provider: Waiting for coordinators to be discovered...',
       );
       await Future.delayed(const Duration(seconds: 2));
     },
     error: (error, stack) async {
-      Logger.log.e('📊 Stats Provider: Error loading coordinators: $error');
+      Logger.log.e(() => '📊 Stats Provider: Error loading coordinators: $error');
     },
   );
 
@@ -732,7 +732,7 @@ class RelayConnectivityNotifier
 
       _initialized = true;
     } catch (e) {
-      Logger.log.e('Error initializing relay connectivity: $e');
+      Logger.log.e(() => 'Error initializing relay connectivity: $e');
     }
   }
 

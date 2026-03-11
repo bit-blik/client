@@ -74,7 +74,7 @@ class _TakerConflictScreenState extends ConsumerState<TakerConflictScreen> {
   }
 
   void _handleStatusUpdate(OfferStatus statusEnum, BuildContext context) {
-    Logger.log.i(
+    Logger.log.i(() => 
       "[TakerConflictScreen] Offer status updated to ${statusEnum.name}",
     );
 
@@ -83,7 +83,7 @@ class _TakerConflictScreenState extends ConsumerState<TakerConflictScreen> {
         statusEnum == OfferStatus.settled ||
         statusEnum == OfferStatus.payingTaker ||
         statusEnum == OfferStatus.takerPaid) {
-      Logger.log.d(
+      Logger.log.d(() => 
         "[TakerConflictScreen] Status is ${statusEnum.name}. Navigating to payment process screen.",
       );
       if (mounted) {
@@ -92,7 +92,7 @@ class _TakerConflictScreenState extends ConsumerState<TakerConflictScreen> {
     }
     // Navigate to payment failed screen
     else if (statusEnum == OfferStatus.takerPaymentFailed) {
-      Logger.log.d(
+      Logger.log.d(() => 
         "[TakerConflictScreen] Status is takerPaymentFailed. Navigating to payment failed screen.",
       );
       if (mounted) {

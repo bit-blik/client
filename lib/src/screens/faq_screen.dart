@@ -34,7 +34,7 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
     _localeSubscription = LocaleSettings.getLocaleStream().listen((locale) {
       // Check if the locale actually changed to avoid redundant loads if the stream emits the same locale
       if (_currentLocale != locale) {
-        Logger.log.d("FAQ Screen: Locale changed to $locale, reloading content.");
+        Logger.log.d(() => "FAQ Screen: Locale changed to $locale, reloading content.");
         _currentLocale = locale;
         _loadFaqContent();
       }
@@ -63,7 +63,7 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
     // This ensures that if _loadFaqContent is called before the stream listener has a chance to update _currentLocale
     // (e.g. during initState), it still uses the correct, most up-to-date locale.
     final localeToLoad = _currentLocale ?? LocaleSettings.currentLocale;
-    Logger.log.d("FAQ Screen: Loading content for locale: $localeToLoad");
+    Logger.log.d(() => "FAQ Screen: Loading content for locale: $localeToLoad");
 
     setState(() {
       _isLoading = true;
@@ -78,13 +78,13 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
       try {
         markdownData = await rootBundle.loadString(filePath);
       } catch (e) {
-        Logger.log.w('Could not load FAQ for language: $langCode. Falling back to English. Error: $e');
+        Logger.log.w(() => 'Could not load FAQ for language: $langCode. Falling back to English. Error: $e');
         langCode = 'en';
         filePath = 'assets/faq/faq_$langCode.md';
         try {
           markdownData = await rootBundle.loadString(filePath);
         } catch (fallbackError) {
-          Logger.log.w('Could not load English fallback FAQ. Error: $fallbackError');
+          Logger.log.w(() => 'Could not load English fallback FAQ. Error: $fallbackError');
           throw Exception('Failed to load FAQ content for $langCode and fallback en.');
         }
       }
@@ -99,7 +99,7 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
       setState(() {
         _error = 'Failed to load FAQ content: ${e.toString()}';
       });
-      Logger.log.e('Error loading FAQ: $_error');
+      Logger.log.e(() => 'Error loading FAQ: $_error');
     } finally {
       setState(() {
         _isLoading = false;

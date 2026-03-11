@@ -23,37 +23,37 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
   @override
   void initState() {
     super.initState();
-    Logger.log.d('[RoleSelectionScreen] initState called');
+    Logger.log.d(() => '[RoleSelectionScreen] initState called');
   }
 
   /// Syncs the local active offer state with the coordinator's state
   Future<void> _syncActiveOfferWithCoordinator() async {
-    Logger.log.d('[RoleSelectionScreen] _syncActiveOfferWithCoordinator called');
+    Logger.log.d(() => '[RoleSelectionScreen] _syncActiveOfferWithCoordinator called');
 
     if (_isSyncing) {
-      Logger.log.d('[RoleSelectionScreen] Already syncing, skipping');
+      Logger.log.d(() => '[RoleSelectionScreen] Already syncing, skipping');
       return;
     }
 
     final activeOffer = ref.read(activeOfferProvider);
     final publicKey = await ref.read(publicKeyProvider.future);
 
-    Logger.log.d('[RoleSelectionScreen] activeOffer: ${activeOffer?.id}, publicKey: ${publicKey?.substring(0, 8)}...');
+    Logger.log.d(() => '[RoleSelectionScreen] activeOffer: ${activeOffer?.id}, publicKey: ${publicKey?.substring(0, 8)}...');
 
     // Only sync if we have an active offer and a public key
     if (activeOffer == null) {
-      Logger.log.d('[RoleSelectionScreen] No active offer, skipping sync');
+      Logger.log.d(() => '[RoleSelectionScreen] No active offer, skipping sync');
       return;
     }
 
     if (publicKey == null) {
-      Logger.log.d('[RoleSelectionScreen] No public key, skipping sync');
+      Logger.log.d(() => '[RoleSelectionScreen] No public key, skipping sync');
       return;
     }
 
     // Skip sync for offers with 'created' status - they only exist locally
     if (activeOffer.status == OfferStatus.created.name) {
-      Logger.log.d('[RoleSelectionScreen] Offer has created status, skipping coordinator sync');
+      Logger.log.d(() => '[RoleSelectionScreen] Offer has created status, skipping coordinator sync');
       return;
     }
 
@@ -65,14 +65,14 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
     });
 
     try {
-      Logger.log.i('[RoleSelectionScreen] Fetching active offer from coordinator for offer ${activeOffer.id}');
+      Logger.log.i(() => '[RoleSelectionScreen] Fetching active offer from coordinator for offer ${activeOffer.id}');
       final apiService = ref.read(apiServiceProvider);
       final fetchedOffer = await apiService.getMyActiveOffer(publicKey, activeOffer.coordinatorPubkey);
-      Logger.log.d('[RoleSelectionScreen] Fetched offer result: ${fetchedOffer != null ? "found" : "null"}');
+      Logger.log.d(() => '[RoleSelectionScreen] Fetched offer result: ${fetchedOffer != null ? "found" : "null"}');
 
       final fetchedOfferObj = fetchedOffer != null ? Offer.fromJson(fetchedOffer) : null;
       if (fetchedOfferObj == null) {
-        Logger.log.i(
+        Logger.log.i(() => 
           '[RoleSelectionScreen] No active offer found on coordinator. Clearing local active offer.',
         );
         return;
@@ -83,7 +83,7 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
           fetchedOfferObj.statusEnum == OfferStatus.cancelled ||
           fetchedOfferObj.id != activeOffer.id) {
         // Coordinator says no active offer, or taker has paid - clear local state
-        Logger.log.i(
+        Logger.log.i(() => 
           '[RoleSelectionScreen] No active offer on coordinator or taker has paid. Clearing local active offer.',
         );
        await ref.read(activeOfferProvider.notifier).setActiveOffer(null);
@@ -92,18 +92,18 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
         if (fetchedOfferObj.status != activeOffer.status ||
             fetchedOfferObj.takerFees != activeOffer.takerFees ||
             fetchedOfferObj.makerFees != activeOffer.makerFees) {
-          Logger.log.i(
+          Logger.log.i(() => 
             '[RoleSelectionScreen] Offer status mismatch. Local: ${activeOffer.status}, Coordinator: ${fetchedOfferObj.status}. Updating local state.',
           );
 
           // Update local state to match coordinator
           await ref.read(activeOfferProvider.notifier).setActiveOffer(fetchedOfferObj);
         } else {
-          Logger.log.d('[RoleSelectionScreen] Offer status in sync: ${activeOffer.status}');
+          Logger.log.d(() => '[RoleSelectionScreen] Offer status in sync: ${activeOffer.status}');
         }
       }
     } catch (e) {
-      Logger.log.e('[RoleSelectionScreen] Error syncing active offer with coordinator: $e');
+      Logger.log.e(() => '[RoleSelectionScreen] Error syncing active offer with coordinator: $e');
       // Don't show error to user - this is a background sync operation
     } finally {
       if (mounted) {
@@ -138,7 +138,7 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
       case OfferStatus.expiredSentBlik:
         // BLIK expired, maker needs to confirm payment manually
         // These are handled in the special onTap handler to fetch BLIK code
-        Logger.log.d("Maker offer in expired BLIK state: $offerStatus");
+        Logger.log.d(() => "Maker offer in expired BLIK state: $offerStatus");
         break;
       case OfferStatus.conflict:
       case OfferStatus.dispute:
@@ -149,7 +149,7 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
         context.go("/maker-invalid-blik", extra: offer);
         break;
       default:
-        Logger.log.w("Cannot resume Maker offer in state: $offerStatus");
+        Logger.log.w(() => "Cannot resume Maker offer in state: $offerStatus");
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(t.offers.errors.cannotResume(status: offerStatus.name))));
@@ -180,7 +180,7 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
     } else if (offerStatus == OfferStatus.conflict || offerStatus == OfferStatus.dispute) {
       context.go('/taker-conflict', extra: offer.id);
     } else {
-      Logger.log.e("[RoleSelectionScreen] Error: Resuming Taker offer in unexpected state: $offerStatus");
+      Logger.log.e(() => "[RoleSelectionScreen] Error: Resuming Taker offer in unexpected state: $offerStatus");
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(t.offers.errors.cannotResumeTaker(status: offerStatus.name))));
@@ -197,11 +197,11 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
 
     // Listen for when activeOffer becomes available and trigger sync
     ref.listen<Offer?>(activeOfferProvider, (previous, current) {
-      Logger.log.d(
+      Logger.log.d(() => 
         '[RoleSelectionScreen] activeOfferProvider changed: previous=${previous?.id}, current=${current?.id}',
       );
       if (current != null && !_hasTriggeredInitialSync && !_isSyncing) {
-        Logger.log.d('[RoleSelectionScreen] Active offer loaded: ${current.id}, triggering sync');
+        Logger.log.d(() => '[RoleSelectionScreen] Active offer loaded: ${current.id}, triggering sync');
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             _syncActiveOfferWithCoordinator();

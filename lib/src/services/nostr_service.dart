@@ -3,13 +3,15 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:drift_cache_manager/drift_cache_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ndk/ndk.dart';
 import 'package:ndk/shared/isolates/isolate_manager.dart';
 import 'package:ndk/shared/nips/nip44/nip44.dart';
-// import 'package:ndk_objectbox/data_layer/db/object_box/db_object_box.dart';
+import 'package:ndk_flutter/ndk_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast_cache_manager/sembast_cache_manager.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:ndk_rust_verifier/ndk_rust_verifier.dart' as web_rust_verifier;
@@ -152,7 +154,6 @@ class NostrService {
   final KeyService _keyService;
   Ndk? _ndk;
   Bip340EventSigner? _clientSigner;
-  final eventVerifier = Bip340EventVerifier();// web_rust_verifier.RustEventVerifier(); //kIsWeb? web_rust_verifier.RustEventVerifier() : RustEventVerifier();
 
   final Map<String, Completer<NostrResponse>> _pendingRequests = {};
   final Random _random = Random();
@@ -175,10 +176,12 @@ class NostrService {
   final Map<String, CoordinatorInfo> _coordinatorInfoCache = {};
 
   // Default whitelist (hardcoded)
-  List<String> kWhitelistCoordinatorPubKeys = !kDebugMode? [
-     "c6e5e031989223dd63e6ed49f0905a19a92ed86e0754721d6071133a9340bf7e",
-  ]:["30a68e444a09fcf01c49c673e9fd4c1ddf27bae6ee3f9b7a26c8785de741d414"]
-  ;
+  List<String> kWhitelistCoordinatorPubKeys =
+      !kDebugMode
+          ? ["c6e5e031989223dd63e6ed49f0905a19a92ed86e0754721d6071133a9340bf7e"]
+          : [
+            "30a68e444a09fcf01c49c673e9fd4c1ddf27bae6ee3f9b7a26c8785de741d414",
+          ];
 
   // Blacklist and custom whitelist (loaded from preferences)
   List<String> _blacklistedCoordinators = [];
@@ -197,7 +200,7 @@ class NostrService {
     await _subscribeToResponses();
 
     _isInitialized = true;
-    Logger.log.i('✅ NostrService initialized');
+    Logger.log.i(() => '✅ NostrService initialized');
   }
 
   /// Load configuration from SharedPreferences
@@ -205,14 +208,20 @@ class NostrService {
     final prefs = await SharedPreferences.getInstance();
 
     _relayUrls =
-        // prefs.getStringList(_relayUrlsKey) ??
-            List.from(_defaultRelayUrls);
+    // prefs.getStringList(_relayUrlsKey) ??
+    List.from(_defaultRelayUrls);
     _blacklistedCoordinators = prefs.getStringList(_blacklistKey) ?? [];
-    _customWhitelistedCoordinators = prefs.getStringList(_customWhitelistKey) ?? [];
+    _customWhitelistedCoordinators =
+        prefs.getStringList(_customWhitelistKey) ?? [];
 
-    Logger.log.i('📡 Using relays: $_relayUrls');
-    Logger.log.i('🚫 Blacklisted coordinators: ${_blacklistedCoordinators.length}');
-    Logger.log.i('✅ Custom whitelisted coordinators: ${_customWhitelistedCoordinators.length}');
+    Logger.log.i(() => '📡 Using relays: $_relayUrls');
+    Logger.log.i(
+      () => '🚫 Blacklisted coordinators: ${_blacklistedCoordinators.length}',
+    );
+    Logger.log.i(
+      () =>
+          '✅ Custom whitelisted coordinators: ${_customWhitelistedCoordinators.length}',
+    );
   }
 
   /// Initialize NDK and connect to relays
@@ -221,22 +230,26 @@ class NostrService {
     if (_ndk != null) {
       try {
         await _ndk!.destroy();
-        Logger.log.d('🔄 Destroyed previous NDK instance');
+        Logger.log.d(() => '🔄 Destroyed previous NDK instance');
       } catch (e) {
-        Logger.log.w('⚠️ Error destroying previous NDK instance: $e');
+        Logger.log.w(() => '⚠️ Error destroying previous NDK instance: $e');
       }
     }
-    // Create cache manager
-    final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
-    final cacheManager = await SembastCacheManager.create(databasePath: appDocumentsDir.path);
+    final cacheManager =
+      kIsWeb ?
+        await DriftCacheManager.create() :
+      await SembastCacheManager.create(databasePath: (await getApplicationDocumentsDirectory()).path);
+    // final cacheManager = MemCacheManager(); //DbObjectBox();
+
+    final eventVerifier = kIsWeb ? WebEventVerifier() : RustEventVerifier();
 
     // Initialize NDK with bootstrap relays config
     _ndk = Ndk(
       NdkConfig(
-        cache: cacheManager,//DbObjectBox(),
+        cache: cacheManager,
         eventVerifier: eventVerifier,
         bootstrapRelays: _relayUrls,
-        logLevel: kDebugMode?LogLevel.debug:LogLevel.warning,
+        logLevel: kDebugMode ? LogLevel.debug : LogLevel.warning,
       ),
     );
 
@@ -266,11 +279,12 @@ class NostrService {
     //   }
     // });
     Logger.log.i(
-      '🔑 Client signer initialized with pubkey: ${_keyService.publicKeyHex}',
+      () =>
+          '🔑 Client signer initialized with pubkey: ${_keyService.publicKeyHex}',
     );
 
     // Wait for NDK to actually connect to at least one relay
-    Logger.log.t('⏳ Waiting for NDK to connect to relays...');
+    Logger.log.t(() => '⏳ Waiting for NDK to connect to relays...');
 
     // Wait up to 10 seconds for connection
     bool connected = false;
@@ -279,16 +293,17 @@ class NostrService {
       // Check if any relays are connected (this is a simple heuristic)
       // In a real implementation, you'd check NDK's connection status
       // For now, we'll just wait a reasonable amount of time
-      if (i >= 3) { // Wait at least 2 seconds
+      if (i >= 3) {
+        // Wait at least 2 seconds
         connected = true;
         break;
       }
     }
 
     if (connected) {
-      Logger.log.i('✅ NDK connection wait completed');
+      Logger.log.i(() => '✅ NDK connection wait completed');
     } else {
-      Logger.log.w('⚠️ NDK connection timeout - proceeding anyway');
+      Logger.log.w(() => '⚠️ NDK connection timeout - proceeding anyway');
     }
   }
 
@@ -308,17 +323,19 @@ class NostrService {
     _responseSubscription = _ndk!.requests.subscription(
       name: "client-responses",
       filters: [filter],
-      explicitRelays: _relayUrls
+      explicitRelays: _relayUrls,
     );
 
     _responseSubscription!.stream.listen(_handleResponseEvent);
-    Logger.log.i('👂 Subscribed to coordinator responses');
+    Logger.log.i(() => '👂 Subscribed to coordinator responses');
   }
 
   /// Handle incoming response events
   void _handleResponseEvent(Nip01Event event) async {
     try {
-      Logger.log.d('📨 Received response event: ${event.id} from ${event.pubKey}');
+      Logger.log.d(
+        () => '📨 Received response event: ${event.id} from ${event.pubKey}',
+      );
 
       // Decrypt the content using NIP-44
       final decryptedContent = await Nip44.decryptMessage(
@@ -327,7 +344,7 @@ class NostrService {
         event.pubKey,
       );
 
-      Logger.log.d('🔓 Decrypted response: $decryptedContent');
+      Logger.log.d(() => '🔓 Decrypted response: $decryptedContent');
 
       final responseData = jsonDecode(decryptedContent) as Map<String, dynamic>;
       final response = NostrResponse.fromJson(responseData);
@@ -336,14 +353,17 @@ class NostrService {
       if (response.id != null && _pendingRequests.containsKey(response.id)) {
         final completer = _pendingRequests.remove(response.id);
         completer?.complete(response);
-        Logger.log.d('✅ Completed request: ${response.id}');
+        Logger.log.d(() => '✅ Completed request: ${response.id}');
       } else {
-        Logger.log.w('⚠️ No matching pending request for response ID: ${response.id}');
+        Logger.log.w(
+          () =>
+              '⚠️ No matching pending request for response ID: ${response.id}',
+        );
       }
     } catch (e) {
-      Logger.log.e('❌ Error handling response event: $e');
-      Logger.log.e('🔑 Current pubkey: ${_keyService.publicKeyHex}');
-      Logger.log.e('📨 Event from: ${event.pubKey}');
+      Logger.log.e(() => '❌ Error handling response event: $e');
+      Logger.log.e(() => '🔑 Current pubkey: ${_keyService.publicKeyHex}');
+      Logger.log.e(() => '📨 Event from: ${event.pubKey}');
     }
   }
 
@@ -397,13 +417,14 @@ class NostrService {
 
       // Publish the event
       _ndk!.broadcast.broadcast(
-          nostrEvent: event,
-          customSigner: _clientSigner,
-          specificRelays: _relayUrls
+        nostrEvent: event,
+        customSigner: _clientSigner,
+        specificRelays: _relayUrls,
       );
 
       Logger.log.d(
-        '📤 Sent request: ${request.method} (ID: $requestId) to $coordinatorPubkey',
+        () =>
+            '📤 Sent request: ${request.method} (ID: $requestId) to $coordinatorPubkey',
       );
 
       // Wait for response with timeout
@@ -424,7 +445,9 @@ class NostrService {
         if (request.method != 'get_info') {
           // Trigger health check asynchronously (don't await)
           checkCoordinatorHealth(coordinatorPubkey).catchError((error) {
-            Logger.log.w('⚠️ Error during health check after timeout: $error');
+            Logger.log.w(
+              () => '⚠️ Error during health check after timeout: $error',
+            );
           });
         }
         rethrow;
@@ -514,10 +537,10 @@ class NostrService {
     _offerSubscription = _ndk!.requests.subscription(
       name: "offers-stream",
       filters: [filter],
-      explicitRelays: _relayUrls
+      explicitRelays: _relayUrls,
     );
     _offerSubscription!.stream.listen(_handleOfferEvent);
-    Logger.log.i('🔎 Started offers subscription');
+    Logger.log.i(() => '🔎 Started offers subscription');
   }
 
   void _handleOfferEvent(Nip01Event event) {
@@ -525,7 +548,7 @@ class NostrService {
       final offer = _mapEventToOffer(event);
       _offerStreamController.add(offer);
     } catch (e) {
-      Logger.log.e('❌ Error parsing offer event: $e');
+      Logger.log.e(() => '❌ Error parsing offer event: $e');
     }
   }
 
@@ -536,9 +559,9 @@ class NostrService {
     for (final t in event.tags) {
       if (t.length >= 2) tagMap[t[0]] = t[1];
     }
-    final reservedAt =  int.tryParse(tagMap['reserved_at'] ?? '0') ?? 0;
-    final takerPaidAt =  int.tryParse(tagMap['paid_at'] ?? '0') ?? 0;
-    final createdAt =  int.tryParse(tagMap['created_at'] ?? '0') ?? 0;
+    final reservedAt = int.tryParse(tagMap['reserved_at'] ?? '0') ?? 0;
+    final takerPaidAt = int.tryParse(tagMap['paid_at'] ?? '0') ?? 0;
+    final createdAt = int.tryParse(tagMap['created_at'] ?? '0') ?? 0;
     // Build Offer (fallback/default when fields missing!)
     final offer = Offer(
       id: tagMap['d'] ?? event.id,
@@ -565,8 +588,14 @@ class NostrService {
       updatedAt: null,
       makerConfirmedAt: null,
       settledAt: null,
-      reservedAt: reservedAt!=0 ?DateTime.fromMillisecondsSinceEpoch(reservedAt * 1000) : null,
-      takerPaidAt: takerPaidAt!=0 ?DateTime.fromMillisecondsSinceEpoch(takerPaidAt * 1000) : null,
+      reservedAt:
+          reservedAt != 0
+              ? DateTime.fromMillisecondsSinceEpoch(reservedAt * 1000)
+              : null,
+      takerPaidAt:
+          takerPaidAt != 0
+              ? DateTime.fromMillisecondsSinceEpoch(takerPaidAt * 1000)
+              : null,
       takerFees: int.tryParse(tagMap['taker_fees'] ?? '0'),
     );
     return offer;
@@ -610,7 +639,11 @@ class NostrService {
     final filter = Filter(kinds: [KIND_OFFER], dTags: [offerId], limit: 1);
 
     // Use query for a one-time fetch.
-    final response = _ndk!.requests.query(filters: [filter], cacheRead: false, explicitRelays: _relayUrls);
+    final response = _ndk!.requests.query(
+      filters: [filter],
+      cacheRead: false,
+      explicitRelays: _relayUrls,
+    );
     final events = await response.stream.toList();
 
     if (events.isEmpty) {
@@ -703,7 +736,10 @@ class NostrService {
   }
 
   /// GET /my-active-offer
-  Future<Map<String, dynamic>?> getMyActiveOffer(String userPubkey, String coordinatorPubkey) async {
+  Future<Map<String, dynamic>?> getMyActiveOffer(
+    String userPubkey,
+    String coordinatorPubkey,
+  ) async {
     if (!_isInitialized) {
       await init();
     }
@@ -723,7 +759,8 @@ class NostrService {
     } catch (e) {
       // Continue to the next coordinator if one fails
       Logger.log.e(
-        "Error getting active offer from coordinator ${coordinatorPubkey}: $e",
+        () =>
+            "Error getting active offer from coordinator ${coordinatorPubkey}: $e",
       );
     }
     return null; // No active offer found on any coordinator
@@ -738,7 +775,9 @@ class NostrService {
     final allOffers = <Offer>[];
     final coordinators = _discoveredCoordinators.values.toList();
     if (coordinators.isEmpty) {
-      Logger.log.w("No coordinators discovered, cannot get finished offers.");
+      Logger.log.w(
+        () => "No coordinators discovered, cannot get finished offers.",
+      );
       return [];
     }
 
@@ -778,7 +817,8 @@ class NostrService {
       });
     } catch (e) {
       Logger.log.e(
-        "Error getting finished offers from coordinator $coordinatorPubkey: $e",
+        () =>
+            "Error getting finished offers from coordinator $coordinatorPubkey: $e",
       );
       return [];
     }
@@ -856,10 +896,7 @@ class NostrService {
     _handleResponse(response, (result) => null);
   }
 
-  Future<void> markBlikCharged(
-    String offerId,
-    String coordinatorPubkey,
-  ) async {
+  Future<void> markBlikCharged(String offerId, String coordinatorPubkey) async {
     final request = NostrRequest(
       method: 'mark_blik_charged',
       params: {'offer_id': offerId},
@@ -906,7 +943,7 @@ class NostrService {
 
     final coordinators = _discoveredCoordinators.values.toList();
     if (coordinators.isEmpty) {
-      Logger.log.w("No coordinators discovered, cannot get stats.");
+      Logger.log.w(() => "No coordinators discovered, cannot get stats.");
       return {
         'total_sats': 0,
         'total_offers': 0,
@@ -921,8 +958,8 @@ class NostrService {
             'avg_time_blik_received_to_created_seconds': null,
             'avg_time_taker_paid_to_created_seconds': null,
             'count': 0,
-          }
-        }
+          },
+        },
       };
     }
 
@@ -966,22 +1003,28 @@ class NostrService {
         }
 
         // Aggregate nested stats if present
-        if (stats.containsKey('stats') && stats['stats'] is Map<String, dynamic>) {
+        if (stats.containsKey('stats') &&
+            stats['stats'] is Map<String, dynamic>) {
           final nestedStats = stats['stats'] as Map<String, dynamic>;
 
           // Process lifetime stats
-          if (nestedStats.containsKey('lifetime') && nestedStats['lifetime'] is Map<String, dynamic>) {
-            final lifetimeStats = nestedStats['lifetime'] as Map<String, dynamic>;
+          if (nestedStats.containsKey('lifetime') &&
+              nestedStats['lifetime'] is Map<String, dynamic>) {
+            final lifetimeStats =
+                nestedStats['lifetime'] as Map<String, dynamic>;
             final count = (lifetimeStats['count'] as num?)?.toInt() ?? 0;
             lifetimeCount += count;
 
-            final blikTime = lifetimeStats['avg_time_blik_received_to_created_seconds'] as num?;
+            final blikTime =
+                lifetimeStats['avg_time_blik_received_to_created_seconds']
+                    as num?;
             if (blikTime != null && count > 0) {
               lifetimeBlikTimeSum += blikTime.toDouble() * count;
               lifetimeBlikTimeValidEntries += count;
             }
 
-            final paidTime = lifetimeStats['avg_time_taker_paid_to_created_seconds'] as num?;
+            final paidTime =
+                lifetimeStats['avg_time_taker_paid_to_created_seconds'] as num?;
             if (paidTime != null && count > 0) {
               lifetimePaidTimeSum += paidTime.toDouble() * count;
               lifetimePaidTimeValidEntries += count;
@@ -989,18 +1032,24 @@ class NostrService {
           }
 
           // Process last_7_days stats
-          if (nestedStats.containsKey('last_7_days') && nestedStats['last_7_days'] is Map<String, dynamic>) {
-            final last7DaysStats = nestedStats['last_7_days'] as Map<String, dynamic>;
+          if (nestedStats.containsKey('last_7_days') &&
+              nestedStats['last_7_days'] is Map<String, dynamic>) {
+            final last7DaysStats =
+                nestedStats['last_7_days'] as Map<String, dynamic>;
             final count = (last7DaysStats['count'] as num?)?.toInt() ?? 0;
             last7DaysCount += count;
 
-            final blikTime = last7DaysStats['avg_time_blik_received_to_created_seconds'] as num?;
+            final blikTime =
+                last7DaysStats['avg_time_blik_received_to_created_seconds']
+                    as num?;
             if (blikTime != null && count > 0) {
               last7DaysBlikTimeSum += blikTime.toDouble() * count;
               last7DaysBlikTimeValidEntries += count;
             }
 
-            final paidTime = last7DaysStats['avg_time_taker_paid_to_created_seconds'] as num?;
+            final paidTime =
+                last7DaysStats['avg_time_taker_paid_to_created_seconds']
+                    as num?;
             if (paidTime != null && count > 0) {
               last7DaysPaidTimeSum += paidTime.toDouble() * count;
               last7DaysPaidTimeValidEntries += count;
@@ -1008,7 +1057,10 @@ class NostrService {
           }
         }
       } catch (e) {
-        Logger.log.e("Error getting stats from coordinator ${coordinator.pubkey}: $e");
+        Logger.log.e(
+          () =>
+              "Error getting stats from coordinator ${coordinator.pubkey}: $e",
+        );
       }
     }
 
@@ -1021,24 +1073,30 @@ class NostrService {
       'offers': allOffers,
       'stats': {
         'lifetime': {
-          'avg_time_blik_received_to_created_seconds': lifetimeBlikTimeValidEntries > 0
-              ? (lifetimeBlikTimeSum / lifetimeBlikTimeValidEntries).round()
-              : null,
-          'avg_time_taker_paid_to_created_seconds': lifetimePaidTimeValidEntries > 0
-              ? (lifetimePaidTimeSum / lifetimePaidTimeValidEntries).round()
-              : null,
+          'avg_time_blik_received_to_created_seconds':
+              lifetimeBlikTimeValidEntries > 0
+                  ? (lifetimeBlikTimeSum / lifetimeBlikTimeValidEntries).round()
+                  : null,
+          'avg_time_taker_paid_to_created_seconds':
+              lifetimePaidTimeValidEntries > 0
+                  ? (lifetimePaidTimeSum / lifetimePaidTimeValidEntries).round()
+                  : null,
           'count': lifetimeCount,
         },
         'last_7_days': {
-          'avg_time_blik_received_to_created_seconds': last7DaysBlikTimeValidEntries > 0
-              ? (last7DaysBlikTimeSum / last7DaysBlikTimeValidEntries).round()
-              : null,
-          'avg_time_taker_paid_to_created_seconds': last7DaysPaidTimeValidEntries > 0
-              ? (last7DaysPaidTimeSum / last7DaysPaidTimeValidEntries).round()
-              : null,
+          'avg_time_blik_received_to_created_seconds':
+              last7DaysBlikTimeValidEntries > 0
+                  ? (last7DaysBlikTimeSum / last7DaysBlikTimeValidEntries)
+                      .round()
+                  : null,
+          'avg_time_taker_paid_to_created_seconds':
+              last7DaysPaidTimeValidEntries > 0
+                  ? (last7DaysPaidTimeSum / last7DaysPaidTimeValidEntries)
+                      .round()
+                  : null,
           'count': last7DaysCount,
-        }
-      }
+        },
+      },
     };
   }
 
@@ -1062,7 +1120,7 @@ class NostrService {
     final response = _ndk!.requests.query(
       name: "coordinator-discovery",
       filters: [filter],
-      explicitRelays: _relayUrls
+      explicitRelays: _relayUrls,
     );
     await for (final event in response.stream) {
       _handleCoordinatorInfoEvent(event);
@@ -1094,11 +1152,11 @@ class NostrService {
     _offerStatusSubscription = _ndk!.requests.subscription(
       name: "offer-status-updates",
       filters: [filter],
-      explicitRelays: _relayUrls
+      explicitRelays: _relayUrls,
     );
 
     _offerStatusSubscription!.stream.listen(_handleOfferStatusEvent);
-    Logger.log.i('📊 Started offer status subscription for $userPubkey');
+    Logger.log.i(() => '📊 Started offer status subscription for $userPubkey');
   }
 
   Future<void> stopOfferStatusSubscription() async {
@@ -1107,7 +1165,7 @@ class NostrService {
         _offerStatusSubscription!.requestId,
       );
       _offerStatusSubscription = null;
-      Logger.log.i('📊 Stopped offer status subscription');
+      Logger.log.i(() => '📊 Stopped offer status subscription');
     }
   }
 
@@ -1115,7 +1173,8 @@ class NostrService {
   void _handleOfferStatusEvent(Nip01Event event) async {
     try {
       Logger.log.d(
-        '📊 Received offer status update: ${event.id} from ${event.pubKey}',
+        () =>
+            '📊 Received offer status update: ${event.id} from ${event.pubKey}',
       );
 
       // Decrypt the content using NIP-44
@@ -1125,7 +1184,7 @@ class NostrService {
         event.pubKey,
       );
 
-      Logger.log.d('🔓 Decrypted status update: $decryptedContent');
+      Logger.log.d(() => '🔓 Decrypted status update: $decryptedContent');
 
       final content = jsonDecode(decryptedContent) as Map<String, dynamic>;
       final statusUpdate = OfferStatusUpdate.fromJson(content, event.pubKey);
@@ -1134,10 +1193,11 @@ class NostrService {
       _offerStatusController.add(statusUpdate);
 
       Logger.log.d(
-        '📊 Processed status update: ${statusUpdate.offerId} -> ${statusUpdate.status}',
+        () =>
+            '📊 Processed status update: ${statusUpdate.offerId} -> ${statusUpdate.status}',
       );
     } catch (e) {
-      Logger.log.e('❌ Error handling offer status event: $e');
+      Logger.log.e(() => '❌ Error handling offer status event: $e');
     }
   }
 
@@ -1149,22 +1209,26 @@ class NostrService {
   bool _shouldIncludeCoordinator(String pubkey) {
     // Normalize pubkey to hex format for comparison
     String pubkeyHex = _normalizePubkey(pubkey);
-    
+
     // Check if blacklisted
     if (_blacklistedCoordinators.any((b) => _normalizePubkey(b) == pubkeyHex)) {
       return false;
     }
-    
+
     // Check if in default whitelist
-    if (kWhitelistCoordinatorPubKeys.any((w) => _normalizePubkey(w) == pubkeyHex)) {
+    if (kWhitelistCoordinatorPubKeys.any(
+      (w) => _normalizePubkey(w) == pubkeyHex,
+    )) {
       return true;
     }
-    
+
     // Check if in custom whitelist
-    if (_customWhitelistedCoordinators.any((w) => _normalizePubkey(w) == pubkeyHex)) {
+    if (_customWhitelistedCoordinators.any(
+      (w) => _normalizePubkey(w) == pubkeyHex,
+    )) {
       return true;
     }
-    
+
     return false;
   }
 
@@ -1181,15 +1245,17 @@ class NostrService {
   }
 
   /// Handle incoming coordinator info events
-  void  _handleCoordinatorInfoEvent(Nip01Event event) {
+  void _handleCoordinatorInfoEvent(Nip01Event event) {
     try {
       final coordinator = DiscoveredCoordinator.fromNostrEvent(event);
       final pubkey = coordinator.pubkey;
-      
+
       // Always add to discovered coordinators if in default whitelist (even if blacklisted)
       // This allows users to see and unblacklist them in the UI
-      final isDefaultWhitelisted = kWhitelistCoordinatorPubKeys.any((w) => _normalizePubkey(w) == _normalizePubkey(pubkey));
-      
+      final isDefaultWhitelisted = kWhitelistCoordinatorPubKeys.any(
+        (w) => _normalizePubkey(w) == _normalizePubkey(pubkey),
+      );
+
       if (isDefaultWhitelisted || _shouldIncludeCoordinator(pubkey)) {
         _discoveredCoordinators[pubkey] = coordinator;
         _discoveredCoordinators[pubkey]!.responsive = true;
@@ -1197,7 +1263,7 @@ class NostrService {
         final coordinatorInfo = coordinator.toCoordinatorInfo();
         _coordinatorInfoCache[pubkey] = coordinatorInfo;
         Logger.log.i(
-          '🎯 Discovered coordinator: ${coordinator.name} ($pubkey)',
+          () => '🎯 Discovered coordinator: ${coordinator.name} ($pubkey)',
         );
         // Only check health if not blacklisted
         if (_shouldIncludeCoordinator(pubkey)) {
@@ -1206,7 +1272,7 @@ class NostrService {
         }
       }
     } catch (e) {
-      Logger.log.e('❌ Error parsing coordinator info event: $e');
+      Logger.log.e(() => '❌ Error parsing coordinator info event: $e');
     }
   }
 
@@ -1216,19 +1282,17 @@ class NostrService {
     if (!_shouldIncludeCoordinator(coordinatorPubkey)) {
       return;
     }
-    
+
     try {
       final request = NostrRequest(method: 'get_info', params: {});
       // Use a shorter timeout for health checks
-      await sendRequest(
-        request,
-        coordinatorPubkey,
-      );
+      await sendRequest(request, coordinatorPubkey);
       // If no exception, coordinator is responsive
       _markCoordinatorResponsive(coordinatorPubkey, true);
     } catch (e) {
       Logger.log.w(
-        '🚨 Coordinator $coordinatorPubkey did not respond to get_info: $e',
+        () =>
+            '🚨 Coordinator $coordinatorPubkey did not respond to get_info: $e',
       );
       _markCoordinatorResponsive(coordinatorPubkey, false);
     }
@@ -1261,30 +1325,32 @@ class NostrService {
   /// Includes both discovered coordinators and custom whitelisted ones
   List<DiscoveredCoordinator> get discoveredCoordinators {
     final coordinators = <DiscoveredCoordinator>[];
-    
+
     // Add discovered coordinators (already filtered by _shouldIncludeCoordinator)
     coordinators.addAll(_discoveredCoordinators.values);
-    
+
     // Add custom whitelisted coordinators that haven't been discovered yet
     for (final pubkey in _customWhitelistedCoordinators) {
       final normalized = _normalizePubkey(pubkey);
       if (!_discoveredCoordinators.containsKey(normalized)) {
         // Create a placeholder coordinator for custom whitelisted ones
-        coordinators.add(DiscoveredCoordinator(
-          pubkey: normalized,
-          name: pubkey, // Use pubkey as name if not discovered
-          icon: null,
-          minAmountSats: 0,
-          maxAmountSats: 0,
-          makerFee: 0.0,
-          takerFee: 0.0,
-          reservationSeconds: 0,
-          currencies: [],
-          version: '',
-          lastSeen: DateTime.now(),
-          responsive: null,
-          termsOfUsageNaddr: null,
-        ));
+        coordinators.add(
+          DiscoveredCoordinator(
+            pubkey: normalized,
+            name: pubkey, // Use pubkey as name if not discovered
+            icon: null,
+            minAmountSats: 0,
+            maxAmountSats: 0,
+            makerFee: 0.0,
+            takerFee: 0.0,
+            reservationSeconds: 0,
+            currencies: [],
+            version: '',
+            lastSeen: DateTime.now(),
+            responsive: null,
+            termsOfUsageNaddr: null,
+          ),
+        );
       }
     }
 
@@ -1292,27 +1358,41 @@ class NostrService {
     coordinators.sort((a, b) {
       final aNormalized = _normalizePubkey(a.pubkey);
       final bNormalized = _normalizePubkey(b.pubkey);
-      
-      final aIsDefault = kWhitelistCoordinatorPubKeys.any((w) => _normalizePubkey(w) == aNormalized);
-      final bIsDefault = kWhitelistCoordinatorPubKeys.any((w) => _normalizePubkey(w) == bNormalized);
-      
-      final aIsCustomOnly = _customWhitelistedCoordinators.any((w) => _normalizePubkey(w) == aNormalized) && !aIsDefault;
-      final bIsCustomOnly = _customWhitelistedCoordinators.any((w) => _normalizePubkey(w) == bNormalized) && !bIsDefault;
-      
+
+      final aIsDefault = kWhitelistCoordinatorPubKeys.any(
+        (w) => _normalizePubkey(w) == aNormalized,
+      );
+      final bIsDefault = kWhitelistCoordinatorPubKeys.any(
+        (w) => _normalizePubkey(w) == bNormalized,
+      );
+
+      final aIsCustomOnly =
+          _customWhitelistedCoordinators.any(
+            (w) => _normalizePubkey(w) == aNormalized,
+          ) &&
+          !aIsDefault;
+      final bIsCustomOnly =
+          _customWhitelistedCoordinators.any(
+            (w) => _normalizePubkey(w) == bNormalized,
+          ) &&
+          !bIsDefault;
+
       // Default whitelisted coordinators come first
       if (aIsDefault != bIsDefault) {
         return aIsDefault ? -1 : 1;
       }
-      
+
       // Custom-only coordinators come last (after default whitelisted)
       if (aIsCustomOnly != bIsCustomOnly) {
-        return aIsCustomOnly ? 1 : -1; // custom-only goes to the end (positive value)
+        return aIsCustomOnly
+            ? 1
+            : -1; // custom-only goes to the end (positive value)
       }
-      
+
       // Within each group (default or custom), sort by responsive status (true first)
       final aResponsive = a.responsive ?? false;
       final bResponsive = b.responsive ?? false;
-      
+
       if (aResponsive != bResponsive) {
         return aResponsive ? -1 : 1; // responsive coordinators come first
       }
@@ -1343,44 +1423,58 @@ class NostrService {
   /// Check if a coordinator is in the default whitelist
   bool isDefaultWhitelisted(String pubkey) {
     final normalized = _normalizePubkey(pubkey);
-    return kWhitelistCoordinatorPubKeys.any((w) => _normalizePubkey(w) == normalized);
+    return kWhitelistCoordinatorPubKeys.any(
+      (w) => _normalizePubkey(w) == normalized,
+    );
   }
 
   /// Check if a coordinator is blacklisted
   bool isBlacklisted(String pubkey) {
     final normalized = _normalizePubkey(pubkey);
-    return _blacklistedCoordinators.any((b) => _normalizePubkey(b) == normalized);
+    return _blacklistedCoordinators.any(
+      (b) => _normalizePubkey(b) == normalized,
+    );
   }
 
   /// Get the list of blacklisted coordinators
-  List<String> get blacklistedCoordinators => List.from(_blacklistedCoordinators);
+  List<String> get blacklistedCoordinators =>
+      List.from(_blacklistedCoordinators);
 
   /// Get the list of custom whitelisted coordinators
-  List<String> get customWhitelistedCoordinators => List.from(_customWhitelistedCoordinators);
+  List<String> get customWhitelistedCoordinators =>
+      List.from(_customWhitelistedCoordinators);
 
   /// Get the list of default whitelisted coordinators
-  List<String> get defaultWhitelistedCoordinators => List.from(kWhitelistCoordinatorPubKeys);
+  List<String> get defaultWhitelistedCoordinators =>
+      List.from(kWhitelistCoordinatorPubKeys);
 
   /// Toggle blacklist status for a coordinator
   Future<void> toggleBlacklist(String pubkey, bool blacklist) async {
     final normalized = _normalizePubkey(pubkey);
-    
+
     if (blacklist) {
       // Remove any existing entry (in case of format mismatch) and add normalized
-      _blacklistedCoordinators.removeWhere((b) => _normalizePubkey(b) == normalized);
+      _blacklistedCoordinators.removeWhere(
+        (b) => _normalizePubkey(b) == normalized,
+      );
       _blacklistedCoordinators.add(normalized);
     } else {
-      _blacklistedCoordinators.removeWhere((b) => _normalizePubkey(b) == normalized);
+      _blacklistedCoordinators.removeWhere(
+        (b) => _normalizePubkey(b) == normalized,
+      );
     }
-    
+
     // Save to preferences
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(_blacklistKey, _blacklistedCoordinators);
-    
+
     // Don't remove from discovered coordinators - keep them visible so users can unblacklist
     // The _shouldIncludeCoordinator check will prevent them from being used in operations
-    
-    Logger.log.i('${blacklist ? "🚫" : "✅"} Coordinator $normalized ${blacklist ? "blacklisted" : "unblacklisted"}');
+
+    Logger.log.i(
+      () =>
+          '${blacklist ? "🚫" : "✅"} Coordinator $normalized ${blacklist ? "blacklisted" : "unblacklisted"}',
+    );
   }
 
   /// Add a coordinator to custom whitelist
@@ -1389,7 +1483,7 @@ class NostrService {
     if (trimmed.isEmpty) {
       throw ArgumentError('Npub cannot be empty');
     }
-    
+
     // Validate npub format
     String normalized;
     try {
@@ -1402,20 +1496,25 @@ class NostrService {
     } catch (e) {
       throw ArgumentError('Invalid npub format: $e');
     }
-    
+
     // Check if already in custom whitelist
-    if (_customWhitelistedCoordinators.any((w) => _normalizePubkey(w) == normalized)) {
+    if (_customWhitelistedCoordinators.any(
+      (w) => _normalizePubkey(w) == normalized,
+    )) {
       throw ArgumentError('Coordinator already in custom whitelist');
     }
-    
+
     _customWhitelistedCoordinators.add(normalized);
-    
+
     // Save to preferences
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(_customWhitelistKey, _customWhitelistedCoordinators);
-    
-    Logger.log.i('✅ Added coordinator $normalized to custom whitelist');
-    
+    await prefs.setStringList(
+      _customWhitelistKey,
+      _customWhitelistedCoordinators,
+    );
+
+    Logger.log.i(() => '✅ Added coordinator $normalized to custom whitelist');
+
     // Try to discover this coordinator
     // Note: This won't immediately discover it, but it will be included if discovered later
   }
@@ -1423,23 +1522,30 @@ class NostrService {
   /// Remove a coordinator from custom whitelist
   Future<void> removeCustomWhitelist(String pubkey) async {
     final normalized = _normalizePubkey(pubkey);
-    
+
     final beforeLength = _customWhitelistedCoordinators.length;
-    _customWhitelistedCoordinators.removeWhere((w) => _normalizePubkey(w) == normalized);
+    _customWhitelistedCoordinators.removeWhere(
+      (w) => _normalizePubkey(w) == normalized,
+    );
     final afterLength = _customWhitelistedCoordinators.length;
-    
+
     if (beforeLength > afterLength) {
       // Save to preferences
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList(_customWhitelistKey, _customWhitelistedCoordinators);
-      
+      await prefs.setStringList(
+        _customWhitelistKey,
+        _customWhitelistedCoordinators,
+      );
+
       // Remove from discovered coordinators if not in default whitelist
       if (!isDefaultWhitelisted(normalized)) {
         _discoveredCoordinators.remove(normalized);
         _coordinatorInfoCache.remove(normalized);
       }
-      
-      Logger.log.i('🗑️ Removed coordinator $normalized from custom whitelist');
+
+      Logger.log.i(
+        () => '🗑️ Removed coordinator $normalized from custom whitelist',
+      );
     }
   }
 

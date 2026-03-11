@@ -65,7 +65,7 @@ class _TakerInvalidBlikScreenState extends ConsumerState<TakerInvalidBlikScreen>
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () async {
-                        Logger.log.d("[TakerInvalidBlikScreen] Retry selected for offer ${offer.id}");
+                        Logger.log.d(() => "[TakerInvalidBlikScreen] Retry selected for offer ${offer.id}");
 
                         final userPublicKey = await ref.read(publicKeyProvider.future);
 
@@ -140,7 +140,7 @@ class _TakerInvalidBlikScreenState extends ConsumerState<TakerInvalidBlikScreen>
                                 }
 
                                 try {
-                                  Logger.log.d(
+                                  Logger.log.d(() => 
                                     "[TakerInvalidBlikScreen] Canceling reservation for offer ${offer.id} by taker $userPublicKey",
                                   );
                                   await apiService.cancelReservation(offer.id, userPublicKey, offer.coordinatorPubkey);
@@ -156,7 +156,7 @@ class _TakerInvalidBlikScreenState extends ConsumerState<TakerInvalidBlikScreen>
                                     context.go('/offers');
                                   }
                                 } catch (e) {
-                                  Logger.log.d("[TakerInvalidBlikScreen] Error canceling reservation: $e");
+                                  Logger.log.d(() => "[TakerInvalidBlikScreen] Error canceling reservation: $e");
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(t.reservations.errors.cancelling(error: e.toString())),
@@ -225,7 +225,7 @@ class _TakerInvalidBlikScreenState extends ConsumerState<TakerInvalidBlikScreen>
                                 }
 
                                 try {
-                                  Logger.log.d(
+                                  Logger.log.d(() => 
                                     "[TakerInvalidBlikScreen] Reporting conflict for offer ${offer.id} by taker $userPublicKey",
                                   );
                                   await apiService.markBlikCharged(offer.id, offer.coordinatorPubkey);
@@ -241,7 +241,7 @@ class _TakerInvalidBlikScreenState extends ConsumerState<TakerInvalidBlikScreen>
                                     context.go('/taker-conflict', extra: offer.id);
                                   }
                                 } catch (e) {
-                                  Logger.log.d("[TakerInvalidBlikScreen] Error reporting conflict: $e");
+                                  Logger.log.d(() => "[TakerInvalidBlikScreen] Error reporting conflict: $e");
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(t.taker.invalidBlik.errors.conflictReport(details: e.toString())),

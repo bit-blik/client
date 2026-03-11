@@ -232,7 +232,7 @@ class _ReservationProgressIndicatorState
     // Check if either reservedAt or maxDuration changed
     if (widget.reservedAt != oldWidget.reservedAt ||
         widget.maxDuration != oldWidget.maxDuration) {
-      Logger.log.d(
+      Logger.log.d(() => 
         "[ReservationProgress] reservedAt or maxDuration changed. Recalculating.",
       );
       _timer?.cancel();
@@ -295,11 +295,11 @@ class _ReservationProgressIndicatorState
   }
 
   Future<void> _triggerRefresh() async {
-    Logger.log.d("[ReservationProgress] Timer expired. Refreshing providers.");
+    Logger.log.d(() => "[ReservationProgress] Timer expired. Refreshing providers.");
     if (mounted) {
       ref.invalidate(availableOffersProvider);
     } else {
-      Logger.log.d("[ReservationProgress] Widget disposed before refresh.");
+      Logger.log.d(() => "[ReservationProgress] Widget disposed before refresh.");
     }
   }
 
@@ -378,7 +378,7 @@ class _BlikConfirmationProgressIndicatorState
   void didUpdateWidget(covariant BlikConfirmationProgressIndicator oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.blikReceivedAt != oldWidget.blikReceivedAt) {
-      Logger.log.d("[BlikConfirmProgress] blikReceivedAt changed. Recalculating.");
+      Logger.log.d(() => "[BlikConfirmProgress] blikReceivedAt changed. Recalculating.");
       _timer?.cancel();
       _calculateProgress();
       if (_progress > 0) {
@@ -432,11 +432,11 @@ class _BlikConfirmationProgressIndicatorState
   }
 
   Future<void> _triggerRefresh() async {
-    Logger.log.d("[BlikConfirmProgress] Timer expired. Refreshing providers.");
+    Logger.log.d(() => "[BlikConfirmProgress] Timer expired. Refreshing providers.");
     if (mounted) {
       ref.invalidate(availableOffersProvider);
     } else {
-      Logger.log.d("[BlikConfirmProgress] Widget disposed before refresh.");
+      Logger.log.d(() => "[BlikConfirmProgress] Widget disposed before refresh.");
     }
   }
 
