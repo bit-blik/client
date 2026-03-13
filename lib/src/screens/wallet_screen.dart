@@ -24,6 +24,8 @@ class WalletScreen extends ConsumerWidget {
               : NWallets(
                 ndkFlutter: NdkFlutter(ndk: ndk),
                 title: t.wallet.title,
+                showWalletActions: false,
+                walletCardsScrollDirection: Axis.vertical,
                 showPendingTransactions: false,
                 showRecentTransactions: false,
                 albyGoConnectConfig: AlbyGoConnectConfig(
