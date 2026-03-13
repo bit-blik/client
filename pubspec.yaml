@@ -91,6 +91,8 @@ dependencies:
 dependency_overrides:
   ndk:
     path: ../../ndk/packages/ndk
+  ndk_flutter:
+    path: ../../ndk/packages/ndk_flutter
 
 dev_dependencies:
   #build_runner: 2.4.15

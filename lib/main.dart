@@ -19,6 +19,7 @@ import 'package:flutter_localizations/flutter_localizations.dart'; // Keep for G
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ndk_flutter/l10n/app_localizations.dart' as ndk_l10n;
 import 'package:ndk/shared/logger/logger.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -312,7 +313,10 @@ class _MyAppState extends ConsumerState<MyApp> {
       ),
       locale: appLocale.flutterLocale,
       supportedLocales: AppLocaleUtils.supportedLocales,
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      localizationsDelegates: [
+        ...GlobalMaterialLocalizations.delegates,
+        ndk_l10n.AppLocalizations.delegate,
+      ],
       routerConfig: router,
     );
   }
