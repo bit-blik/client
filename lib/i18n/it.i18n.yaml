@@ -714,6 +714,10 @@ settings:
 wallet:
   title: Portafoglio
   description: Gestisci le impostazioni del tuo portafoglio Lightning
+  missingReceiving:
+    title: Portafoglio di ricezione richiesto
+    message: Nessun portafoglio configurato per ricevere. Aggiungine uno nelle impostazioni Portafoglio per accettare offerte.
+    openSettings: Impostazioni portafoglio
 
 nwc:
   title: Nostr Wallet Connect (NWC)

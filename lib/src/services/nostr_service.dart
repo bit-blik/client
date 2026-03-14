@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:drift_cache_manager/drift_cache_manager.dart';
@@ -9,9 +8,9 @@ import 'package:ndk/ndk.dart';
 import 'package:ndk/shared/isolates/isolate_manager.dart';
 import 'package:ndk/shared/nips/nip44/nip44.dart';
 import 'package:ndk_flutter/ndk_flutter.dart';
+import 'package:ndk_flutter/repositories/flutter_secure_storage_wallets_repo.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast_cache_manager/sembast_cache_manager.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:ndk_rust_verifier/ndk_rust_verifier.dart' as web_rust_verifier;
@@ -236,9 +235,11 @@ class NostrService {
       }
     }
     final cacheManager =
-      kIsWeb ?
-        await DriftCacheManager.create() :
-      await SembastCacheManager.create(databasePath: (await getApplicationDocumentsDirectory()).path);
+        kIsWeb
+            ? await DriftCacheManager.create()
+            : await SembastCacheManager.create(
+              databasePath: (await getApplicationDocumentsDirectory()).path,
+            );
     // final cacheManager = MemCacheManager(); //DbObjectBox();
 
     final eventVerifier = kIsWeb ? WebEventVerifier() : RustEventVerifier();
@@ -247,6 +248,7 @@ class NostrService {
     _ndk = Ndk(
       NdkConfig(
         cache: cacheManager,
+        walletsRepo: FlutterSecureStorageWalletsRepo(),
         eventVerifier: eventVerifier,
         bootstrapRelays: _relayUrls,
         logLevel: kDebugMode ? LogLevel.debug : LogLevel.warning,

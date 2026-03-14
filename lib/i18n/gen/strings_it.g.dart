@@ -324,6 +324,7 @@ class _TranslationsWalletIt extends TranslationsWalletEn {
 	// Translations
 	@override String get title => 'Portafoglio';
 	@override String get description => 'Gestisci le impostazioni del tuo portafoglio Lightning';
+	@override late final _TranslationsWalletMissingReceivingIt missingReceiving = _TranslationsWalletMissingReceivingIt._(_root);
 }
 
 // Path: nwc
@@ -1269,6 +1270,18 @@ class _TranslationsLandingActionsIt extends TranslationsLandingActionsEn {
 	@override String get sellBlik => 'Compra bitcoin';
 	@override String get sellBlikSubtitle => 'con BLIK';
 	@override String get howItWorks => 'Come funziona?';
+}
+
+// Path: wallet.missingReceiving
+class _TranslationsWalletMissingReceivingIt extends TranslationsWalletMissingReceivingEn {
+	_TranslationsWalletMissingReceivingIt._(TranslationsIt root) : this._root = root, super.internal(root);
+
+	final TranslationsIt _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Portafoglio di ricezione richiesto';
+	@override String get message => 'Nessun portafoglio configurato per ricevere. Aggiungine uno nelle impostazioni Portafoglio per accettare offerte.';
+	@override String get openSettings => 'Impostazioni portafoglio';
 }
 
 // Path: nwc.labels
@@ -2370,6 +2383,9 @@ extension on TranslationsIt {
 			case 'settings.title': return 'Impostazioni';
 			case 'wallet.title': return 'Portafoglio';
 			case 'wallet.description': return 'Gestisci le impostazioni del tuo portafoglio Lightning';
+			case 'wallet.missingReceiving.title': return 'Portafoglio di ricezione richiesto';
+			case 'wallet.missingReceiving.message': return 'Nessun portafoglio configurato per ricevere. Aggiungine uno nelle impostazioni Portafoglio per accettare offerte.';
+			case 'wallet.missingReceiving.openSettings': return 'Impostazioni portafoglio';
 			case 'nwc.title': return 'Nostr Wallet Connect (NWC)';
 			case 'nwc.description': return 'Connetti il tuo portafoglio Lightning tramite NWC';
 			case 'nwc.labels.connectionString': return 'Stringa di Connessione NWC';

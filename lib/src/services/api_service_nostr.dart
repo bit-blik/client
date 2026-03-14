@@ -21,6 +21,11 @@ class ApiServiceNostr {
   Future<void> init() async {
     await _keyService.init();
     await _nostrService.init();
+    final ndkInstance = _nostrService.ndk;
+    if (ndkInstance != null) {
+      _keyService.attachNdk(ndkInstance);
+      await _keyService.migrateLegacyWalletStorage();
+    }
   }
 
   Future<void> dispose() async {

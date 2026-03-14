@@ -77,16 +77,10 @@ class _OfferDetailsScreenState extends ConsumerState<OfferDetailsScreen> {
     final availableOffersAsync = ref.watch(availableOffersProvider);
     final offerAsyncValue = ref.watch(offerDetailsProvider(widget.offerId));
     final publicKeyAsyncValue = ref.watch(publicKeyProvider);
-    final lightningAddressAsync = ref.watch(lightningAddressProvider);
-    final keyService = ref.read(keyServiceProvider);
+    final hasReceivingWalletAsync = ref.watch(hasReceivingWalletProvider);
     final myActiveOffer = ref.watch(activeOfferProvider);
     final t = Translations.of(context);
     final router = GoRouter.of(context);
-
-    final hasLightningAddress = lightningAddressAsync.maybeWhen(
-      data: (address) => address != null && address.isNotEmpty,
-      orElse: () => false,
-    );
 
     return Scaffold(
       appBar: AppBar(title: Text(t.offers.details.selectedOffer)),
@@ -176,20 +170,27 @@ class _OfferDetailsScreenState extends ConsumerState<OfferDetailsScreen> {
                         data: (coordInfo) {
                           final hasTerms = coordInfo?.termsOfUsageNaddr != null;
                           final isTermsAccepted = !hasTerms || _termsAccepted;
+                          final hasReceivingWallet = hasReceivingWalletAsync
+                              .maybeWhen(
+                                data: (value) => value,
+                                orElse: () => false,
+                              );
                           final isButtonEnabled =
                               publicKey != null &&
-                              hasLightningAddress &&
+                              hasReceivingWallet &&
                               isTermsAccepted &&
                               !_isLoadingTerms;
 
                           return isButtonEnabled
                               ? () async {
-                                // Check if lightning address is set
-                                if (!hasLightningAddress) {
-                                  LightningAddressWidget.showLightningAddressRequiredDialog(
+                                // Check if there is any receiving-capable wallet
+                                final hasReceivingWalletNow = await ref.read(
+                                  hasReceivingWalletProvider.future,
+                                );
+                                if (!hasReceivingWalletNow) {
+                                  LightningAddressWidget.showReceivingWalletRequiredDialog(
                                     context,
                                     ref,
-                                    keyService,
                                     t,
                                   );
                                   return;
@@ -320,7 +321,9 @@ class _OfferDetailsScreenState extends ConsumerState<OfferDetailsScreen> {
               ),
             );
           } else if (isReserved || isBlikReceived) {
-            if (myActiveOffer != null && offer.id == myActiveOffer.id && offer.takerPubkey == publicKeyAsyncValue.value!) {
+            if (myActiveOffer != null &&
+                offer.id == myActiveOffer.id &&
+                offer.takerPubkey == publicKeyAsyncValue.value!) {
               actionButton = SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -671,10 +674,24 @@ class _OfferDetailsScreenState extends ConsumerState<OfferDetailsScreen> {
 
                                   const SizedBox(height: 6),
 
-                                  // Lightning address widget for funded offers - only show if not set
-                                  if (isFunded && !hasLightningAddress) ...[
+                                  // Receiving wallet hint for funded offers
+                                  if (isFunded &&
+                                      hasReceivingWalletAsync.maybeWhen(
+                                        data: (value) => !value,
+                                        orElse: () => false,
+                                      )) ...[
                                     const SizedBox(height: 10),
-                                    const LightningAddressWidget(),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                      ),
+                                      child:
+                                          LightningAddressWidget.buildMissingReceivingWalletWarning(
+                                            context,
+                                            ref,
+                                            t,
+                                          ),
+                                    ),
                                   ],
                                   const SizedBox(height: 6),
 

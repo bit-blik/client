@@ -35,17 +35,17 @@ class WalletScreen extends ConsumerWidget {
                   callback: 'bitblik://',
                 ),
                 onWalletSelected: (walletId) {
-                  try {
-                    ndk.wallets.setDefaultWallet(walletId);
-                    ref.read(defaultWalletProvider.notifier).refresh();
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Failed to set default wallet: $e'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
+                  // try {
+                  //   // ndk.wallets.setDefaultWallet(walletId);
+                  //   // ref.read(defaultWalletProvider.notifier).refresh();
+                  // } catch (e) {
+                  //   ScaffoldMessenger.of(context).showSnackBar(
+                  //     SnackBar(
+                  //       content: Text('Failed to set default wallet: $e'),
+                  //       backgroundColor: Colors.red,
+                  //     ),
+                  //   );
+                  // }
                 },
               ),
     );

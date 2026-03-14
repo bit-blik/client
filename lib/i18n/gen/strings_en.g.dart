@@ -371,6 +371,8 @@ class TranslationsWalletEn {
 
 	/// en: 'Manage your Lightning wallet settings'
 	String get description => 'Manage your Lightning wallet settings';
+
+	late final TranslationsWalletMissingReceivingEn missingReceiving = TranslationsWalletMissingReceivingEn.internal(_root);
 }
 
 // Path: nwc
@@ -1929,6 +1931,24 @@ class TranslationsLandingActionsEn {
 	String get howItWorks => 'How it works?';
 }
 
+// Path: wallet.missingReceiving
+class TranslationsWalletMissingReceivingEn {
+	TranslationsWalletMissingReceivingEn.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Receiving wallet required'
+	String get title => 'Receiving wallet required';
+
+	/// en: 'No wallet configured for receiving. Add one in Wallet settings to take offers.'
+	String get message => 'No wallet configured for receiving. Add one in Wallet settings to take offers.';
+
+	/// en: 'Wallet settings'
+	String get openSettings => 'Wallet settings';
+}
+
 // Path: nwc.labels
 class TranslationsNwcLabelsEn {
 	TranslationsNwcLabelsEn.internal(this._root);
@@ -3381,6 +3401,9 @@ extension on Translations {
 			case 'settings.title': return 'Settings';
 			case 'wallet.title': return 'Wallet';
 			case 'wallet.description': return 'Manage your Lightning wallet settings';
+			case 'wallet.missingReceiving.title': return 'Receiving wallet required';
+			case 'wallet.missingReceiving.message': return 'No wallet configured for receiving. Add one in Wallet settings to take offers.';
+			case 'wallet.missingReceiving.openSettings': return 'Wallet settings';
 			case 'nwc.title': return 'Nostr Wallet Connect (NWC)';
 			case 'nwc.description': return 'Connect your Lightning wallet via NWC';
 			case 'nwc.labels.connectionString': return 'NWC Connection String';

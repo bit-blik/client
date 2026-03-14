@@ -324,6 +324,7 @@ class _TranslationsWalletPl extends TranslationsWalletEn {
 	// Translations
 	@override String get title => 'Portfel';
 	@override String get description => 'Zarządzaj ustawieniami portfela Lightning';
+	@override late final _TranslationsWalletMissingReceivingPl missingReceiving = _TranslationsWalletMissingReceivingPl._(_root);
 }
 
 // Path: nwc
@@ -1267,6 +1268,18 @@ class _TranslationsLandingActionsPl extends TranslationsLandingActionsEn {
 	@override String get sellBlik => 'Kup bitcoin';
 	@override String get sellBlikSubtitle => 'używając BLIK';
 	@override String get howItWorks => 'Jak to działa?';
+}
+
+// Path: wallet.missingReceiving
+class _TranslationsWalletMissingReceivingPl extends TranslationsWalletMissingReceivingEn {
+	_TranslationsWalletMissingReceivingPl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Wymagany portfel odbiorczy';
+	@override String get message => 'Brak skonfigurowanego portfela do odbierania. Dodaj go w ustawieniach portfela, aby przyjmować oferty.';
+	@override String get openSettings => 'Ustawienia portfela';
 }
 
 // Path: nwc.labels
@@ -2366,6 +2379,9 @@ extension on TranslationsPl {
 			case 'settings.title': return 'Ustawienia';
 			case 'wallet.title': return 'Portfel';
 			case 'wallet.description': return 'Zarządzaj ustawieniami portfela Lightning';
+			case 'wallet.missingReceiving.title': return 'Wymagany portfel odbiorczy';
+			case 'wallet.missingReceiving.message': return 'Brak skonfigurowanego portfela do odbierania. Dodaj go w ustawieniach portfela, aby przyjmować oferty.';
+			case 'wallet.missingReceiving.openSettings': return 'Ustawienia portfela';
 			case 'nwc.title': return 'Nostr Wallet Connect (NWC)';
 			case 'nwc.description': return 'Połącz swój portfel Lightning przez NWC';
 			case 'nwc.labels.connectionString': return 'Ciąg połączenia NWC';

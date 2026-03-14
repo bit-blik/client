@@ -293,7 +293,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
     });
 
     try {
-      await ndk.wallets.payInvoice(ndk.wallets.defaultWallet!.id, invoice);
+      await ndk.wallets.send(invoice: invoice);
       // Note: Code below is unreachable until payment is implemented
       // Logger.log.i(() => '[MakerPayInvoiceScreen] Invoice accepted');
       // if (mounted) {
