@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:ndk/domain_layer/entities/wallet/wallet.dart';
+import 'package:ndk/presentation_layer/ndk.dart';
 import '../../../i18n/gen/strings.g.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -386,60 +388,25 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
   }
 
   Future<String> _createInvoiceForDefaultReceivingWallet({
-    required dynamic ndk,
+    required Ndk ndk,
     required int amountSats,
   }) async {
-    final wallets = ndk.wallets as dynamic;
-    final wallet = ndk.wallets.defaultWalletForReceiving;
+    Wallet? wallet = ndk.wallets.defaultWalletForReceiving;
     if (wallet == null) {
+      wallet = ndk.wallets.getWalletsForUnit('sat').firstWhere(
+        (w) => w.canReceive,
+        orElse: () => throw Exception('No receiving wallet available'),
+      );
       throw Exception('No default receiving wallet configured');
     }
-
-    final walletId = wallet.id as String;
-
-    Future<dynamic> callReceiveWithWalletId() async {
-      return await wallets.receive(
-        walletId: walletId,
-        amount: amountSats,
-        unit: 'sat',
-      );
+    final result = await ndk.wallets.receive(
+      walletId: wallet.id,
+      amountSats: amountSats,
+    );
+    final invoice = _extractBolt11Invoice(result);
+    if (invoice != null) {
+      return invoice;
     }
-
-    Future<dynamic> callReceiveDefault() async {
-      return await wallets.receive(amount: amountSats, unit: 'sat');
-    }
-
-    Future<dynamic> callCreateInvoiceWithWalletId() async {
-      return await wallets.createInvoice(
-        walletId: walletId,
-        amount: amountSats,
-        unit: 'sat',
-      );
-    }
-
-    Future<dynamic> callCreateInvoiceDefault() async {
-      return await wallets.createInvoice(amount: amountSats, unit: 'sat');
-    }
-
-    final invoiceCalls = <Future<dynamic> Function()>[
-      callReceiveWithWalletId,
-      callReceiveDefault,
-      callCreateInvoiceWithWalletId,
-      callCreateInvoiceDefault,
-    ];
-
-    for (final invoiceCall in invoiceCalls) {
-      try {
-        final result = await invoiceCall();
-        final invoice = _extractBolt11Invoice(result);
-        if (invoice != null) {
-          return invoice;
-        }
-      } catch (_) {
-        // Try the next known wallet API shape.
-      }
-    }
-
     throw Exception('Unable to generate invoice from default receiving wallet');
   }
 
