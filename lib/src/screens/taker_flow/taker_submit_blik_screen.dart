@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:ndk/shared/logger/logger.dart';
-import 'package:ndk/domain_layer/entities/wallet/wallet_type.dart';
 
 import '../../models/offer.dart';
 import '../../models/coordinator_info.dart'; // Added
@@ -309,9 +308,8 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
       return;
     }
 
-    final wallets = ndk.wallets.getWalletsForUnit('sat');
-    final receivingWallets = wallets.where((wallet) => wallet.canReceive);
-    if (receivingWallets.isEmpty) {
+    final defaultReceivingWallet = ndk.wallets.defaultWalletForReceiving;
+    if (defaultReceivingWallet == null || !defaultReceivingWallet.canReceive) {
       LightningAddressWidget.showReceivingWalletRequiredDialog(context, ref, t);
       ref.read(errorProvider.notifier).state =
           t.wallet.missingReceiving.message;
@@ -319,24 +317,31 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
       return;
     }
 
-    final preferredWallet = ndk.wallets.defaultWalletForReceiving;
-    final selectedWallet =
-        (preferredWallet != null && preferredWallet.canReceive)
-            ? preferredWallet
-            : receivingWallets.first;
+    final takerFeeAmount =
+        offer.takerFees ??
+        (_coordinatorInfo != null
+            ? (offer.amountSats * _coordinatorInfo!.takerFee / 100).ceil()
+            : 0);
+    final amountToInvoiceSats = offer.amountSats - takerFeeAmount;
+    if (amountToInvoiceSats <= 0) {
+      ref.read(errorProvider.notifier).state = t.system.errors.generic;
+      _startBlikInputTimer(offer);
+      return;
+    }
 
-    String takerLightningAddress;
-    if (selectedWallet.type == WalletType.LNURL) {
-      final identifier = selectedWallet.metadata['identifier'];
-      if (identifier is! String || identifier.trim().isEmpty) {
-        ref.read(errorProvider.notifier).state =
-            t.lightningAddress.prompts.required;
-        _startBlikInputTimer(offer);
-        return;
-      }
-      takerLightningAddress = identifier.trim();
-    } else {
-      takerLightningAddress = selectedWallet.id;
+    late final String takerInvoice;
+    try {
+      takerInvoice = await _createInvoiceForDefaultReceivingWallet(
+        ndk: ndk,
+        amountSats: amountToInvoiceSats,
+      );
+    } catch (e) {
+      Logger.log.e(
+        () => '[TakerSubmitBlikScreen] Failed to create taker invoice: $e',
+      );
+      ref.read(errorProvider.notifier).state = t.system.errors.generic;
+      _startBlikInputTimer(offer);
+      return;
     }
     // --- End Validations ---
 
@@ -349,7 +354,7 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
         offerId: offer.id,
         takerId: takerId,
         blikCode: blikCode,
-        takerLightningAddress: takerLightningAddress,
+        takerInvoice: takerInvoice,
         coordinatorPubkey: offer.coordinatorPubkey,
       );
 
@@ -378,6 +383,113 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
         ref.read(isLoadingProvider.notifier).state = false;
       }
     }
+  }
+
+  Future<String> _createInvoiceForDefaultReceivingWallet({
+    required dynamic ndk,
+    required int amountSats,
+  }) async {
+    final wallets = ndk.wallets as dynamic;
+    final wallet = ndk.wallets.defaultWalletForReceiving;
+    if (wallet == null) {
+      throw Exception('No default receiving wallet configured');
+    }
+
+    final walletId = wallet.id as String;
+
+    Future<dynamic> callReceiveWithWalletId() async {
+      return await wallets.receive(
+        walletId: walletId,
+        amount: amountSats,
+        unit: 'sat',
+      );
+    }
+
+    Future<dynamic> callReceiveDefault() async {
+      return await wallets.receive(amount: amountSats, unit: 'sat');
+    }
+
+    Future<dynamic> callCreateInvoiceWithWalletId() async {
+      return await wallets.createInvoice(
+        walletId: walletId,
+        amount: amountSats,
+        unit: 'sat',
+      );
+    }
+
+    Future<dynamic> callCreateInvoiceDefault() async {
+      return await wallets.createInvoice(amount: amountSats, unit: 'sat');
+    }
+
+    final invoiceCalls = <Future<dynamic> Function()>[
+      callReceiveWithWalletId,
+      callReceiveDefault,
+      callCreateInvoiceWithWalletId,
+      callCreateInvoiceDefault,
+    ];
+
+    for (final invoiceCall in invoiceCalls) {
+      try {
+        final result = await invoiceCall();
+        final invoice = _extractBolt11Invoice(result);
+        if (invoice != null) {
+          return invoice;
+        }
+      } catch (_) {
+        // Try the next known wallet API shape.
+      }
+    }
+
+    throw Exception('Unable to generate invoice from default receiving wallet');
+  }
+
+  String? _extractBolt11Invoice(dynamic value) {
+    String? normalize(String? raw) {
+      if (raw == null) return null;
+      final trimmed = raw.trim();
+      final withoutPrefix =
+          trimmed.toLowerCase().startsWith('lightning:')
+              ? trimmed.substring('lightning:'.length).trim()
+              : trimmed;
+      if (withoutPrefix.toLowerCase().startsWith('lnbc')) {
+        return withoutPrefix;
+      }
+      return null;
+    }
+
+    if (value is String) {
+      return normalize(value);
+    }
+
+    if (value is Map) {
+      final keys = <String>['bolt11', 'invoice', 'payment_request', 'request'];
+      for (final key in keys) {
+        final candidate = value[key];
+        if (candidate is String) {
+          final normalized = normalize(candidate);
+          if (normalized != null) {
+            return normalized;
+          }
+        }
+      }
+      return null;
+    }
+
+    try {
+      final invoice = (value as dynamic).invoice;
+      if (invoice is String) {
+        return normalize(invoice);
+      }
+    } catch (_) {}
+
+    try {
+      final bolt11 = (value as dynamic).bolt11;
+      if (bolt11 is String) {
+        return normalize(bolt11);
+      }
+    } catch (_) {}
+
+    return null;
   }
 
   Future<void> _pasteFromClipboard() async {

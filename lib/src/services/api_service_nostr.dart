@@ -143,8 +143,9 @@ class ApiServiceNostr {
     } else {
       final lastKnown = MemoryCache.instance.read<double>(_btcPlnCacheKey);
       if (lastKnown != null) {
-        Logger.log.w(() => 
-          'Returning stale BTC/PLN rate due to all sources failing to fetch.',
+        Logger.log.w(
+          () =>
+              'Returning stale BTC/PLN rate due to all sources failing to fetch.',
         );
         return lastKnown;
       }
@@ -169,15 +170,18 @@ class ApiServiceNostr {
           rate = _parseBlockchainInfoResponse(response.body);
         }
         if (rate != null) {
-          Logger.log.d(() => 'Successfully fetched rate from $sourceName: $rate');
+          Logger.log.d(
+            () => 'Successfully fetched rate from $sourceName: $rate',
+          );
           return rate;
         } else {
           Logger.log.w(() => 'Failed to parse response from $sourceName');
           return null;
         }
       } else {
-        Logger.log.w(() => 
-          'Failed to fetch BTC/PLN rate from $sourceName: ${response.statusCode} ${response.body}',
+        Logger.log.w(
+          () =>
+              'Failed to fetch BTC/PLN rate from $sourceName: ${response.statusCode} ${response.body}',
         );
         return null;
       }
@@ -208,7 +212,7 @@ class ApiServiceNostr {
     required String offerId,
     required String takerId,
     required String blikCode,
-    required String takerLightningAddress,
+    required String takerInvoice,
     required String coordinatorPubkey,
   }) async {
     try {
@@ -216,7 +220,7 @@ class ApiServiceNostr {
         offerId: offerId,
         takerId: takerId,
         blikCode: blikCode,
-        takerLightningAddress: takerLightningAddress,
+        takerInvoice: takerInvoice,
         coordinatorPubkey: coordinatorPubkey,
       );
     } catch (e) {
@@ -262,9 +266,15 @@ class ApiServiceNostr {
     }
   }
 
-  Future<Map<String, dynamic>?> getMyActiveOffer(String userPubkey, String coordinatorPubkey) async {
+  Future<Map<String, dynamic>?> getMyActiveOffer(
+    String userPubkey,
+    String coordinatorPubkey,
+  ) async {
     try {
-      return await _nostrService.getMyActiveOffer(userPubkey, coordinatorPubkey);
+      return await _nostrService.getMyActiveOffer(
+        userPubkey,
+        coordinatorPubkey,
+      );
     } catch (e) {
       Logger.log.e(() => 'Error calling getMyActiveOffer: $e');
       return null;
@@ -357,10 +367,7 @@ class ApiServiceNostr {
     }
   }
 
-  Future<void> markBlikCharged(
-    String offerId,
-    String coordinatorPubKey,
-  ) async {
+  Future<void> markBlikCharged(String offerId, String coordinatorPubKey) async {
     try {
       await _nostrService.markBlikCharged(offerId, coordinatorPubKey);
     } catch (e) {

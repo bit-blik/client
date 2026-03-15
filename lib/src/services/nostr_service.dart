@@ -681,7 +681,7 @@ class NostrService {
     required String offerId,
     required String takerId,
     required String blikCode,
-    required String takerLightningAddress,
+    required String takerInvoice,
     required String coordinatorPubkey,
   }) async {
     final request = NostrRequest(
@@ -689,7 +689,7 @@ class NostrService {
       params: {
         'offer_id': offerId,
         'blik_code': blikCode,
-        'taker_lightning_address': takerLightningAddress,
+        'taker_invoice': takerInvoice,
       },
     );
 
