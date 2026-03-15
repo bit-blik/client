@@ -341,9 +341,11 @@ packages:
   drift_cache_manager:
     dependency: "direct main"
     description:
-      path: "../../ndk/packages/drift_cache_manager"
-      relative: true
-    source: path
+      path: "packages/drift_cache_manager"
+      ref: "75eefe1da7d36263ed1988bd1a65c1a946a4c850"
+      resolved-ref: "75eefe1da7d36263ed1988bd1a65c1a946a4c850"
+      url: "https://github.com/relaystr/ndk.git"
+    source: git
     version: "0.0.2-dev.0+1"
   drift_flutter:
     dependency: transitive
@@ -768,9 +770,11 @@ packages:
   ndk:
     dependency: "direct main"
     description:
-      path: "../../ndk/packages/ndk"
-      relative: true
-    source: path
+      path: "packages/ndk"
+      ref: "75eefe1da7d36263ed1988bd1a65c1a946a4c850"
+      resolved-ref: "75eefe1da7d36263ed1988bd1a65c1a946a4c850"
+      url: "https://github.com/relaystr/ndk.git"
+    source: git
     version: "0.7.2-dev.0"
   ndk_amber:
     dependency: transitive
@@ -783,16 +787,20 @@ packages:
   ndk_flutter:
     dependency: "direct main"
     description:
-      path: "../../ndk/packages/ndk_flutter"
-      relative: true
-    source: path
+      path: "packages/ndk_flutter"
+      ref: "75eefe1da7d36263ed1988bd1a65c1a946a4c850"
+      resolved-ref: "75eefe1da7d36263ed1988bd1a65c1a946a4c850"
+      url: "https://github.com/relaystr/ndk.git"
+    source: git
     version: "0.0.2-dev.2"
   ndk_objectbox:
     dependency: "direct main"
     description:
-      path: "../../ndk/packages/objectbox"
-      relative: true
-    source: path
+      path: "packages/objectbox"
+      ref: "75eefe1da7d36263ed1988bd1a65c1a946a4c850"
+      resolved-ref: "75eefe1da7d36263ed1988bd1a65c1a946a4c850"
+      url: "https://github.com/relaystr/ndk.git"
+    source: git
     version: "0.2.8-dev.0+1"
   nip07_event_signer:
     dependency: transitive
@@ -1037,9 +1045,11 @@ packages:
   sembast_cache_manager:
     dependency: "direct main"
     description:
-      path: "../../ndk/packages/sembast_cache_manager"
-      relative: true
-    source: path
+      path: "packages/sembast_cache_manager"
+      ref: "75eefe1da7d36263ed1988bd1a65c1a946a4c850"
+      resolved-ref: "75eefe1da7d36263ed1988bd1a65c1a946a4c850"
+      url: "https://github.com/relaystr/ndk.git"
+    source: git
     version: "1.0.8-dev.0"
   shared_preferences:
     dependency: "direct main"
@@ -1471,5 +1481,5 @@ packages:
     source: hosted
     version: "3.1.3"
 sdks:
-  dart: ">=3.10.8 <4.0.0"
+  dart: ">=3.10.3 <4.0.0"
   flutter: ">=3.38.4"

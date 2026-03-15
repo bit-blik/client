@@ -1,23 +1,22 @@
-import 'dart:async'; // For Timer
+import 'dart:async';
 import 'dart:io'; // For Platform check
-import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For Clipboard
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ndk/shared/logger/logger.dart';
-import 'package:ndk/entities.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:url_launcher/url_launcher.dart'; // For launching URLs/Intents
 import 'package:android_intent_plus/android_intent.dart'; // For Android Intents
 import 'package:android_intent_plus/flag.dart'; // Import for flags enum
 import '../../providers/providers.dart'; // Import providers
 import '../../models/offer.dart'; // Import Offer model for status enum comparison
+import 'package:ndk/domain_layer/entities/wallet/wallet.dart';
 // Import ApiService
 import 'package:go_router/go_router.dart';
 import '../../../i18n/gen/strings.g.dart'; // Correct Slang import
 import 'webln_stub.dart' if (dart.library.js) 'webln_web.dart';
 import 'maker_amount_form.dart'; // Import MakerProgressIndicator
-import '../../screens/wallet_screen.dart'; // Import for kNwcWalletId
 
 class MakerPayInvoiceScreen extends ConsumerStatefulWidget {
   const MakerPayInvoiceScreen({super.key});
@@ -28,10 +27,11 @@ class MakerPayInvoiceScreen extends ConsumerStatefulWidget {
 }
 
 class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
-  Timer? _statusPollTimer;
   bool isWallet = false;
   bool _sentWeblnPayment = false;
-  bool _isPayingWithNwc = false;
+  bool _isPayingWithWallet = false;
+  bool _hasSendingWallet = false;
+  StreamSubscription<List<Wallet>>? _walletsSubscription;
 
   @override
   void initState() {
@@ -55,12 +55,49 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
     } catch (e) {
       // print("!!!!catch $e");
     }
+    _syncWalletState();
+    final ndk = ref.read(ndkProvider);
+    if (ndk != null) {
+      _walletsSubscription = ndk.wallets.walletsStream.listen((_) {
+        _syncWalletState();
+      });
+    }
     // No longer need to start polling - will use subscription instead
   }
 
   @override
   void dispose() {
+    _walletsSubscription?.cancel();
     super.dispose();
+  }
+
+  Future<void> _syncWalletState() async {
+    final ndk = ref.read(ndkProvider);
+    if (ndk == null) {
+      if (mounted) {
+        setState(() {
+          _hasSendingWallet = false;
+        });
+      }
+      return;
+    }
+
+    final wallets = ndk.wallets.getWalletsForUnit('sat');
+    final sendingWallets = wallets.where((wallet) => wallet.canSend).toList();
+    final hasSendingWallet = sendingWallets.isNotEmpty;
+
+    final defaultSendingWallet = ndk.wallets.defaultWalletForSending;
+    if (hasSendingWallet &&
+        (defaultSendingWallet == null || !defaultSendingWallet.canSend)) {
+      ndk.wallets.setDefaultWalletForSending(sendingWallets.first.id);
+    }
+
+    ref.read(defaultWalletProvider.notifier).refresh();
+
+    if (!mounted) return;
+    setState(() {
+      _hasSendingWallet = hasSendingWallet;
+    });
   }
 
   // --- Status Update Handler ---
@@ -70,7 +107,9 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
   ) async {
     if (status == null || !mounted) return;
 
-    Logger.log.d(() => '[MakerPayInvoiceScreen] Status update received: $status');
+    Logger.log.d(
+      () => '[MakerPayInvoiceScreen] Status update received: $status',
+    );
 
     // final publicKey = ref.read(publicKeyProvider).value;
     // if (publicKey == null) {
@@ -102,16 +141,18 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
     // await ref.read(activeOfferProvider.notifier).setActiveOffer(updatedOffer);
 
     if (status.index >= OfferStatus.funded.index) {
-      Logger.log.i(() => 
-        '[MakerPayInvoiceScreen] Invoice paid! Offer status: $status. Moving to next step.',
+      Logger.log.i(
+        () =>
+            '[MakerPayInvoiceScreen] Invoice paid! Offer status: $status. Moving to next step.',
       );
       if (mounted) {
         context.go("/wait-taker");
       }
-      _isPayingWithNwc = false;
+      _isPayingWithWallet = false;
     } else {
-      Logger.log.d(() => 
-        '[MakerPayInvoiceScreen] Offer status: $status. No action needed yet.',
+      Logger.log.d(
+        () =>
+            '[MakerPayInvoiceScreen] Offer status: $status. No action needed yet.',
       );
     }
   }
@@ -174,105 +215,6 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
     }
   }
 
-  Future<void> _showNwcConnectDialog() async {
-    final t = Translations.of(context);
-    final ndk = ref.read(ndkProvider);
-
-    if (ndk == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(t.maker.payInvoice.errors.nwcNotConnected),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    final controller = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-
-    await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(t.maker.payInvoice.actions.connectWallet),
-          content: Form(
-            key: formKey,
-            child: TextFormField(
-              controller: controller,
-              decoration: InputDecoration(
-                hintText: t.nwc.labels.hint,
-                labelText: t.nwc.labels.connectionString,
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return t.nwc.errors.required;
-                }
-                if (!value.startsWith('nostr+walletconnect://')) {
-                  return t.nwc.errors.invalid;
-                }
-                return null;
-              },
-              maxLines: 3,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(t.common.buttons.cancel),
-            ),
-            TextButton(
-              onPressed: () async {
-                if (!formKey.currentState!.validate()) {
-                  return;
-                }
-
-                try {
-                  // Create NWC wallet using NDK
-                  final nwcWallet = NwcWallet(
-                    id: kNwcWalletId,
-                    name: "NWC Wallet",
-                    supportedUnits: {'sat'},
-                    nwcUrl: controller.text.trim(),
-                  );
-
-                  // Add wallet
-                  await ndk.wallets.addWallet(nwcWallet);
-
-                  // Set as default
-                  ndk.wallets.setDefaultWallet(kNwcWalletId);
-
-                  // Refresh wallet state
-                  ref.read(defaultWalletProvider.notifier).refresh();
-
-                  if (!context.mounted) return;
-                  Navigator.of(context).pop(true);
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(t.maker.payInvoice.feedback.nwcConnected),
-                    ),
-                  );
-                } catch (e) {
-                  if (!context.mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        t.nwc.errors.connecting(details: e.toString()),
-                      ),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              },
-              child: Text(t.nwc.prompts.connect),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<void> _payWithNwc(String invoice) async {
     final t = Translations.of(context);
     final ndk = ref.read(ndkProvider);
@@ -289,7 +231,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
     }
 
     setState(() {
-      _isPayingWithNwc = true;
+      _isPayingWithWallet = true;
     });
 
     try {
@@ -311,7 +253,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
     } finally {
       if (mounted) {
         setState(() {
-          _isPayingWithNwc = false;
+          _isPayingWithWallet = false;
         });
       }
     }
@@ -323,8 +265,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
     String holdInvoice,
     Translations t,
   ) {
-    final defaultWallet = ref.watch(defaultWalletProvider);
-    final isConnected = defaultWallet != null;
+    final isConnected = _hasSendingWallet;
     if (!isConnected) {
       return SizedBox(
         width: double.infinity,
@@ -335,7 +276,15 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
             backgroundColor: Colors.blue[700],
             foregroundColor: Colors.white,
           ),
-          onPressed: _showNwcConnectDialog,
+          onPressed: () async {
+            await context.push('/wallet');
+            if (!mounted) return;
+            for (var i = 0; i < 6; i++) {
+              await _syncWalletState();
+              if (_hasSendingWallet) break;
+              await Future<void>.delayed(const Duration(milliseconds: 250));
+            }
+          },
         ),
       );
     }
@@ -345,7 +294,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
       width: double.infinity,
       child: ElevatedButton.icon(
         icon:
-            _isPayingWithNwc
+            _isPayingWithWallet
                 ? const SizedBox(
                   width: 16,
                   height: 16,
@@ -356,7 +305,7 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
                 )
                 : const Icon(Icons.bolt),
         label: Text(
-          _isPayingWithNwc
+          _isPayingWithWallet
               ? t.maker.payInvoice.actions.paying
               : isConnected
               ? t.maker.payInvoice.actions.payWithNwc
@@ -366,22 +315,21 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
           backgroundColor: Colors.orange[700],
           foregroundColor: Colors.white,
         ),
-        onPressed: _isPayingWithNwc ? null : () => _payWithNwc(holdInvoice),
+        onPressed: _isPayingWithWallet ? null : () => _payWithNwc(holdInvoice),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final offer = ref.watch(activeOfferProvider);
-    final t = Translations.of(context);
-
-    // Listen to the active offer provider for status changes
     ref.listen<Offer?>(activeOfferProvider, (previous, next) {
       if (next != null && mounted) {
         _handleStatusUpdate(next.statusEnum, next.coordinatorPubkey);
       }
     });
+
+    final offer = ref.watch(activeOfferProvider);
+    final t = Translations.of(context);
 
     final holdInvoiceFromProvider = ref.watch(holdInvoiceProvider);
     // Get hold invoice from either provider or active offer
@@ -389,8 +337,8 @@ class _MakerPayInvoiceScreenState extends ConsumerState<MakerPayInvoiceScreen> {
 
     // WebLN auto-pay logic
     if (isWallet && holdInvoice != null && !_sentWeblnPayment) {
-      Logger.log.d(() => 
-        "isWallet: $isWallet, _sentWeblnPayment: $_sentWeblnPayment",
+      Logger.log.d(
+        () => "isWallet: $isWallet, _sentWeblnPayment: $_sentWeblnPayment",
       );
       sendWeblnPayment(holdInvoice)
           .then((_) {

@@ -46,25 +46,9 @@ dependencies:
   flutter_secure_storage: ^10.0.0 # For secure key storage (Updated to latest)
   ndk: 0.7.1-dev.5
   ndk_flutter: 0.0.2
-#    git:
-#      url: https://github.com/relaystr/ndk.git
-#      path: packages/ndk
-#      ref: 2b469e91e41e0c155fdac2cd44d7180bcdefd147
-#  ndk_rust_verifier: 0.5.0
-#  ndk_flutter:
-#    path: ../../ndk/packages/ndk_flutter
-#  ndk_rust_verifier:
-#    path: ../../ndk/packages/rust_verifier
-  ndk_objectbox:
-    path: ../../ndk/packages/objectbox
-  drift_cache_manager:
-    path: ../../ndk/packages/drift_cache_manager
-  sembast_cache_manager:
-    path: ../../ndk/packages/sembast_cache_manager
-#    git:
-#      url: https://github.com/relaystr/ndk.git
-#      path: packages/objectbox
-#      ref: 2b469e91e41e0c155fdac2cd44d7180bcdefd147
+  ndk_objectbox: 0.2.8
+  drift_cache_manager: 0.0.2
+  sembast_cache_manager: 1.0.7
   url_launcher: ^6.3.1 # For launching URLs/Intents
   android_intent_plus: ^6.0.0
   path_provider: 2.1.5
@@ -90,9 +74,35 @@ dependencies:
 
 dependency_overrides:
   ndk:
-    path: ../../ndk/packages/ndk
+    git:
+      url: https://github.com/relaystr/ndk.git
+      path: packages/ndk
+      ref: 75eefe1da7d36263ed1988bd1a65c1a946a4c850
+#    path: ../../ndk/packages/ndk
   ndk_flutter:
-    path: ../../ndk/packages/ndk_flutter
+    git:
+      url: https://github.com/relaystr/ndk.git
+      path: packages/ndk_flutter
+      ref: 75eefe1da7d36263ed1988bd1a65c1a946a4c850
+#    path: ../../ndk/packages/ndk_flutter
+  ndk_objectbox:
+    git:
+      url: https://github.com/relaystr/ndk.git
+      path: packages/objectbox
+      ref: 75eefe1da7d36263ed1988bd1a65c1a946a4c850
+  #    path: ../../ndk/packages/ndk_objectbox
+  drift_cache_manager:
+    git:
+      url: https://github.com/relaystr/ndk.git
+      path: packages/drift_cache_manager
+      ref: 75eefe1da7d36263ed1988bd1a65c1a946a4c850
+  #    path: ../../ndk/packages/drift_cache_manager
+  sembast_cache_manager:
+    git:
+      url: https://github.com/relaystr/ndk.git
+      path: packages/sembast_cache_manager
+      ref: 75eefe1da7d36263ed1988bd1a65c1a946a4c850
+#    path: ../../ndk/packages/sembast_cache_manager
 
 dev_dependencies:
   #build_runner: 2.4.15
