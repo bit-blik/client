@@ -1034,23 +1034,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.28.0"
-  sembast:
-    dependency: transitive
-    description:
-      name: sembast
-      sha256: "139cf71496105de32e7a08a4e3a1ead0f81c4a616ec9703ed07e8f0d10cdd505"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.8.6"
-  sembast_cache_manager:
-    dependency: "direct main"
-    description:
-      path: "packages/sembast_cache_manager"
-      ref: "75eefe1da7d36263ed1988bd1a65c1a946a4c850"
-      resolved-ref: "75eefe1da7d36263ed1988bd1a65c1a946a4c850"
-      url: "https://github.com/relaystr/ndk.git"
-    source: git
-    version: "1.0.8-dev.0"
   shared_preferences:
     dependency: "direct main"
     description:

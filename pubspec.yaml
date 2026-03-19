@@ -48,7 +48,7 @@ dependencies:
   ndk_flutter: 0.0.2
   ndk_objectbox: 0.2.8
   drift_cache_manager: 0.0.2
-  sembast_cache_manager: 1.0.7
+#  sembast_cache_manager: 1.0.7
   url_launcher: ^6.3.1 # For launching URLs/Intents
   android_intent_plus: ^6.0.0
   path_provider: 2.1.5
@@ -97,11 +97,11 @@ dependency_overrides:
       path: packages/drift_cache_manager
       ref: 75eefe1da7d36263ed1988bd1a65c1a946a4c850
   #    path: ../../ndk/packages/drift_cache_manager
-  sembast_cache_manager:
-    git:
-      url: https://github.com/relaystr/ndk.git
-      path: packages/sembast_cache_manager
-      ref: 75eefe1da7d36263ed1988bd1a65c1a946a4c850
+#  sembast_cache_manager:
+#    git:
+#      url: https://github.com/relaystr/ndk.git
+#      path: packages/sembast_cache_manager
+#      ref: 75eefe1da7d36263ed1988bd1a65c1a946a4c850
 #    path: ../../ndk/packages/sembast_cache_manager
 
 dev_dependencies:

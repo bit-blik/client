@@ -1,6 +1,6 @@
 ## [0.5.0] - 2026-03-15
-- cashu wallet support
 - multiple wallets support
+- cashu wallet
 - taker receive to any wallet that supports it, like NWC or cashu, not just LNURL
 - better privacy since lnurl is no longer sent to the coordinator, just the invoice
 

@@ -8,9 +8,7 @@ import 'package:ndk/ndk.dart';
 import 'package:ndk/shared/isolates/isolate_manager.dart';
 import 'package:ndk/shared/nips/nip44/nip44.dart';
 import 'package:ndk_flutter/ndk_flutter.dart';
-import 'package:ndk_flutter/repositories/flutter_secure_storage_wallets_repo.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:sembast_cache_manager/sembast_cache_manager.dart';
+import 'package:ndk_objectbox/data_layer/db/object_box/db_object_box.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:ndk_rust_verifier/ndk_rust_verifier.dart' as web_rust_verifier;
@@ -237,10 +235,11 @@ class NostrService {
     final cacheManager =
         kIsWeb
             ? await DriftCacheManager.create()
-            : await SembastCacheManager.create(
-              databasePath: (await getApplicationDocumentsDirectory()).path,
-            );
-    // final cacheManager = MemCacheManager(); //DbObjectBox();
+            : DbObjectBox();
+    // await SembastCacheManager.create(
+    //           databasePath: (await getApplicationDocumentsDirectory()).path,
+    //         )
+    ;
 
     final eventVerifier = kIsWeb ? WebEventVerifier() : RustEventVerifier();
 
