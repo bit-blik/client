@@ -1417,7 +1417,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
       bottomNavigationBar: SizedBox(
         height: 70,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(6.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -1449,7 +1449,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                             ),
                           ),
                         ),
-                        // const SizedBox(width: 16),
+                        const SizedBox(width: 8),
                         // InkWell(
                         //   onTap: () async {
                         //     final Uri url = Uri.parse('https://github.com/bit-blik/client');
@@ -1470,8 +1470,8 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                           },
                           child: Image.asset(
                             'assets/nostr.png',
-                            width: 32,
-                            height: 32,
+                            width: 36,
+                            height: 36,
                           ),
                         ),
                       ],
