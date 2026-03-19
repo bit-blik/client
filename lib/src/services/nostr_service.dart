@@ -2,13 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:drift_cache_manager/drift_cache_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ndk/ndk.dart';
 import 'package:ndk/shared/isolates/isolate_manager.dart';
 import 'package:ndk/shared/nips/nip44/nip44.dart';
 import 'package:ndk_flutter/ndk_flutter.dart';
-import 'package:ndk_objectbox/data_layer/db/object_box/db_object_box.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:ndk_rust_verifier/ndk_rust_verifier.dart' as web_rust_verifier;
@@ -16,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/coordinator_info.dart';
 import '../models/offer.dart';
 import 'key_service.dart';
+import 'nostr_cache_factory.dart';
 
 /// Request/Response models for Nostr RPC communication
 class NostrRequest {
@@ -232,10 +231,7 @@ class NostrService {
         Logger.log.w(() => '⚠️ Error destroying previous NDK instance: $e');
       }
     }
-    final cacheManager =
-        kIsWeb
-            ? await DriftCacheManager.create()
-            : DbObjectBox();
+    final cacheManager = await createNostrCacheManager();
     // await SembastCacheManager.create(
     //           databasePath: (await getApplicationDocumentsDirectory()).path,
     //         )
