@@ -64,7 +64,6 @@ Maker zablokował już swoje Bitcoin w fakturze `hold invoice` przed otrzymaniem
 Ponieważ faktury typu `hold invoice` mają ograniczone okno ważności (zazwyczaj kilka godzin), Maker nie może zwlekać w nieskończoność. Musi albo uczciwie dokończyć transakcję, albo ryzykować utratę swoich Bitcoin w procesie rozwiązywania sporów.
 
 Ponieważ Bitcoin są przechowywane w fakturze `hold invoice`, Maker (sprzedawca) jest motywowany do uczciwego działania. Bez dowodów przeciwnych faktura nie zostanie zwrócona Makerowi.
-Ponieważ faktury wstrzymujące powinny być utrzymywane tylko przez krótki okres (zazwyczaj kilka godzin), faktura zostanie rozliczona, a środki będą przechowywane przez koordynatora do czasu, gdy Taker dostarczy dowody w celu rozwiązania sporu.
 
 
 #### Co motywuje Takera do uczciwego działania?

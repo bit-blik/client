@@ -91,7 +91,6 @@ The Maker has already locked their Bitcoin in a Lightning Network hold invoice b
 Since hold invoices have a limited validity window (typically a few hours), the Maker cannot indefinitely stall. They must either complete the trade honestly or risk losing their Bitcoin through the dispute resolution process.
 
 Since the Bitcoin are held in a Lightning Network hold invoice, the Maker (seller) is incentivized to act honestly. Without evidence to contrary the invoice will not be released back to the Maker.
-Since hold invoices should only be held for a short period (typically few hours), the invoice will settle and the funds will be kept by coordinator until the Taker provides evidence to resolve the dispute.
 
 
 #### What motivates the Taker to act honestly?
