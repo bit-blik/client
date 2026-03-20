@@ -88,10 +88,9 @@ The Maker has already locked their Bitcoin in a Lightning Network hold invoice b
 - **If the Maker falsely denies receiving a valid BLIK payment:** The Taker can open a dispute and provide bank evidence proving the payment was made. If the coordinator finds in favor of the Taker, the hold invoice is settled anyway, and the Maker loses their Bitcoin without recourse.
 - **If the Maker abandons the trade or becomes unresponsive:** The coordinator can settle the invoice in favor of the Taker (if payment evidence exists) or, in ambiguous cases, keep the funds locked until the dispute is resolved.
 
-Since hold invoices have a limited validity window (typically a few hours), the Maker cannot indefinitely stall. They must either complete the trade honestly or risk losing their Bitcoin through the dispute resolution process.
+Hold invoices have a limited validity window (typically a few hours), meaning the Maker cannot indefinitely stall. They must either complete the trade honestly or risk losing their Bitcoin through the dispute resolution process.
 
-Since the Bitcoin are held in a Lightning Network hold invoice, the Maker (seller) is incentivized to act honestly. Without evidence to contrary the invoice will not be released back to the Maker.
-
+With Bitcoin held in a Lightning Network hold invoice, the Maker (seller) is incentivized to act honestly. Without evidence to the contrary, the invoice will not be released back to the Maker.
 
 #### What motivates the Taker to act honestly?
 
