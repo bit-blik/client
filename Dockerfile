@@ -21,7 +21,7 @@ RUN flutter pub get
 RUN flutter config --enable-web
 
 # Build the web application with the specified build mode
-RUN flutter build web --${BUILD_MODE} --no-web-resources-cdn --no-wasm-dry-run
+RUN flutter build web --${BUILD_MODE} --no-web-resources-cdn --wasm
 
 # Stage 2: Serve the built web application using Nginx
 FROM nginx:stable-alpine
