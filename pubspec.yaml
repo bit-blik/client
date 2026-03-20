@@ -75,25 +75,25 @@ dependency_overrides:
     git:
       url: https://github.com/relaystr/ndk.git
       path: packages/ndk
-      ref: 8048ddfa6067ccaffd12859f9305ef86eaa4c01a
+      ref: 407378f55c3fb6d0e2a11f44ec071adda05ecc2e
 #    path: ../../ndk/packages/ndk
   ndk_flutter:
     git:
       url: https://github.com/relaystr/ndk.git
       path: packages/ndk_flutter
-      ref: 8048ddfa6067ccaffd12859f9305ef86eaa4c01a
+      ref: 407378f55c3fb6d0e2a11f44ec071adda05ecc2e
 #    path: ../../ndk/packages/ndk_flutter
   ndk_objectbox:
     git:
       url: https://github.com/relaystr/ndk.git
       path: packages/objectbox
-      ref: 8048ddfa6067ccaffd12859f9305ef86eaa4c01a
+      ref: 407378f55c3fb6d0e2a11f44ec071adda05ecc2e
   #    path: ../../ndk/packages/ndk_objectbox
   drift_cache_manager:
     git:
       url: https://github.com/relaystr/ndk.git
       path: packages/drift_cache_manager
-      ref: 8048ddfa6067ccaffd12859f9305ef86eaa4c01a
+      ref: 407378f55c3fb6d0e2a11f44ec071adda05ecc2e
   #    path: ../../ndk/packages/drift_cache_manager
 
 dev_dependencies:

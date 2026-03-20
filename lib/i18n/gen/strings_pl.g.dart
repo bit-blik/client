@@ -519,6 +519,7 @@ class _TranslationsOffersDetailsPl extends TranslationsOffersDetailsEn {
 	@override String get finishedOffers => 'Zakończone oferty';
 	@override String get finishedOffersWithTime => 'Zakończone oferty (ostatnie 24h):';
 	@override String get noAvailable => 'Brak dostępnych ofert.';
+	@override String get noAvailableTip => 'Wskazówka: udostępnij Bitblik w swojej społeczności i wśród znajomych, aby zwiększyć liczbę zamówień w Bitblik.';
 	@override String get noSuccessfulTrades => 'Brak udanych transakcji.';
 	@override String get loadingDetails => 'Ładowanie szczegółów oferty...';
 	@override String amount({required Object amount}) => 'Kwota: ${amount} satoshi';
@@ -1993,6 +1994,7 @@ extension on TranslationsPl {
 			case 'offers.details.finishedOffers': return 'Zakończone oferty';
 			case 'offers.details.finishedOffersWithTime': return 'Zakończone oferty (ostatnie 24h):';
 			case 'offers.details.noAvailable': return 'Brak dostępnych ofert.';
+			case 'offers.details.noAvailableTip': return 'Wskazówka: udostępnij Bitblik w swojej społeczności i wśród znajomych, aby zwiększyć liczbę zamówień w Bitblik.';
 			case 'offers.details.noSuccessfulTrades': return 'Brak udanych transakcji.';
 			case 'offers.details.loadingDetails': return 'Ładowanie szczegółów oferty...';
 			case 'offers.details.amount': return ({required Object amount}) => 'Kwota: ${amount} satoshi';

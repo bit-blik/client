@@ -86,6 +86,7 @@ offers:
     finishedOffers: Finished offers
     finishedOffersWithTime: "Finished offers (last 24h):"
     noAvailable: No available offers.
+    noAvailableTip: "Tip: share Bitblik in your community and among friends to increase Bitblik orders."
     noSuccessfulTrades: No successful trades.
     loadingDetails: "Loading offer details..." # Used by taker.paymentProcess & taker.waitConfirmation
   

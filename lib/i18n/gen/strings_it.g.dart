@@ -519,6 +519,7 @@ class _TranslationsOffersDetailsIt extends TranslationsOffersDetailsEn {
 	@override String get finishedOffers => 'Offerte completate';
 	@override String get finishedOffersWithTime => 'Offerte completate (ultime 24h):';
 	@override String get noAvailable => 'Nessuna offerta disponibile.';
+	@override String get noAvailableTip => 'Suggerimento: condividi Bitblik nella tua community e tra i tuoi amici per aumentare gli ordini su Bitblik.';
 	@override String get noSuccessfulTrades => 'Nessuna transazione completata.';
 	@override String get loadingDetails => 'Caricamento dettagli offerta...';
 	@override String amount({required Object amount}) => 'Importo: ${amount} satoshi';
@@ -1995,6 +1996,7 @@ extension on TranslationsIt {
 			case 'offers.details.finishedOffers': return 'Offerte completate';
 			case 'offers.details.finishedOffersWithTime': return 'Offerte completate (ultime 24h):';
 			case 'offers.details.noAvailable': return 'Nessuna offerta disponibile.';
+			case 'offers.details.noAvailableTip': return 'Suggerimento: condividi Bitblik nella tua community e tra i tuoi amici per aumentare gli ordini su Bitblik.';
 			case 'offers.details.noSuccessfulTrades': return 'Nessuna transazione completata.';
 			case 'offers.details.loadingDetails': return 'Caricamento dettagli offerta...';
 			case 'offers.details.amount': return ({required Object amount}) => 'Importo: ${amount} satoshi';

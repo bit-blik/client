@@ -237,7 +237,16 @@ class NostrService {
     //         )
     ;
 
-    final eventVerifier = kIsWeb ? WebEventVerifier() : RustEventVerifier();
+    late final EventVerifier eventVerifier;
+    if (kIsWeb) {
+      try {
+        eventVerifier = WebEventVerifier();
+      } on UnsupportedError {
+        eventVerifier = Bip340EventVerifier();
+      }
+    } else {
+      eventVerifier = RustEventVerifier();
+    }
 
     // Initialize NDK with bootstrap relays config
     _ndk = Ndk(

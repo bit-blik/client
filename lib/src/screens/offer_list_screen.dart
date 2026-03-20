@@ -536,6 +536,42 @@ class _OfferListScreenState extends ConsumerState<OfferListScreen> {
                     children: [
                       SizedBox(height: 30),
                       Center(child: Text(t.offers.details.noAvailable)),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                            
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEFF6FF),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: const Color(0xFFBFDBFE)),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Icon(
+                                Icons.info_outline,
+                                color: Color(0xFF2563EB),
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  t.offers.details.noAvailableTip,
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(
+                                    color: Color(0xFF1D4ED8),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                       SizedBox(height: 30),
                       const Divider(height: 32, thickness: 1),
                       _buildStatsSection(
@@ -1101,6 +1137,41 @@ class _OfferListScreenState extends ConsumerState<OfferListScreen> {
                   children: [
                     SizedBox(height: 30),
                     Center(child: Text(t.offers.details.noAvailable)),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEFF6FF),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: const Color(0xFFBFDBFE)),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.info_outline,
+                              color: Color(0xFF2563EB),
+                              size: 18,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                t.offers.details.noAvailableTip,
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(
+                                  color: Color(0xFF1D4ED8),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     SizedBox(height: 30),
                     const Divider(height: 32, thickness: 1),
                     _buildStatsSection(

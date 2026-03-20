@@ -690,6 +690,9 @@ class TranslationsOffersDetailsEn {
 	/// en: 'No available offers.'
 	String get noAvailable => 'No available offers.';
 
+	/// en: 'Tip: share Bitblik in your community and among friends to increase Bitblik orders.'
+	String get noAvailableTip => 'Tip: share Bitblik in your community and among friends to increase Bitblik orders.';
+
 	/// en: 'No successful trades.'
 	String get noSuccessfulTrades => 'No successful trades.';
 
@@ -3013,6 +3016,7 @@ extension on Translations {
 			case 'offers.details.finishedOffers': return 'Finished offers';
 			case 'offers.details.finishedOffersWithTime': return 'Finished offers (last 24h):';
 			case 'offers.details.noAvailable': return 'No available offers.';
+			case 'offers.details.noAvailableTip': return 'Tip: share Bitblik in your community and among friends to increase Bitblik orders.';
 			case 'offers.details.noSuccessfulTrades': return 'No successful trades.';
 			case 'offers.details.loadingDetails': return 'Loading offer details...';
 			case 'offers.details.amount': return ({required Object amount}) => 'Amount: ${amount} satoshi';

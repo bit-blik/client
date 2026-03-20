@@ -342,8 +342,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/drift_cache_manager"
-      ref: "8048ddfa6067ccaffd12859f9305ef86eaa4c01a"
-      resolved-ref: "8048ddfa6067ccaffd12859f9305ef86eaa4c01a"
+      ref: "407378f55c3fb6d0e2a11f44ec071adda05ecc2e"
+      resolved-ref: "407378f55c3fb6d0e2a11f44ec071adda05ecc2e"
       url: "https://github.com/relaystr/ndk.git"
     source: git
     version: "0.0.2-dev.2"
@@ -771,8 +771,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/ndk"
-      ref: "8048ddfa6067ccaffd12859f9305ef86eaa4c01a"
-      resolved-ref: "8048ddfa6067ccaffd12859f9305ef86eaa4c01a"
+      ref: "407378f55c3fb6d0e2a11f44ec071adda05ecc2e"
+      resolved-ref: "407378f55c3fb6d0e2a11f44ec071adda05ecc2e"
       url: "https://github.com/relaystr/ndk.git"
     source: git
     version: "0.7.2-dev.2"
@@ -788,8 +788,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/ndk_flutter"
-      ref: "8048ddfa6067ccaffd12859f9305ef86eaa4c01a"
-      resolved-ref: "8048ddfa6067ccaffd12859f9305ef86eaa4c01a"
+      ref: "407378f55c3fb6d0e2a11f44ec071adda05ecc2e"
+      resolved-ref: "407378f55c3fb6d0e2a11f44ec071adda05ecc2e"
       url: "https://github.com/relaystr/ndk.git"
     source: git
     version: "0.0.2-dev.4"
@@ -797,8 +797,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/objectbox"
-      ref: "8048ddfa6067ccaffd12859f9305ef86eaa4c01a"
-      resolved-ref: "8048ddfa6067ccaffd12859f9305ef86eaa4c01a"
+      ref: "407378f55c3fb6d0e2a11f44ec071adda05ecc2e"
+      resolved-ref: "407378f55c3fb6d0e2a11f44ec071adda05ecc2e"
       url: "https://github.com/relaystr/ndk.git"
     source: git
     version: "0.2.8-dev.2"
