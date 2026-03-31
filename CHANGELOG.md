@@ -1,4 +1,4 @@
-## [0.5.0] - 2026-03-15
+## [0.5.0] - 2026-04-01
 - multiple wallets support
 - cashu wallet
 - taker receive to any wallet that supports it, like NWC or cashu, not just LNURL
