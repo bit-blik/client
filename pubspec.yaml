@@ -44,10 +44,10 @@ dependencies:
 
   bip340: ^0.3.0 # For secp256k1 key pair generation (alternative to dart_nostr)
   flutter_secure_storage: ^10.0.0 # For secure key storage (Updated to latest)
-  ndk: 0.7.1-dev.5
-  ndk_flutter: 0.0.2
-  ndk_objectbox: 0.2.8
-  drift_cache_manager: 0.0.2
+  ndk: 0.8.0+1
+  ndk_flutter: ^0.8.0+2
+  ndk_objectbox: ^0.2.9
+  ndk_drift: ^0.1.0
   url_launcher: ^6.3.1 # For launching URLs/Intents
   android_intent_plus: ^6.0.0
   path_provider: 2.1.5
@@ -71,30 +71,30 @@ dependencies:
   mobile_scanner: ^7.1.4
 
 dependency_overrides:
-  ndk:
-    git:
-      url: https://github.com/relaystr/ndk.git
-      path: packages/ndk
-      ref: 407378f55c3fb6d0e2a11f44ec071adda05ecc2e
+#  ndk:
+#    git:
+#      url: https://github.com/relaystr/ndk.git
+#      path: packages/ndk
+#      ref: 407378f55c3fb6d0e2a11f44ec071adda05ecc2e
 #    path: ../../ndk/packages/ndk
-  ndk_flutter:
-    git:
-      url: https://github.com/relaystr/ndk.git
-      path: packages/ndk_flutter
-      ref: 407378f55c3fb6d0e2a11f44ec071adda05ecc2e
-#    path: ../../ndk/packages/ndk_flutter
-  ndk_objectbox:
-    git:
-      url: https://github.com/relaystr/ndk.git
-      path: packages/objectbox
-      ref: 407378f55c3fb6d0e2a11f44ec071adda05ecc2e
-  #    path: ../../ndk/packages/ndk_objectbox
-  drift_cache_manager:
-    git:
-      url: https://github.com/relaystr/ndk.git
-      path: packages/drift_cache_manager
-      ref: 407378f55c3fb6d0e2a11f44ec071adda05ecc2e
-  #    path: ../../ndk/packages/drift_cache_manager
+#  ndk_flutter:
+#    git:
+#      url: https://github.com/relaystr/ndk.git
+#      path: packages/ndk_flutter
+#      ref: 407378f55c3fb6d0e2a11f44ec071adda05ecc2e
+##    path: ../../ndk/packages/ndk_flutter
+#  ndk_objectbox:
+#    git:
+#      url: https://github.com/relaystr/ndk.git
+#      path: packages/objectbox
+#      ref: 407378f55c3fb6d0e2a11f44ec071adda05ecc2e
+#  #    path: ../../ndk/packages/ndk_objectbox
+#  drift_cache_manager:
+#    git:
+#      url: https://github.com/relaystr/ndk.git
+#      path: packages/drift_cache_manager
+#      ref: 407378f55c3fb6d0e2a11f44ec071adda05ecc2e
+#  #    path: ../../ndk/packages/drift_cache_manager
 
 dev_dependencies:
   #build_runner: 2.4.15
