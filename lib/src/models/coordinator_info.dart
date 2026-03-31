@@ -1,6 +1,3 @@
-import 'package:flutter/foundation.dart';
-
-@immutable
 class CoordinatorInfo {
   final String name;
   final int reservationSeconds;

@@ -2,8 +2,12 @@ import 'dart:math'; // For Random.secure()
 import 'dart:typed_data'; // For Uint8List
 
 import 'package:bip340/bip340.dart' as bip340;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:ndk/entities.dart';
+import 'package:ndk/ndk.dart';
 import 'package:ndk/shared/logger/logger.dart';
+
+import 'secure_key_value_store.dart';
+import 'wallet_ids.dart';
 
 // Helper function for hex encoding
 String bytesToHex(List<int> bytes) {
@@ -26,13 +30,16 @@ Uint8List hexToBytes(String hex) {
 }
 
 class KeyService {
-  final _storage = const FlutterSecureStorage();
+  final SecureKeyValueStore _storage;
   final _privateKeyStorageKey = 'bitblik_private_key_hex';
   final _lightningAddressStorageKey = 'bitblik_lightning_address';
   final _nwcConnectionStringKey = 'bitblik_nwc_connection_string';
 
   String? _publicKeyHex;
   String? _privateKeyHex; // Store keys as hex strings
+
+  KeyService({SecureKeyValueStore? storage})
+    : _storage = storage ?? createDefaultSecureKeyValueStore();
 
   // Public getter for the public key (hex format)
   String? get publicKeyHex => _publicKeyHex;

@@ -9,6 +9,7 @@ import '../models/coordinator_info.dart';
 import '../models/offer.dart';
 import 'key_service.dart';
 import 'nostr_service.dart';
+import 'nostr_wallets_repo_factory.dart';
 
 class ApiServiceNostr {
   static const _btcPlnCacheKey = 'btcPlnRate';
@@ -16,7 +17,13 @@ class ApiServiceNostr {
   final NostrService _nostrService;
   final KeyService _keyService;
 
-  ApiServiceNostr(this._keyService) : _nostrService = NostrService(_keyService);
+  ApiServiceNostr(
+    this._keyService, {
+    NostrWalletsRepoFactory? walletsRepoFactory,
+  }) : _nostrService = NostrService(
+         _keyService,
+         walletsRepoFactory: walletsRepoFactory,
+       );
 
   Future<void> init() async {
     await _keyService.init();

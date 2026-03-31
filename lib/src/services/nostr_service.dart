@@ -2,17 +2,23 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:ndk/ndk.dart';
 import 'package:ndk/shared/isolates/isolate_manager.dart';
 import 'package:ndk/shared/nips/nip44/nip44.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:ndk_rust_verifier/ndk_rust_verifier.dart' as web_rust_verifier;
 
 import '../models/coordinator_info.dart';
 import '../models/offer.dart';
 import 'key_service.dart';
+import 'nostr_cache_factory.dart';
+import 'nostr_event_verifier_factory.dart';
+import 'nostr_wallets_repo_factory.dart';
+import 'shared_config_store.dart';
+
+const bool _kIsWeb = bool.fromEnvironment('dart.library.js_util');
+const bool _kDebugMode = !bool.fromEnvironment('dart.vm.product');
+const bool _kIsFlutterRuntime = bool.fromEnvironment('dart.library.ui');
 
 /// Request/Response models for Nostr RPC communication
 class NostrRequest {
@@ -146,6 +152,8 @@ class NostrService {
   static const int KIND_OFFER = 38383;
 
   final KeyService _keyService;
+  final NostrWalletsRepoFactory _walletsRepoFactory;
+  final SharedConfigStore _configStore;
   Ndk? _ndk;
   Bip340EventSigner? _clientSigner;
   final eventVerifier = Bip340EventVerifier();// web_rust_verifier.RustEventVerifier(); //kIsWeb? web_rust_verifier.RustEventVerifier() : RustEventVerifier();
@@ -170,17 +178,17 @@ class NostrService {
   // Coordinator info cache by pubkey
   final Map<String, CoordinatorInfo> _coordinatorInfoCache = {};
 
-  // Default whitelist (hardcoded)
-  List<String> kWhitelistCoordinatorPubKeys = !kDebugMode? [
-     "c6e5e031989223dd63e6ed49f0905a19a92ed86e0754721d6071133a9340bf7e",
-  ]:["30a68e444a09fcf01c49c673e9fd4c1ddf27bae6ee3f9b7a26c8785de741d414"]
-  ;
-
   // Blacklist and custom whitelist (loaded from preferences)
   List<String> _blacklistedCoordinators = [];
   List<String> _customWhitelistedCoordinators = [];
 
-  NostrService(this._keyService) {
+  NostrService(
+    this._keyService, {
+    NostrWalletsRepoFactory? walletsRepoFactory,
+    SharedConfigStore? configStore,
+  }) : _walletsRepoFactory =
+           walletsRepoFactory ?? createDefaultNostrWalletsRepoFactory(),
+       _configStore = configStore ?? createDefaultSharedConfigStore() {
     _offerStreamController = StreamController<Offer>.broadcast();
   }
 
@@ -196,15 +204,14 @@ class NostrService {
     Logger.log.i('✅ NostrService initialized');
   }
 
-  /// Load configuration from SharedPreferences
+  /// Load configuration from shared config store
   Future<void> _loadConfiguration() async {
-    final prefs = await SharedPreferences.getInstance();
-
     _relayUrls =
-        // prefs.getStringList(_relayUrlsKey) ??
-            List.from(_defaultRelayUrls);
-    _blacklistedCoordinators = prefs.getStringList(_blacklistKey) ?? [];
-    _customWhitelistedCoordinators = prefs.getStringList(_customWhitelistKey) ?? [];
+    // prefs.getStringList(_relayUrlsKey) ??
+    List.from(_defaultRelayUrls);
+    _blacklistedCoordinators =
+        await _configStore.getStringList(_blacklistKey) ?? [];
+    _customWhitelistedCoordinators = await _configStore.getStringList(_customWhitelistKey) ?? [];
 
     Logger.log.i('📡 Using relays: $_relayUrls');
     Logger.log.i('🚫 Blacklisted coordinators: ${_blacklistedCoordinators.length}');
@@ -222,21 +229,29 @@ class NostrService {
         Logger.log.w('⚠️ Error destroying previous NDK instance: $e');
       }
     }
+    final cacheManager = await createNostrCacheManager();
+    // await SembastCacheManager.create(
+    //           databasePath: (await getApplicationDocumentsDirectory()).path,
+    //         )
+    ;
+
+    final eventVerifier = createNostrEventVerifier(isWeb: _kIsWeb);
 
     // Initialize NDK with bootstrap relays config
     _ndk = Ndk(
       NdkConfig(
-        cache: MemCacheManager(),
+        cache: cacheManager,
+        walletsRepo: _walletsRepoFactory.create(),
         eventVerifier: eventVerifier,
         bootstrapRelays: _relayUrls,
-        logLevel: kDebugMode?LogLevel.debug:LogLevel.warning,
+        logLevel: _kDebugMode ? LogLevel.warning : LogLevel.warning,
       ),
     );
 
     await IsolateManager.instance.ready;
 
     ndk!.connectivity.relayConnectivityChanges.listen((data) {
-      print("🔗 Relay connectivity change: ${data}");
+      Logger.log.d(() => "🔗 Relay connectivity change: ${data}");
     });
 
     // _ndk!.connectivity.relayConnectivityChanges.listen((data) {
@@ -1142,22 +1157,27 @@ class NostrService {
   bool _shouldIncludeCoordinator(String pubkey) {
     // Normalize pubkey to hex format for comparison
     String pubkeyHex = _normalizePubkey(pubkey);
-    
+
     // Check if blacklisted
     if (_blacklistedCoordinators.any((b) => _normalizePubkey(b) == pubkeyHex)) {
       return false;
     }
-    
+
+    // In pure Dart CLI runtime, include all discovered coordinators unless blacklisted.
+    if (!_kIsFlutterRuntime) {
+      return true;
+    }
+
     // Check if in default whitelist
     if (kWhitelistCoordinatorPubKeys.any((w) => _normalizePubkey(w) == pubkeyHex)) {
       return true;
     }
-    
+
     // Check if in custom whitelist
     if (_customWhitelistedCoordinators.any((w) => _normalizePubkey(w) == pubkeyHex)) {
       return true;
     }
-    
+
     return false;
   }
 
@@ -1178,11 +1198,11 @@ class NostrService {
     try {
       final coordinator = DiscoveredCoordinator.fromNostrEvent(event);
       final pubkey = coordinator.pubkey;
-      
+
       // Always add to discovered coordinators if in default whitelist (even if blacklisted)
       // This allows users to see and unblacklist them in the UI
       final isDefaultWhitelisted = kWhitelistCoordinatorPubKeys.any((w) => _normalizePubkey(w) == _normalizePubkey(pubkey));
-      
+
       if (isDefaultWhitelisted || _shouldIncludeCoordinator(pubkey)) {
         _discoveredCoordinators[pubkey] = coordinator;
         _discoveredCoordinators[pubkey]!.responsive = true;
@@ -1209,7 +1229,7 @@ class NostrService {
     if (!_shouldIncludeCoordinator(coordinatorPubkey)) {
       return;
     }
-    
+
     try {
       final request = NostrRequest(method: 'get_info', params: {});
       // Use a shorter timeout for health checks
@@ -1254,10 +1274,10 @@ class NostrService {
   /// Includes both discovered coordinators and custom whitelisted ones
   List<DiscoveredCoordinator> get discoveredCoordinators {
     final coordinators = <DiscoveredCoordinator>[];
-    
+
     // Add discovered coordinators (already filtered by _shouldIncludeCoordinator)
     coordinators.addAll(_discoveredCoordinators.values);
-    
+
     // Add custom whitelisted coordinators that haven't been discovered yet
     for (final pubkey in _customWhitelistedCoordinators) {
       final normalized = _normalizePubkey(pubkey);
@@ -1285,27 +1305,27 @@ class NostrService {
     coordinators.sort((a, b) {
       final aNormalized = _normalizePubkey(a.pubkey);
       final bNormalized = _normalizePubkey(b.pubkey);
-      
+
       final aIsDefault = kWhitelistCoordinatorPubKeys.any((w) => _normalizePubkey(w) == aNormalized);
       final bIsDefault = kWhitelistCoordinatorPubKeys.any((w) => _normalizePubkey(w) == bNormalized);
-      
+
       final aIsCustomOnly = _customWhitelistedCoordinators.any((w) => _normalizePubkey(w) == aNormalized) && !aIsDefault;
       final bIsCustomOnly = _customWhitelistedCoordinators.any((w) => _normalizePubkey(w) == bNormalized) && !bIsDefault;
-      
+
       // Default whitelisted coordinators come first
       if (aIsDefault != bIsDefault) {
         return aIsDefault ? -1 : 1;
       }
-      
+
       // Custom-only coordinators come last (after default whitelisted)
       if (aIsCustomOnly != bIsCustomOnly) {
         return aIsCustomOnly ? 1 : -1; // custom-only goes to the end (positive value)
       }
-      
+
       // Within each group (default or custom), sort by responsive status (true first)
       final aResponsive = a.responsive ?? false;
       final bResponsive = b.responsive ?? false;
-      
+
       if (aResponsive != bResponsive) {
         return aResponsive ? -1 : 1; // responsive coordinators come first
       }
@@ -1319,9 +1339,8 @@ class NostrService {
 
   /// Update relay configuration
   Future<void> updateRelayConfig(List<String> relayUrls) async {
-    final prefs = await SharedPreferences.getInstance();
     _relayUrls = relayUrls;
-    await prefs.setStringList(_relayUrlsKey, relayUrls);
+    await _configStore.setStringList(_relayUrlsKey, relayUrls);
 
     // Reinitialize NDK with new relays if already initialized
     if (_isInitialized) {
@@ -1357,7 +1376,7 @@ class NostrService {
   /// Toggle blacklist status for a coordinator
   Future<void> toggleBlacklist(String pubkey, bool blacklist) async {
     final normalized = _normalizePubkey(pubkey);
-    
+
     if (blacklist) {
       // Remove any existing entry (in case of format mismatch) and add normalized
       _blacklistedCoordinators.removeWhere((b) => _normalizePubkey(b) == normalized);
@@ -1365,14 +1384,12 @@ class NostrService {
     } else {
       _blacklistedCoordinators.removeWhere((b) => _normalizePubkey(b) == normalized);
     }
-    
-    // Save to preferences
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(_blacklistKey, _blacklistedCoordinators);
-    
+
+    await _configStore.setStringList(_blacklistKey, _blacklistedCoordinators);
+
     // Don't remove from discovered coordinators - keep them visible so users can unblacklist
     // The _shouldIncludeCoordinator check will prevent them from being used in operations
-    
+
     Logger.log.i('${blacklist ? "🚫" : "✅"} Coordinator $normalized ${blacklist ? "blacklisted" : "unblacklisted"}');
   }
 
@@ -1382,7 +1399,7 @@ class NostrService {
     if (trimmed.isEmpty) {
       throw ArgumentError('Npub cannot be empty');
     }
-    
+
     // Validate npub format
     String normalized;
     try {
@@ -1395,20 +1412,18 @@ class NostrService {
     } catch (e) {
       throw ArgumentError('Invalid npub format: $e');
     }
-    
+
     // Check if already in custom whitelist
     if (_customWhitelistedCoordinators.any((w) => _normalizePubkey(w) == normalized)) {
       throw ArgumentError('Coordinator already in custom whitelist');
     }
-    
+
     _customWhitelistedCoordinators.add(normalized);
-    
-    // Save to preferences
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(_customWhitelistKey, _customWhitelistedCoordinators);
-    
+
+    await _configStore.setStringList(_customWhitelistKey, _customWhitelistedCoordinators);
+
     Logger.log.i('✅ Added coordinator $normalized to custom whitelist');
-    
+
     // Try to discover this coordinator
     // Note: This won't immediately discover it, but it will be included if discovered later
   }
@@ -1416,22 +1431,20 @@ class NostrService {
   /// Remove a coordinator from custom whitelist
   Future<void> removeCustomWhitelist(String pubkey) async {
     final normalized = _normalizePubkey(pubkey);
-    
+
     final beforeLength = _customWhitelistedCoordinators.length;
     _customWhitelistedCoordinators.removeWhere((w) => _normalizePubkey(w) == normalized);
     final afterLength = _customWhitelistedCoordinators.length;
-    
+
     if (beforeLength > afterLength) {
-      // Save to preferences
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList(_customWhitelistKey, _customWhitelistedCoordinators);
-      
+      await _configStore.setStringList(_customWhitelistKey, _customWhitelistedCoordinators);
+
       // Remove from discovered coordinators if not in default whitelist
       if (!isDefaultWhitelisted(normalized)) {
         _discoveredCoordinators.remove(normalized);
         _coordinatorInfoCache.remove(normalized);
       }
-      
+
       Logger.log.i('🗑️ Removed coordinator $normalized from custom whitelist');
     }
   }
