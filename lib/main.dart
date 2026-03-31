@@ -19,6 +19,8 @@ import 'package:flutter_localizations/flutter_localizations.dart'; // Keep for G
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ndk/entities.dart';
+import 'package:ndk_flutter/l10n/app_localizations.dart' as ndk_l10n;
 import 'package:ndk/shared/logger/logger.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -197,7 +199,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/taker-conflict',
             builder:
                 (context, state) =>
-                    TakerConflictScreen(offerId: state.extra as String),
+                TakerConflictScreen(offerId: state.extra as String),
           ),
           GoRoute(
             path: '/maker-invalid-blik',
@@ -275,11 +277,11 @@ class _MyAppState extends ConsumerState<MyApp> {
       ref.read(keyServiceProvider);
       ref.read(apiServiceProvider);
 
-      Logger.log.i(
+      Logger.log.i(() =>
         '🚀 App initialized: API service and coordinator discovery started',
       );
     } catch (e) {
-      Logger.log.e('❌ Error during app initialization: $e');
+      Logger.log.e(() => '❌ Error during app initialization: $e');
     }
 
     // Initialize API service and start coordinator discovery
@@ -295,42 +297,25 @@ class _MyAppState extends ConsumerState<MyApp> {
         // Initialize app lifecycle provider (reconnects NDK when app resumes)
         ref.read(appLifecycleProvider);
 
-        // Initialize NWC connection if saved
-        try {
-          final nwcService = await ref.read(nwcServiceProvider.future);
-          await nwcService.initAndConnect();
-          if (nwcService.isConnected) {
-            ref.read(nwcConnectionStatusProvider.notifier).state = true;
+        // // Start listening to connectivity changes
+        // _connectivitySubscription = listenToConnectivityChanges(ref);
 
-            // Initialize notification manager to start listening
-            ref.read(nwcNotificationManagerProvider);
-
-            Logger.log.i(
-              '💰 NWC connected and wallet info providers initialized',
-            );
-          }
-        } catch (e) {
-          Logger.log.w('⚠️ Error initializing NWC connection: $e');
-        }
-
-        Logger.log.i(
-          '🚀 App initialized: API service and coordinator discovery started',
-        );
+        Logger.log.i(() => '🚀 App initialized: API service and coordinator discovery started');
       } catch (e) {
-        Logger.log.e('❌ Error during app initialization: $e');
+        Logger.log.e(() => '❌ Error during app initialization: $e');
       }
     });
 
     // Only listen for deep links on Android/iOS/macOS, not web
     if (!kIsWeb) {
       _sub = _appLinks.uriLinkStream.listen(
-        (Uri? uri) {
+            (Uri? uri) {
           if (uri != null) {
             _handleDeepLink(uri);
           }
         },
         onError: (err) {
-          Logger.log.e('Deep link error: $err');
+          Logger.log.e(() => 'Deep link error: $err');
         },
       );
 
@@ -346,7 +331,7 @@ class _MyAppState extends ConsumerState<MyApp> {
         _handleDeepLink(initialUri);
       }
     } catch (e) {
-      Logger.log.e('Error getting initial link: $e');
+      Logger.log.e(() => 'Error getting initial link: $e');
     }
   }
 
@@ -354,7 +339,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     final router = ref.read(routerProvider);
     final scheme = uri.scheme.toLowerCase();
 
-    Logger.log.i('🔗 Deep link received: $uri (scheme: $scheme)');
+    Logger.log.i(() => '🔗 Deep link received: $uri (scheme: $scheme)');
 
     // Handle nostr+walletconnect:// scheme (NWC connection)
     if (scheme == 'nostr+walletconnect') {
@@ -395,19 +380,30 @@ class _MyAppState extends ConsumerState<MyApp> {
   Future<void> _handleNwcDeepLink(String connectionString) async {
     final router = ref.read(routerProvider);
 
-    Logger.log.i('🔗 NWC deep link: connecting wallet...');
+    Logger.log.i(() => '🔗 NWC deep link: connecting wallet...');
 
     try {
-      // Connect NWC
-      final nwcService = await ref.read(nwcServiceProvider.future);
-      await nwcService.connect(connectionString);
-      ref.read(nwcConnectionStatusProvider.notifier).state = true;
+      // Ensure NDK is initialized before adding the wallet
+      final apiService = await ref.read(initializedApiServiceProvider.future);
+      final ndk = apiService.ndk;
+      if (ndk == null) {
+        Logger.log.e(() => '❌ NDK not initialized - cannot add NWC wallet');
+        router.go('/wallet');
+        return;
+      }
 
-      // Trigger balance and budget loading
-      ref.read(nwcBalanceProvider.notifier).loadBalance();
-      ref.read(nwcBudgetProvider.notifier).loadBudget();
+      final nwcWallet = NwcWallet(
+        id: kNwcWalletId,
+        name: 'NWC Wallet',
+        supportedUnits: {'sat'},
+        nwcUrl: connectionString.trim(),
+      );
 
-      Logger.log.i('💰 NWC connected via deep link');
+      await ndk.wallets.addWallet(nwcWallet);
+      ndk.wallets.setDefaultWallet(kNwcWalletId);
+      ref.read(defaultWalletProvider.notifier).refresh();
+
+      Logger.log.i(() => '💰 NWC connected via deep link');
 
       // Check if there's an active offer in 'created' status
       final activeOffer = ref.read(activeOfferProvider);
@@ -415,19 +411,19 @@ class _MyAppState extends ConsumerState<MyApp> {
       if (activeOffer != null &&
           activeOffer.status == OfferStatus.created.name) {
         // Active offer in created status - go to pay invoice screen
-        Logger.log.i(
-          '📝 Active offer found in created status, navigating to pay screen',
+        Logger.log.i(() =>
+        '📝 Active offer found in created status, navigating to pay screen',
         );
         router.go('/pay');
       } else {
         // No active offer or not in created status - go to wallet screen
-        Logger.log.i(
-          '💳 No active offer in created status, navigating to wallet',
+        Logger.log.i(() =>
+        '💳 No active offer in created status, navigating to wallet',
         );
         router.go('/wallet');
       }
     } catch (e) {
-      Logger.log.e('❌ Error connecting NWC via deep link: $e');
+      Logger.log.e(() => '❌ Error connecting NWC via deep link: $e');
       // Still navigate to wallet screen on error so user can see what happened
       router.go('/wallet');
     }
@@ -451,9 +447,12 @@ class _MyAppState extends ConsumerState<MyApp> {
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.white,
       ),
-      locale: appLocale.flutterLocale,
+      locale: LocaleSettings.currentLocale.flutterLocale,
       supportedLocales: AppLocaleUtils.supportedLocales,
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      localizationsDelegates: [
+        ...GlobalMaterialLocalizations.delegates,
+        ndk_l10n.AppLocalizations.delegate,
+      ],
       routerConfig: router,
     );
   }
@@ -517,54 +516,54 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
         context: context,
         builder:
             (context) => Dialog(
-              child: Container(
-                constraints: const BoxConstraints(
-                  maxWidth: 500,
-                  maxHeight: 600,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          Text(
-                            t.app.changelog,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const Spacer(),
-                          IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Divider(height: 1),
-                    Flexible(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Html(
-                          data: htmlContent,
-                          onLinkTap: (url, attributes, element) async {
-                            if (url != null) {
-                              await launchUrl(Uri.parse(url));
-                            }
-                          },
+          child: Container(
+            constraints: const BoxConstraints(
+              maxWidth: 500,
+              maxHeight: 600,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        t.app.changelog,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                  ],
+                      const Spacer(),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                const Divider(height: 1),
+                Flexible(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Html(
+                      data: htmlContent,
+                      onLinkTap: (url, attributes, element) async {
+                        if (url != null) {
+                          await launchUrl(Uri.parse(url));
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
+          ),
+        ),
       );
     } catch (e) {
-      Logger.log.e('Error loading changelog: $e');
+      Logger.log.e(() => 'Error loading changelog: $e');
     }
   }
 
@@ -577,282 +576,282 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
       context: context,
       builder:
           (context) => StatefulBuilder(
-            builder:
-                (context, setState) => Dialog(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Container(
-                    constraints: const BoxConstraints(maxWidth: 400),
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Title with emoji
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              t.altstore.dialogTitle,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Text('🫣', style: TextStyle(fontSize: 22)),
-                          ],
-                        ),
-                        const SizedBox(height: 32),
+        builder:
+            (context, setState) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 400),
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Title with emoji
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      t.altstore.dialogTitle,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text('🫣', style: TextStyle(fontSize: 22)),
+                  ],
+                ),
+                const SizedBox(height: 32),
 
-                        // Step 1
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              '1',
-                              style: TextStyle(
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    t.altstore.step1Title,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: Link(
-                                      uri: Uri.parse(
-                                        'https://altstore.io/download',
-                                      ),
-                                      target: LinkTarget.blank,
-                                      builder:
-                                          (
-                                            context,
-                                            followLink,
-                                          ) => ElevatedButton(
-                                            onPressed: followLink,
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: const Color(
-                                                0xFFE8F5E9,
-                                              ),
-                                              foregroundColor: Colors.black,
-                                              elevation: 0,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 14,
-                                                  ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(24),
-                                              ),
-                                            ),
-                                            child: Text(
-                                              t.altstore.step1Button,
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    t.altstore.step1Warning,
-                                    style: const TextStyle(
-                                      color: Colors.pink,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Step 2
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              '2',
-                              style: TextStyle(
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    t.altstore.step2Title,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: Link(
-                                      uri: Uri.parse(
-                                        'altstore://source?url=https://bitblik.app/.well-known/sources/alt-store-source.json',
-                                      ),
-                                      // builder:
-                                      //     (context, followLink) => InkWell(
-                                      //   onTap: () {
-                                      //     showFallback = true;
-                                      //     followLink?.call();
-                                      //   },
-                                      //   child: Image.asset(
-                                      //     'assets/apk.png',
-                                      //     width: 100,
-                                      //     height: 31,
-                                      //     fit: BoxFit.contain,
-                                      //   ),
-                                      // ),
-                                      //
-                                      builder:
-                                          (
-                                            context,
-                                            followLink,
-                                          ) => ElevatedButton(
-                                            onPressed: () {
-                                              followLink?.call();
-                                              Future.delayed(
-                                                const Duration(
-                                                  milliseconds: 3000,
-                                                ),
-                                              ).then((_) {
-                                                if (mounted) {
-                                                  setState(() {
-                                                    showFallback = true;
-                                                  });
-                                                }
-                                              });
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: const Color(
-                                                0xFFE3F2FD,
-                                              ),
-                                              foregroundColor: Colors.blue,
-                                              elevation: 0,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 14,
-                                                  ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(24),
-                                              ),
-                                            ),
-                                            child: Text(
-                                              t.altstore.step2Button,
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ),
-                                    ),
-                                  ),
-                                  // Fallback: manual source URL (shown after button click)
-                                  if (showFallback) ...[
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      t.altstore.step2Fallback,
-                                      style: const TextStyle(
-                                        color: Colors.pink,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Clipboard.setData(
-                                          const ClipboardData(
-                                            text:
-                                                'https://bitblik.app/.well-known/sources/alt-store-source.json',
-                                          ),
-                                        );
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              t.common.clipboard.copied,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        width: double.infinity,
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey[100],
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          'bitblik.app/.well-known/sources/alt-store-source.json',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            fontFamily: 'monospace',
-                                            color: Colors.grey[700],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 32),
-
-                        // Close button
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: Text(
-                            t.common.buttons.close,
+                // Step 1
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '1',
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            t.altstore.step1Title,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            width: double.infinity,
+                            child: Link(
+                              uri: Uri.parse(
+                                'https://altstore.io/download',
+                              ),
+                              target: LinkTarget.blank,
+                              builder:
+                                  (
+                                  context,
+                                  followLink,
+                                  ) => ElevatedButton(
+                                onPressed: followLink,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(
+                                    0xFFE8F5E9,
+                                  ),
+                                  foregroundColor: Colors.black,
+                                  elevation: 0,
+                                  padding:
+                                  const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                    BorderRadius.circular(24),
+                                  ),
+                                ),
+                                child: Text(
+                                  t.altstore.step1Button,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            t.altstore.step1Warning,
+                            style: const TextStyle(
+                              color: Colors.pink,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // Step 2
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '2',
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            t.altstore.step2Title,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            width: double.infinity,
+                            child: Link(
+                              uri: Uri.parse(
+                                'altstore://source?url=https://bitblik.app/.well-known/sources/alt-store-source.json',
+                              ),
+                              // builder:
+                              //     (context, followLink) => InkWell(
+                              //   onTap: () {
+                              //     showFallback = true;
+                              //     followLink?.call();
+                              //   },
+                              //   child: Image.asset(
+                              //     'assets/apk.png',
+                              //     width: 100,
+                              //     height: 31,
+                              //     fit: BoxFit.contain,
+                              //   ),
+                              // ),
+                              //
+                              builder:
+                                  (
+                                  context,
+                                  followLink,
+                                  ) => ElevatedButton(
+                                onPressed: () {
+                                  followLink?.call();
+                                  Future.delayed(
+                                    const Duration(
+                                      milliseconds: 3000,
+                                    ),
+                                  ).then((_) {
+                                    if (mounted) {
+                                      setState(() {
+                                        showFallback = true;
+                                      });
+                                    }
+                                  });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(
+                                    0xFFE3F2FD,
+                                  ),
+                                  foregroundColor: Colors.blue,
+                                  elevation: 0,
+                                  padding:
+                                  const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                    BorderRadius.circular(24),
+                                  ),
+                                ),
+                                child: Text(
+                                  t.altstore.step2Button,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Fallback: manual source URL (shown after button click)
+                          if (showFallback) ...[
+                            const SizedBox(height: 12),
+                            Text(
+                              t.altstore.step2Fallback,
+                              style: const TextStyle(
+                                color: Colors.pink,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap: () {
+                                Clipboard.setData(
+                                  const ClipboardData(
+                                    text:
+                                    'https://bitblik.app/.well-known/sources/alt-store-source.json',
+                                  ),
+                                );
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      t.common.clipboard.copied,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[100],
+                                  borderRadius: BorderRadius.circular(
+                                    8,
+                                  ),
+                                ),
+                                child: Text(
+                                  'bitblik.app/.well-known/sources/alt-store-source.json',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontFamily: 'monospace',
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+
+                // Close button
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(
+                    t.common.buttons.close,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
+              ],
+            ),
           ),
+        ),
+      ),
     );
   }
 
   Widget _buildNekoDrawer(
-    BuildContext context,
-    AsyncValue<String?> publicKeyAsync,
-  ) {
+      BuildContext context,
+      AsyncValue<String?> publicKeyAsync,
+      ) {
     final t = Translations.of(context);
     return Drawer(
       backgroundColor: Colors.white,
@@ -989,18 +988,18 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
         },
         loading:
             () => const Center(
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: CircularProgressIndicator(),
-              ),
-            ),
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: CircularProgressIndicator(),
+          ),
+        ),
         error:
             (error, stack) => Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text('Error: ${error.toString()}'),
-              ),
-            ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text('Error: ${error.toString()}'),
+          ),
+        ),
       ),
     );
   }
@@ -1035,9 +1034,9 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
 
   /// Shows the relay status popup when tapped
   void _showRelayStatusPopup(
-    BuildContext context,
-    Map<String, RelayStatus> relays,
-  ) {
+      BuildContext context,
+      Map<String, RelayStatus> relays,
+      ) {
     final t = Translations.of(context);
     final connectedCount = relays.values.where((r) => r.isConnected).length;
     final totalCount = relays.length;
@@ -1089,7 +1088,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                         final stateName = _getStateName(e.value.state, t);
                         final isConnecting =
                             e.value.state == RelayConnectionState.connecting ||
-                            e.value.state == RelayConnectionState.reconnecting;
+                                e.value.state == RelayConnectionState.reconnecting;
 
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
@@ -1190,27 +1189,27 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                 final stateColor = _getStateColor(e.value.state);
                 final isConnecting =
                     e.value.state == RelayConnectionState.connecting ||
-                    e.value.state == RelayConnectionState.reconnecting;
+                        e.value.state == RelayConnectionState.reconnecting;
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 1.0),
                   child:
-                      isConnecting
-                          ? SizedBox(
-                            width: 8,
-                            height: 8,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 1.5,
-                              color: stateColor,
-                            ),
-                          )
-                          : Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: stateColor,
-                            ),
-                          ),
+                  isConnecting
+                      ? SizedBox(
+                    width: 8,
+                    height: 8,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 1.5,
+                      color: stateColor,
+                    ),
+                  )
+                      : Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: stateColor,
+                    ),
+                  ),
                 );
               }),
               const SizedBox(width: 4),
@@ -1268,7 +1267,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         automaticallyImplyLeading:
-            !widget.hideBackButton &&
+        !widget.hideBackButton &&
             ((widget.pageTitle != null && widget.pageTitle!.isNotEmpty) ||
                 widget.showBackButton),
         // Show back button if pageTitle is present or showBackButton is true, unless hideBackButton is true
@@ -1284,7 +1283,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
           // Language Switcher Dropdown
           DropdownButtonHideUnderline(
             child: DropdownButton<AppLocale>(
-              value: appLocale,
+              value: LocaleSettings.currentLocale,
               icon: const SizedBox.shrink(),
               // Hide the dropdown arrow
               isDense: true,
@@ -1328,80 +1327,80 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
               },
               // Custom order: en, pl, it
               items:
-                  const [
-                    AppLocale.en,
-                    AppLocale.pl,
-                    AppLocale.it,
-                  ].map<DropdownMenuItem<AppLocale>>((AppLocale locale) {
-                    final String flagEmoji =
-                        locale.languageCode == 'en'
-                            ? '🇬🇧'
-                            : locale.languageCode == 'pl'
-                            ? '🇵🇱'
-                            : locale.languageCode == 'it'
-                            ? '🇮🇹'
-                            : '';
-                    final String displayName =
-                        locale.languageCode == 'en'
-                            ? 'EN'
-                            : locale.languageCode == 'pl'
-                            ? 'PL'
-                            : locale.languageCode.toUpperCase();
-                    return DropdownMenuItem<AppLocale>(
-                      value: locale,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(flagEmoji, style: const TextStyle(fontSize: 14)),
-                          const SizedBox(width: 6),
-                          Flexible(
-                            child: Text(
-                              displayName,
-                              style: const TextStyle(fontSize: 14),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+              const [
+                AppLocale.en,
+                AppLocale.pl,
+                AppLocale.it,
+              ].map<DropdownMenuItem<AppLocale>>((AppLocale locale) {
+                final String flagEmoji =
+                locale.languageCode == 'en'
+                    ? '🇬🇧'
+                    : locale.languageCode == 'pl'
+                    ? '🇵🇱'
+                    : locale.languageCode == 'it'
+                    ? '🇮🇹'
+                    : '';
+                final String displayName =
+                locale.languageCode == 'en'
+                    ? 'EN'
+                    : locale.languageCode == 'pl'
+                    ? 'PL'
+                    : locale.languageCode.toUpperCase();
+                return DropdownMenuItem<AppLocale>(
+                  value: locale,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(flagEmoji, style: const TextStyle(fontSize: 14)),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          displayName,
+                          style: const TextStyle(fontSize: 14),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    );
-                  }).toList(),
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
           ),
           // Neko icon - opens side menu
           publicKeyAsync.when(
             data:
                 (publicKey) =>
-                    publicKey != null
-                        ? Builder(
-                          builder:
-                              (builderContext) => IconButton(
-                                icon: ClipOval(
-                                  child: CachedNetworkImage(
-                                    imageUrl:
-                                        'https://robohash.org/$publicKey?set=set4',
-                                    placeholder:
-                                        (context, url) => const SizedBox(
-                                          width: 32,
-                                          height: 32,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                          ),
-                                        ),
-                                    errorWidget:
-                                        (context, url, error) =>
-                                            const Icon(Icons.error, size: 24),
-                                    width: 32,
-                                    height: 32,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                tooltip: t.nekoInfo.title,
-                                onPressed: () {
-                                  Scaffold.of(builderContext).openEndDrawer();
-                                },
-                              ),
-                        )
-                        : const SizedBox.shrink(),
+            publicKey != null
+                ? Builder(
+              builder:
+                  (builderContext) => IconButton(
+                icon: ClipOval(
+                  child: CachedNetworkImage(
+                    imageUrl:
+                    'https://robohash.org/$publicKey?set=set4',
+                    placeholder:
+                        (context, url) => const SizedBox(
+                      width: 32,
+                      height: 32,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    ),
+                    errorWidget:
+                        (context, url, error) =>
+                    const Icon(Icons.error, size: 24),
+                    width: 32,
+                    height: 32,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                tooltip: t.nekoInfo.title,
+                onPressed: () {
+                  Scaffold.of(builderContext).openEndDrawer();
+                },
+              ),
+            )
+                : const SizedBox.shrink(),
             loading: () => const SizedBox.shrink(),
             error: (_, __) => const SizedBox.shrink(),
           ),
@@ -1418,7 +1417,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
       bottomNavigationBar: SizedBox(
         height: 70,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(6.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -1450,7 +1449,7 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                             ),
                           ),
                         ),
-                        // const SizedBox(width: 16),
+                        const SizedBox(width: 8),
                         // InkWell(
                         //   onTap: () async {
                         //     final Uri url = Uri.parse('https://github.com/bit-blik/client');
@@ -1471,8 +1470,8 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                           },
                           child: Image.asset(
                             'assets/nostr.png',
-                            width: 32,
-                            height: 32,
+                            width: 36,
+                            height: 36,
                           ),
                         ),
                       ],
@@ -1526,14 +1525,14 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                             target: LinkTarget.blank,
                             builder:
                                 (context, followLink) => InkWell(
-                                  onTap: followLink,
-                                  child: Image.asset(
-                                    'assets/apk.png',
-                                    width: 80,
-                                    height: 25,
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
+                              onTap: followLink,
+                              child: Image.asset(
+                                'assets/apk.png',
+                                width: 80,
+                                height: 25,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
                           ),
                           const SizedBox(width: 8),
                           // Android Zapstore button
@@ -1541,14 +1540,14 @@ class _AppScaffoldState extends ConsumerState<AppScaffold> {
                             uri: Uri.parse('zapstore://app.bitblik'),
                             builder:
                                 (context, followLink) => InkWell(
-                                  onTap: followLink,
-                                  child: Image.asset(
-                                    'assets/zapstore.png',
-                                    width: 80,
-                                    height: 25,
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
+                              onTap: followLink,
+                              child: Image.asset(
+                                'assets/zapstore.png',
+                                width: 80,
+                                height: 25,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
                           ),
                           const SizedBox(width: 8),
                         ],

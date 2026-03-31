@@ -21,6 +21,11 @@ class ApiServiceNostr {
   Future<void> init() async {
     await _keyService.init();
     await _nostrService.init();
+    final ndkInstance = _nostrService.ndk;
+    if (ndkInstance != null) {
+      _keyService.attachNdk(ndkInstance);
+      await _keyService.migrateLegacyWalletStorage();
+    }
   }
 
   Future<void> dispose() async {
@@ -42,7 +47,7 @@ class ApiServiceNostr {
         coordinatorPubkey: coordinatorPubkey,
       );
     } catch (e) {
-      Logger.log.e('Error calling initiateOfferFiat: $e');
+      Logger.log.e(() => 'Error calling initiateOfferFiat: $e');
       rethrow;
     }
   }
@@ -78,7 +83,7 @@ class ApiServiceNostr {
         return rate.toDouble();
       }
     } catch (e) {
-      Logger.log.e('Error parsing CoinGecko response: $e');
+      Logger.log.e(() => 'Error parsing CoinGecko response: $e');
     }
     return null;
   }
@@ -91,7 +96,7 @@ class ApiServiceNostr {
         return rate.toDouble();
       }
     } catch (e) {
-      Logger.log.e('Error parsing Yadio response: $e');
+      Logger.log.e(() => 'Error parsing Yadio response: $e');
     }
     return null;
   }
@@ -104,7 +109,7 @@ class ApiServiceNostr {
         return (plnData['last'] as num).toDouble();
       }
     } catch (e) {
-      Logger.log.e('Error parsing Blockchain.info response: $e');
+      Logger.log.e(() => 'Error parsing Blockchain.info response: $e');
     }
     return null;
   }
@@ -139,7 +144,8 @@ class ApiServiceNostr {
       final lastKnown = MemoryCache.instance.read<double>(_btcPlnCacheKey);
       if (lastKnown != null) {
         Logger.log.w(
-          'Returning stale BTC/PLN rate due to all sources failing to fetch.',
+          () =>
+              'Returning stale BTC/PLN rate due to all sources failing to fetch.',
         );
         return lastKnown;
       }
@@ -164,20 +170,23 @@ class ApiServiceNostr {
           rate = _parseBlockchainInfoResponse(response.body);
         }
         if (rate != null) {
-          Logger.log.d('Successfully fetched rate from $sourceName: $rate');
+          Logger.log.d(
+            () => 'Successfully fetched rate from $sourceName: $rate',
+          );
           return rate;
         } else {
-          Logger.log.w('Failed to parse response from $sourceName');
+          Logger.log.w(() => 'Failed to parse response from $sourceName');
           return null;
         }
       } else {
         Logger.log.w(
-          'Failed to fetch BTC/PLN rate from $sourceName: ${response.statusCode} ${response.body}',
+          () =>
+              'Failed to fetch BTC/PLN rate from $sourceName: ${response.statusCode} ${response.body}',
         );
         return null;
       }
     } catch (e) {
-      Logger.log.e('Error fetching BTC/PLN rate from $sourceName: $e');
+      Logger.log.e(() => 'Error fetching BTC/PLN rate from $sourceName: $e');
       return null;
     }
   }
@@ -194,7 +203,7 @@ class ApiServiceNostr {
         coordinatorPubkey,
       );
     } catch (e) {
-      Logger.log.e('Error calling reserveOffer: $e');
+      Logger.log.e(() => 'Error calling reserveOffer: $e');
       rethrow;
     }
   }
@@ -203,7 +212,7 @@ class ApiServiceNostr {
     required String offerId,
     required String takerId,
     required String blikCode,
-    required String takerLightningAddress,
+    required String takerInvoice,
     required String coordinatorPubkey,
   }) async {
     try {
@@ -211,11 +220,11 @@ class ApiServiceNostr {
         offerId: offerId,
         takerId: takerId,
         blikCode: blikCode,
-        takerLightningAddress: takerLightningAddress,
+        takerInvoice: takerInvoice,
         coordinatorPubkey: coordinatorPubkey,
       );
     } catch (e) {
-      Logger.log.e('Error calling submitBlikCode: $e');
+      Logger.log.e(() => 'Error calling submitBlikCode: $e');
       rethrow;
     }
   }
@@ -232,7 +241,7 @@ class ApiServiceNostr {
         coordinatorPubkey,
       );
     } catch (e) {
-      Logger.log.e('Error calling getBlikCodeForMaker: $e');
+      Logger.log.e(() => 'Error calling getBlikCodeForMaker: $e');
       if (e.toString().contains('not found')) {
         return null;
       }
@@ -252,16 +261,22 @@ class ApiServiceNostr {
         coordinatorPubkey,
       );
     } catch (e) {
-      Logger.log.e('Error calling confirmMakerPayment: $e');
+      Logger.log.e(() => 'Error calling confirmMakerPayment: $e');
       rethrow;
     }
   }
 
-  Future<Map<String, dynamic>?> getMyActiveOffer(String userPubkey, String coordinatorPubkey) async {
+  Future<Map<String, dynamic>?> getMyActiveOffer(
+    String userPubkey,
+    String coordinatorPubkey,
+  ) async {
     try {
-      return await _nostrService.getMyActiveOffer(userPubkey, coordinatorPubkey);
+      return await _nostrService.getMyActiveOffer(
+        userPubkey,
+        coordinatorPubkey,
+      );
     } catch (e) {
-      Logger.log.e('Error calling getMyActiveOffer: $e');
+      Logger.log.e(() => 'Error calling getMyActiveOffer: $e');
       return null;
     }
   }
@@ -270,7 +285,7 @@ class ApiServiceNostr {
     try {
       return await _nostrService.getMyFinishedOffers(userPubkey);
     } catch (e) {
-      Logger.log.e('Error calling getMyFinishedOffers: $e');
+      Logger.log.e(() => 'Error calling getMyFinishedOffers: $e');
       return [];
     }
   }
@@ -279,7 +294,7 @@ class ApiServiceNostr {
     try {
       await _nostrService.cancelOffer(offerId, coordinatorPubkey);
     } catch (e) {
-      Logger.log.e('Error calling cancelOffer: $e');
+      Logger.log.e(() => 'Error calling cancelOffer: $e');
       rethrow;
     }
   }
@@ -296,7 +311,7 @@ class ApiServiceNostr {
         coordinatorPubKey,
       );
     } catch (e) {
-      Logger.log.e('Error calling cancelReservation: $e');
+      Logger.log.e(() => 'Error calling cancelReservation: $e');
       rethrow;
     }
   }
@@ -315,7 +330,7 @@ class ApiServiceNostr {
         coordinatorPubkey: coordinatorPubkey,
       );
     } catch (e) {
-      Logger.log.e('Error calling updateTakerInvoice: $e');
+      Logger.log.e(() => 'Error calling updateTakerInvoice: $e');
       rethrow;
     }
   }
@@ -333,7 +348,7 @@ class ApiServiceNostr {
         coordinatorPubkey: coordinatorPubkey,
       );
     } catch (e) {
-      Logger.log.e('Error calling retryTakerPayment: $e');
+      Logger.log.e(() => 'Error calling retryTakerPayment: $e');
       rethrow;
     }
   }
@@ -347,19 +362,16 @@ class ApiServiceNostr {
     try {
       await _nostrService.markBlikInvalid(offerId, makerId, coordinatorPubKey);
     } catch (e) {
-      Logger.log.e('Error calling markBlikInvalid: $e');
+      Logger.log.e(() => 'Error calling markBlikInvalid: $e');
       rethrow;
     }
   }
 
-  Future<void> markBlikCharged(
-    String offerId,
-    String coordinatorPubKey,
-  ) async {
+  Future<void> markBlikCharged(String offerId, String coordinatorPubKey) async {
     try {
       await _nostrService.markBlikCharged(offerId, coordinatorPubKey);
     } catch (e) {
-      Logger.log.e('Error calling markOfferConflict: $e');
+      Logger.log.e(() => 'Error calling markOfferConflict: $e');
       rethrow;
     }
   }
@@ -368,7 +380,7 @@ class ApiServiceNostr {
     try {
       await _nostrService.openDispute(offerId, coordinatorPubKey);
     } catch (e) {
-      Logger.log.e('Error calling markOfferConflict: $e');
+      Logger.log.e(() => 'Error calling markOfferConflict: $e');
       rethrow;
     }
   }
@@ -383,7 +395,7 @@ class ApiServiceNostr {
     try {
       return await _nostrService.getSuccessfulOffersStats();
     } catch (e) {
-      Logger.log.e('Error calling getSuccessfulOffersStats: $e');
+      Logger.log.e(() => 'Error calling getSuccessfulOffersStats: $e');
       rethrow;
     }
   }
@@ -442,7 +454,7 @@ class ApiServiceNostr {
     try {
       return await _nostrService.getOffer(offerId);
     } catch (e) {
-      Logger.log.e('Error calling getOffer: $e');
+      Logger.log.e(() => 'Error calling getOffer: $e');
       rethrow;
     }
   }

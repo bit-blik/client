@@ -324,6 +324,7 @@ class _TranslationsWalletIt extends TranslationsWalletEn {
 	// Translations
 	@override String get title => 'Portafoglio';
 	@override String get description => 'Gestisci le impostazioni del tuo portafoglio Lightning';
+	@override late final _TranslationsWalletMissingReceivingIt missingReceiving = _TranslationsWalletMissingReceivingIt._(_root);
 }
 
 // Path: nwc
@@ -518,6 +519,7 @@ class _TranslationsOffersDetailsIt extends TranslationsOffersDetailsEn {
 	@override String get finishedOffers => 'Offerte completate';
 	@override String get finishedOffersWithTime => 'Offerte completate (ultime 24h):';
 	@override String get noAvailable => 'Nessuna offerta disponibile.';
+	@override String get noAvailableTip => 'Suggerimento: condividi Bitblik nella tua community e tra i tuoi amici per aumentare gli ordini su Bitblik.';
 	@override String get noSuccessfulTrades => 'Nessuna transazione completata.';
 	@override String get loadingDetails => 'Caricamento dettagli offerta...';
 	@override String amount({required Object amount}) => 'Importo: ${amount} satoshi';
@@ -1271,6 +1273,18 @@ class _TranslationsLandingActionsIt extends TranslationsLandingActionsEn {
 	@override String get howItWorks => 'Come funziona?';
 }
 
+// Path: wallet.missingReceiving
+class _TranslationsWalletMissingReceivingIt extends TranslationsWalletMissingReceivingEn {
+	_TranslationsWalletMissingReceivingIt._(TranslationsIt root) : this._root = root, super.internal(root);
+
+	final TranslationsIt _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Portafoglio di ricezione richiesto';
+	@override String get message => 'Nessun portafoglio configurato per ricevere. Aggiungine uno nelle impostazioni Portafoglio per accettare offerte.';
+	@override String get openSettings => 'Impostazioni portafoglio';
+}
+
 // Path: nwc.labels
 class _TranslationsNwcLabelsIt extends TranslationsNwcLabelsEn {
 	_TranslationsNwcLabelsIt._(TranslationsIt root) : this._root = root, super.internal(root);
@@ -1982,6 +1996,7 @@ extension on TranslationsIt {
 			case 'offers.details.finishedOffers': return 'Offerte completate';
 			case 'offers.details.finishedOffersWithTime': return 'Offerte completate (ultime 24h):';
 			case 'offers.details.noAvailable': return 'Nessuna offerta disponibile.';
+			case 'offers.details.noAvailableTip': return 'Suggerimento: condividi Bitblik nella tua community e tra i tuoi amici per aumentare gli ordini su Bitblik.';
 			case 'offers.details.noSuccessfulTrades': return 'Nessuna transazione completata.';
 			case 'offers.details.loadingDetails': return 'Caricamento dettagli offerta...';
 			case 'offers.details.amount': return ({required Object amount}) => 'Importo: ${amount} satoshi';
@@ -2370,6 +2385,9 @@ extension on TranslationsIt {
 			case 'settings.title': return 'Impostazioni';
 			case 'wallet.title': return 'Portafoglio';
 			case 'wallet.description': return 'Gestisci le impostazioni del tuo portafoglio Lightning';
+			case 'wallet.missingReceiving.title': return 'Portafoglio di ricezione richiesto';
+			case 'wallet.missingReceiving.message': return 'Nessun portafoglio configurato per ricevere. Aggiungine uno nelle impostazioni Portafoglio per accettare offerte.';
+			case 'wallet.missingReceiving.openSettings': return 'Impostazioni portafoglio';
 			case 'nwc.title': return 'Nostr Wallet Connect (NWC)';
 			case 'nwc.description': return 'Connetti il tuo portafoglio Lightning tramite NWC';
 			case 'nwc.labels.connectionString': return 'Stringa di Connessione NWC';

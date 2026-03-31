@@ -86,6 +86,7 @@ offers:
     finishedOffers: Finished offers
     finishedOffersWithTime: "Finished offers (last 24h):"
     noAvailable: No available offers.
+    noAvailableTip: "Tip: share Bitblik in your community and among friends to increase Bitblik orders."
     noSuccessfulTrades: No successful trades.
     loadingDetails: "Loading offer details..." # Used by taker.paymentProcess & taker.waitConfirmation
   
@@ -715,6 +716,10 @@ settings:
 wallet:
   title: Wallet
   description: Manage your Lightning wallet settings
+  missingReceiving:
+    title: Receiving wallet required
+    message: No wallet configured for receiving. Add one in Wallet settings to take offers.
+    openSettings: Wallet settings
 
 nwc:
   title: Nostr Wallet Connect (NWC)

@@ -61,10 +61,9 @@ Maker zablokował już swoje Bitcoin w fakturze `hold invoice` przed otrzymaniem
 - **Jeśli Maker fałszywie zaprzeczy otrzymaniu ważnej płatności BLIK:** Taker może otworzyć spór i dostarczyć dowód bankowy potwierdzający, że płatność została dokonana. Jeśli koordynator przyzna rację Takerowi, faktura zostanie rozliczona mimo wszystko, a Maker traci swoje Bitcoin bez możliwości odwołania.
 - **Jeśli Maker porzuci transakcję lub przestanie odpowiadać:** Koordynator może rozliczyć fakturę na korzyść Takera (jeśli istnieje dowód płatności) lub, w niejednoznacznych przypadkach, utrzymać środki zablokowane do czasu rozwiązania sporu.
 
-Ponieważ faktury typu `hold invoice` mają ograniczone okno ważności (zazwyczaj kilka godzin), Maker nie może zwlekać w nieskończoność. Musi albo uczciwie dokończyć transakcję, albo ryzykować utratę swoich Bitcoin w procesie rozwiązywania sporów.
+Faktury hold mają ograniczony czas ważności (zazwyczaj kilka godzin), co oznacza, że Maker nie może przeciągać sprawy w nieskończoność. Musi albo uczciwie sfinalizować transakcję, albo ryzykuje utratę swoich Bitcoinów w procesie rozwiązywania sporów.
 
-Ponieważ Bitcoin są przechowywane w fakturze `hold invoice`, Maker (sprzedawca) jest motywowany do uczciwego działania. Bez dowodów przeciwnych faktura nie zostanie zwrócona Makerowi.
-Ponieważ faktury wstrzymujące powinny być utrzymywane tylko przez krótki okres (zazwyczaj kilka godzin), faktura zostanie rozliczona, a środki będą przechowywane przez koordynatora do czasu, gdy Taker dostarczy dowody w celu rozwiązania sporu.
+Bitcoiny zablokowane w fakturze hold sieci Lightning motywują Makera (sprzedającego) do uczciwego działania. Bez dowodów potwierdzających jego rację faktura nie zostanie zwolniona z powrotem do Makera.
 
 
 #### Co motywuje Takera do uczciwego działania?

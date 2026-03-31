@@ -88,8 +88,9 @@ Il Maker ha già bloccato i propri Bitcoin in una hold invoice della Lightning N
 - **Se il Maker nega falsamente di aver ricevuto un pagamento BLIK valido:** Il Taker può aprire una disputa e fornire prove bancarie che dimostrano l'avvenuto pagamento. Se il coordinatore decide a favore del Taker, la hold invoice viene comunque chiusa e il Maker perde i propri Bitcoin senza possibilità di appello.
 - **Se il Maker abbandona lo scambio o non risponde:** Il coordinatore può chiudere la invoice a favore del Taker (se esistono prove del pagamento) oppure, in casi ambigui, mantenere i fondi bloccati fino alla risoluzione della disputa.
 
-Poiché le hold invoice hanno una finestra di validità limitata (tipicamente poche ore), il Maker non può temporeggiare indefinitamente. Deve completare lo scambio onestamente oppure rischiare di perdere i propri Bitcoin attraverso il processo di risoluzione delle dispute.
+Le hold invoice hanno una finestra di validità limitata (in genere poche ore), il che significa che il Maker non può procrastinare indefinitamente. Deve portare a termine la transazione onestamente, altrimenti rischia di perdere i suoi Bitcoin attraverso il processo di risoluzione delle controversie.
 
+Con i Bitcoin bloccati in una hold invoice della rete Lightning, il Maker (venditore) è incentivato ad agire onestamente. In assenza di prove a suo favore, la fattura non verrà rilasciata nuovamente al Maker.
 
 #### Cosa motiva il Taker ad agire onestamente?
 

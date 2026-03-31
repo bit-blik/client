@@ -2,6 +2,8 @@ import 'dart:async'; // For Stream.periodic
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ndk/domain_layer/entities/wallet/wallet.dart';
+import 'package:ndk/domain_layer/entities/wallet/wallet_balance.dart';
 import 'package:ndk/shared/logger/logger.dart';
 
 import '../models/coordinator_info.dart';
@@ -10,7 +12,6 @@ import '../models/offer.dart'; // OfferStatus is in here
 import '../services/api_service_nostr.dart';
 import '../services/nostr_service.dart'; // Import DiscoveredCoordinator
 import '../services/key_service.dart'; // Import KeyService
-import '../services/nwc_service.dart';
 import '../services/offer_db_service.dart';
 
 final keyServiceProvider = Provider<KeyService>((ref) {
@@ -18,165 +19,64 @@ final keyServiceProvider = Provider<KeyService>((ref) {
   return service;
 });
 
-/// Async provider for NwcService that waits for NDK to be initialized
-final nwcServiceProvider = FutureProvider<NwcService>((ref) async {
-  final keyService = ref.watch(keyServiceProvider);
-  // Wait for API service to be fully initialized before accessing NDK
-  final apiService = await ref.watch(initializedApiServiceProvider.future);
-  final ndk = apiService.ndk;
-  if (ndk == null) {
-    throw Exception('NDK instance not available');
-  }
-  final service = NwcService(keyService, ndk);
-  ref.onDispose(() {
-    service.dispose();
-  });
-  return service;
-});
-
-final nwcConnectionStatusProvider = StateProvider<bool>((ref) => false);
-
-// Provider for NWC relay URLs
-final nwcRelayUrlsProvider = Provider<List<String>>((ref) {
-  final nwcServiceAsync = ref.watch(nwcServiceProvider);
-  return nwcServiceAsync.valueOrNull?.relayUrls ?? [];
-});
-
-// Provider for NWC wallet balance
-final nwcBalanceProvider =
-    StateNotifierProvider<NwcBalanceNotifier, AsyncValue<int?>>((ref) {
-      return NwcBalanceNotifier(ref);
-    });
-
-// Provider for NWC wallet budget information
-final nwcBudgetProvider =
-    StateNotifierProvider<NwcBudgetNotifier, AsyncValue<Map<String, dynamic>?>>(
-      (ref) {
-        return NwcBudgetNotifier(ref);
-      },
+// Provider for the default wallet (NWC wallet)
+final defaultWalletProvider =
+    StateNotifierProvider<DefaultWalletNotifier, Wallet?>(
+      (ref) => DefaultWalletNotifier(ref),
     );
 
-// Provider that manages NWC notification subscription and refreshes balance/budget
-final nwcNotificationManagerProvider = Provider<void>((ref) {
-  StreamSubscription? notificationSubscription;
+class DefaultWalletNotifier extends StateNotifier<Wallet?> {
+  final Ref _ref;
 
-  Future<void> subscribeToNotifications() async {
-    notificationSubscription?.cancel();
-
-    final nwcServiceAsync = ref.read(nwcServiceProvider);
-    final nwcService = nwcServiceAsync.valueOrNull;
-    if (nwcService == null) return;
-
-    final connection = nwcService.connection;
-
-    if (connection != null) {
-      Logger.log.d('📡 Subscribing to NWC notifications...');
-      notificationSubscription = connection.notificationStream.stream.listen((
-        notification,
-      ) {
-        Logger.log.d(
-          '💰 NWC notification received: ${notification.type} amount: ${notification.amount}',
-        );
-        // Refresh both balance and budget when notification arrives
-        ref.read(nwcBalanceProvider.notifier).loadBalance();
-        ref.read(nwcBudgetProvider.notifier).loadBudget();
-      });
-    }
+  DefaultWalletNotifier(this._ref) : super(null) {
+    _loadWallet();
   }
 
-  // Initialize subscription if already connected
-  final isConnected = ref.read(nwcConnectionStatusProvider);
-  if (isConnected) {
-    subscribeToNotifications();
+  void _loadWallet() {
+    final ndk = _ref.read(ndkProvider);
+    if (ndk == null) {
+      state = null;
+      return;
+    }
+    state = ndk.wallets.defaultWalletForSending;
   }
 
-  // Watch for connection status changes
-  ref.listen<bool>(nwcConnectionStatusProvider, (previous, next) {
-    if (next) {
-      subscribeToNotifications();
-    } else {
-      notificationSubscription?.cancel();
-      notificationSubscription = null;
-    }
-  });
+  /// Call this method after adding or removing a wallet to refresh the state
+  void refresh() {
+    _loadWallet();
+  }
+}
 
-  ref.onDispose(() {
-    notificationSubscription?.cancel();
-  });
+// Provider for wallet balances - streams list of WalletBalance updates for a specific wallet
+// IMPORTANT: This provider calls getBalancesStream which initializes the stream and immediately
+// fetches the current balance from NWC, then continues listening for updates
+final walletBalancesProvider =
+    StreamProvider.family<List<WalletBalance>, String>((ref, walletId) async* {
+      final ndk = ref.watch(ndkProvider);
+      if (ndk == null) {
+        yield [];
+        return;
+      }
+
+      await for (final balances in ndk.wallets.getBalancesStream(walletId)) {
+        yield balances;
+      }
+    });
+
+/// Provider to explicitly trigger balance stream initialization for a specific wallet
+/// Use this to ensure the balance stream is initialized and emitting values
+final walletBalanceInitProvider = Provider.family<void, String>((
+  ref,
+  walletId,
+) {
+  final ndk = ref.watch(ndkProvider);
+
+  if (ndk != null) {
+    // Calling getBalance initializes the internal balance stream for this wallet
+    // This ensures the stream starts emitting values
+    ndk.wallets.getBalance(walletId, "sat");
+  }
 });
-
-class NwcBalanceNotifier extends StateNotifier<AsyncValue<int?>> {
-  final Ref _ref;
-
-  NwcBalanceNotifier(this._ref) : super(const AsyncValue.data(null)) {
-    _init();
-  }
-
-  Future<void> _init() async {
-    final isConnected = _ref.read(nwcConnectionStatusProvider);
-    if (isConnected) {
-      await loadBalance();
-    }
-
-    // Watch for connection status changes
-    _ref.listen<bool>(nwcConnectionStatusProvider, (previous, next) {
-      if (next) {
-        loadBalance();
-      } else {
-        state = const AsyncValue.data(null);
-      }
-    });
-  }
-
-  Future<void> loadBalance() async {
-    state = const AsyncValue.loading();
-    try {
-      final nwcService = await _ref.read(nwcServiceProvider.future);
-      final balance = await nwcService.getBalance();
-      state = AsyncValue.data(balance);
-    } catch (e, stack) {
-      Logger.log.e('❌ Error loading NWC balance: $e');
-      state = AsyncValue.error(e, stack);
-    }
-  }
-}
-
-class NwcBudgetNotifier
-    extends StateNotifier<AsyncValue<Map<String, dynamic>?>> {
-  final Ref _ref;
-
-  NwcBudgetNotifier(this._ref) : super(const AsyncValue.data(null)) {
-    _init();
-  }
-
-  Future<void> _init() async {
-    final isConnected = _ref.read(nwcConnectionStatusProvider);
-    if (isConnected) {
-      await loadBudget();
-    }
-
-    // Watch for connection status changes
-    _ref.listen<bool>(nwcConnectionStatusProvider, (previous, next) {
-      if (next) {
-        loadBudget();
-      } else {
-        state = const AsyncValue.data(null);
-      }
-    });
-  }
-
-  Future<void> loadBudget() async {
-    state = const AsyncValue.loading();
-    try {
-      final nwcService = await _ref.read(nwcServiceProvider.future);
-      final budget = await nwcService.getBudget();
-      state = AsyncValue.data(budget);
-    } catch (e, stack) {
-      Logger.log.e('❌ Error loading NWC budget: $e');
-      state = AsyncValue.error(e, stack);
-    }
-  }
-}
 
 final apiServiceProvider = Provider<ApiServiceNostr>((ref) {
   final keyService = ref.watch(keyServiceProvider);
@@ -220,7 +120,7 @@ class DiscoveredCoordinatorsNotifier
         // await apiService.startCoordinatorDiscovery();
         await _loadCoordinators();
       } catch (e) {
-        Logger.log.e('Error during periodic coordinator refresh: $e');
+        Logger.log.e(() => 'Error during periodic coordinator refresh: $e');
       }
     });
   }
@@ -238,7 +138,8 @@ class DiscoveredCoordinatorsNotifier
       final coordinators = apiService.discoveredCoordinators;
 
       Logger.log.d(
-        '🔍 Provider: Loading ${coordinators.length} coordinators for health check',
+        () =>
+            '🔍 Provider: Loading ${coordinators.length} coordinators for health check',
       );
 
       // Don't set the state immediately - wait for health checks to complete
@@ -248,7 +149,7 @@ class DiscoveredCoordinatorsNotifier
         final healthCheckFutures = <Future<void>>[];
         for (final coordinator in coordinators) {
           Logger.log.d(
-            '🔍 Provider: Starting health check for ${coordinator.name}',
+            () => '🔍 Provider: Starting health check for ${coordinator.name}',
           );
           healthCheckFutures.add(
             apiService.checkCoordinatorHealth(coordinator.pubkey),
@@ -260,9 +161,9 @@ class DiscoveredCoordinatorsNotifier
           await Future.wait(
             healthCheckFutures,
           ).timeout(const Duration(seconds: 20));
-          Logger.log.d('🔍 Provider: All health checks completed');
+          Logger.log.d(() => '🔍 Provider: All health checks completed');
         } catch (e) {
-          Logger.log.w('Some health checks timed out or failed: $e');
+          Logger.log.w(() => 'Some health checks timed out or failed: $e');
           // Continue anyway - some coordinators may have been checked successfully
         }
       }
@@ -270,17 +171,18 @@ class DiscoveredCoordinatorsNotifier
       // Now get the updated list with health check results and set the state
       final updatedCoordinators = apiService.discoveredCoordinators;
       Logger.log.d(
-        '🔍 Provider: Final coordinator list (${updatedCoordinators.length}):',
+        () =>
+            '🔍 Provider: Final coordinator list (${updatedCoordinators.length}):',
       );
       for (final coordinator in updatedCoordinators) {
         Logger.log.d(
-          '  - ${coordinator.name}: responsive=${coordinator.responsive}',
+          () => '  - ${coordinator.name}: responsive=${coordinator.responsive}',
         );
       }
 
       state = AsyncValue.data(updatedCoordinators);
     } catch (e, stack) {
-      Logger.log.e('Error in _loadCoordinators: $e');
+      Logger.log.e(() => 'Error in _loadCoordinators: $e');
       state = AsyncValue.error(e, stack);
     }
   }
@@ -299,7 +201,8 @@ class DiscoveredCoordinatorsNotifier
   Future<void> refreshDiscovery() async {
     try {
       Logger.log.i(
-        '🔍 Provider: Manual refresh triggered, starting coordinator discovery...',
+        () =>
+            '🔍 Provider: Manual refresh triggered, starting coordinator discovery...',
       );
 
       // Wait for API service to be fully initialized
@@ -311,7 +214,7 @@ class DiscoveredCoordinatorsNotifier
       // Reload coordinators with health checks
       await _loadCoordinators(skipHealthChecks: false);
     } catch (e, stack) {
-      Logger.log.e('Error in refreshDiscovery: $e');
+      Logger.log.e(() => 'Error in refreshDiscovery: $e');
       state = AsyncValue.error(e, stack);
     }
   }
@@ -333,13 +236,14 @@ class DiscoveredCoordinatorsNotifier
           })
           .catchError((error) {
             Logger.log.w(
-              '⚠️ Error during health check for $coordinatorPubkey: $error',
+              () =>
+                  '⚠️ Error during health check for $coordinatorPubkey: $error',
             );
             // Still refresh the list to update status
             refreshList(runHealthChecks: false);
           });
     } catch (e) {
-      Logger.log.e('Error checking coordinator health: $e');
+      Logger.log.e(() => 'Error checking coordinator health: $e');
     }
   }
 
@@ -359,7 +263,8 @@ class DiscoveredCoordinatorsNotifier
                     .checkCoordinatorHealth(pubkey)
                     .catchError((error) {
                       Logger.log.w(
-                        '⚠️ Error during health check for $pubkey: $error',
+                        () =>
+                            '⚠️ Error during health check for $pubkey: $error',
                       );
                     }),
               )
@@ -372,12 +277,12 @@ class DiscoveredCoordinatorsNotifier
             refreshList(runHealthChecks: false);
           })
           .catchError((error) {
-            Logger.log.e('Error during health checks: $error');
+            Logger.log.e(() => 'Error during health checks: $error');
             // Still refresh the list
             refreshList(runHealthChecks: false);
           });
     } catch (e) {
-      Logger.log.e('Error checking coordinators health: $e');
+      Logger.log.e(() => 'Error checking coordinators health: $e');
     }
   }
 
@@ -385,13 +290,15 @@ class DiscoveredCoordinatorsNotifier
     try {
       state = const AsyncValue.loading();
       Logger.log.d(
-        '🔍 Provider: Starting coordinator discovery, waiting for API service initialization...',
+        () =>
+            '🔍 Provider: Starting coordinator discovery, waiting for API service initialization...',
       );
 
       // Wait for API service to be fully initialized (this ensures KeyService is ready)
       final apiService = await _ref.read(initializedApiServiceProvider.future);
       Logger.log.d(
-        '🔍 Provider: API service initialized, starting coordinator discovery...',
+        () =>
+            '🔍 Provider: API service initialized, starting coordinator discovery...',
       );
 
       await apiService.startCoordinatorDiscovery();
@@ -400,7 +307,7 @@ class DiscoveredCoordinatorsNotifier
       _startPeriodicRefresh();
       await _loadCoordinators(skipHealthChecks: true);
     } catch (e, stack) {
-      Logger.log.e('Error in _startDiscovery: $e');
+      Logger.log.e(() => 'Error in _startDiscovery: $e');
       state = AsyncValue.error(e, stack);
     }
   }
@@ -449,7 +356,9 @@ class CoordinatorInfoNotifier
             await Future.delayed(const Duration(milliseconds: 500));
             coordinatorInfo = apiService.getCoordinatorInfoByPubkey(pubkey);
           } catch (e) {
-            Logger.log.e('Error during coordinator discovery for $pubkey: $e');
+            Logger.log.e(
+              () => 'Error during coordinator discovery for $pubkey: $e',
+            );
           }
         }
       },
@@ -459,7 +368,7 @@ class CoordinatorInfoNotifier
         coordinatorInfo = apiService.getCoordinatorInfoByPubkey(pubkey);
       },
       error: (error, stack) async {
-        Logger.log.e('Error in coordinator discovery: $error');
+        Logger.log.e(() => 'Error in coordinator discovery: $error');
         // Still try to get from cache even if discovery failed
         coordinatorInfo = apiService.getCoordinatorInfoByPubkey(pubkey);
       },
@@ -539,11 +448,11 @@ class ActiveOfferNotifier extends StateNotifier<Offer?> {
   Future<void> setActiveOffer(Offer? offer) async {
     if (offer != null) {
       Logger.log.d(
-        '[ActiveOfferNotifier] Setting active offer: ${offer.toJson()}',
+        () => '[ActiveOfferNotifier] Setting active offer: ${offer.toJson()}',
       );
       await OfferDbService().upsertActiveOffer(offer);
     } else {
-      Logger.log.d('[ActiveOfferNotifier] Clearing active offer');
+      Logger.log.d(() => '[ActiveOfferNotifier] Clearing active offer');
       await OfferDbService().deleteActiveOffer();
     }
     state = offer;
@@ -575,9 +484,39 @@ class ActiveOfferNotifier extends StateNotifier<Offer?> {
 
 /// Provider to expose the stored Lightning Address
 final lightningAddressProvider = FutureProvider<String?>((ref) async {
+  ref.watch(initializedApiServiceProvider);
   final keyService = ref.watch(keyServiceProvider);
   // Ensure KeyService is initialized (which loads keys) before getting address
   return keyService.getLightningAddress();
+});
+
+/// Provider that indicates whether any wallet can receive funds.
+/// This listens to wallet changes so UI updates immediately after add/remove.
+final hasReceivingWalletProvider = StreamProvider<bool>((ref) async* {
+  final ndk = ref.watch(ndkProvider);
+  if (ndk == null) {
+    yield false;
+    return;
+  }
+
+  bool hasReceivingWallet(Iterable<Wallet> wallets) {
+    for (final wallet in wallets) {
+      if (wallet.canReceive) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  final initialWallets = await ndk.wallets.walletsStream.first.timeout(
+    const Duration(milliseconds: 250),
+    onTimeout: () => <Wallet>[],
+  );
+  yield hasReceivingWallet(initialWallets);
+
+  await for (final wallets in ndk.wallets.walletsStream) {
+    yield hasReceivingWallet(wallets);
+  }
 });
 
 /// Provider for finished (takerPaid, <24h) offers for the current user (taker)
@@ -593,13 +532,15 @@ final finishedOffersProvider = FutureProvider<List<Offer>>((ref) async {
       // Only proceed if we have discovered coordinators
       if (coordinators.isEmpty) {
         Logger.log.d(
-          'No coordinators discovered yet, returning empty finished offers list',
+          () =>
+              'No coordinators discovered yet, returning empty finished offers list',
         );
         return <Offer>[];
       }
 
       Logger.log.d(
-        'Found ${coordinators.length} coordinators, loading finished offers',
+        () =>
+            'Found ${coordinators.length} coordinators, loading finished offers',
       );
       // Use initialized API service to ensure KeyService is ready
       final apiService = await ref.read(initializedApiServiceProvider.future);
@@ -617,7 +558,9 @@ final finishedOffersProvider = FutureProvider<List<Offer>>((ref) async {
     },
     loading: () => <Offer>[], // Return empty list while loading coordinators
     error: (error, stack) {
-      Logger.log.e('Error loading coordinators for finished offers: $error');
+      Logger.log.e(
+        () => 'Error loading coordinators for finished offers: $error',
+      );
       return <Offer>[]; // Return empty list on error
     },
   );
@@ -649,7 +592,8 @@ final offerStatusSubscriptionManagerProvider = Provider<void>((ref) {
 
     if (current != null) {
       Logger.log.d(
-        "[SubscriptionManager] Active offer changed to ${current.id}. Starting new status subscription.",
+        () =>
+            "[SubscriptionManager] Active offer changed to ${current.id}. Starting new status subscription.",
       );
       final apiService = ref.read(apiServiceProvider);
       final keyService = ref.read(keyServiceProvider);
@@ -674,13 +618,14 @@ final offerStatusSubscriptionManagerProvider = Provider<void>((ref) {
             newStatus = OfferStatus.values.byName(statusUpdate.status);
           } catch (e) {
             Logger.log.e(
-              "Error parsing status string '${statusUpdate.status}': $e",
+              () => "Error parsing status string '${statusUpdate.status}': $e",
             );
           }
 
           if (newStatus != null) {
             Logger.log.d(
-              "Offer ${current.id} status updated to: $newStatus. Updating active offer provider.",
+              () =>
+                  "Offer ${current.id} status updated to: $newStatus. Updating active offer provider.",
             );
             activeOfferNotifier.updateOfferStatus(statusUpdate);
           }
@@ -688,7 +633,8 @@ final offerStatusSubscriptionManagerProvider = Provider<void>((ref) {
       });
     } else {
       Logger.log.d(
-        "[SubscriptionManager] Active offer cleared. Subscription stopped.",
+        () =>
+            "[SubscriptionManager] Active offer cleared. Subscription stopped.",
       );
       _currentOfferId = null;
     }
@@ -722,18 +668,21 @@ final successfulOffersStatsProvider = FutureProvider<Map<String, dynamic>>((
     data: (coordinators) async {
       // Coordinators are loaded, we can proceed
       Logger.log.d(
-        '📊 Stats Provider: Found ${coordinators.length} coordinators for stats',
+        () =>
+            '📊 Stats Provider: Found ${coordinators.length} coordinators for stats',
       );
     },
     loading: () async {
       // Wait a bit for coordinators to load
       Logger.log.d(
-        '📊 Stats Provider: Waiting for coordinators to be discovered...',
+        () => '📊 Stats Provider: Waiting for coordinators to be discovered...',
       );
       await Future.delayed(const Duration(seconds: 2));
     },
     error: (error, stack) async {
-      Logger.log.e('📊 Stats Provider: Error loading coordinators: $error');
+      Logger.log.e(
+        () => '📊 Stats Provider: Error loading coordinators: $error',
+      );
     },
   );
 
@@ -832,7 +781,7 @@ class RelayConnectivityNotifier
 
       _initialized = true;
     } catch (e) {
-      Logger.log.e('Error initializing relay connectivity: $e');
+      Logger.log.e(() => 'Error initializing relay connectivity: $e');
     }
   }
 

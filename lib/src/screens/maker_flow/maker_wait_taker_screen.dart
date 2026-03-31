@@ -48,7 +48,7 @@ class _MakerWaitTakerScreenState extends ConsumerState<MakerWaitTakerScreen> {
       return;
     }
 
-    Logger.log.d("[MakerWaitTaker] Status update received: $status");
+    Logger.log.d(() => "[MakerWaitTaker] Status update received: $status");
 
     if (status == OfferStatus.reserved) {
       if (mounted) {

@@ -269,7 +269,7 @@ class Offer {
       return OfferStatus.values.byName(status);
     } catch (e) {
       // Handle cases where the string doesn't match any enum value
-      Logger.log.w('Warning: Unknown offer status "$status", defaulting to created.');
+      Logger.log.w(() => 'Warning: Unknown offer status "$status", defaulting to created.');
       return OfferStatus
           .created; // Or throw an error, depending on desired behavior
     }

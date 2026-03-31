@@ -1,6 +1,6 @@
 # Stage 1: Build the Flutter web application
 # Use an official Flutter image that includes the SDK
-FROM instrumentisto/flutter:3.38.5 AS build
+FROM instrumentisto/flutter:3.41.4 AS build
 
 # Build mode argument: can be "release" or "debug"
 ARG BUILD_MODE=release
@@ -21,7 +21,7 @@ RUN flutter pub get
 RUN flutter config --enable-web
 
 # Build the web application with the specified build mode
-RUN flutter build web --${BUILD_MODE} --no-web-resources-cdn
+RUN flutter build web --${BUILD_MODE} --no-web-resources-cdn --wasm
 
 # Stage 2: Serve the built web application using Nginx
 FROM nginx:stable-alpine

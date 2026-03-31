@@ -1,22 +1,6 @@
-import 'package:web/web.dart';
-import 'dart:js_interop';
+import 'dart:js' as js;
 import 'package:ndk/shared/logger/logger.dart';
 import 'group_links_constants.dart';
-
-/// Extension type for accessing window.appConfig JavaScript object
-@JS()
-extension type AppConfig(JSObject _) implements JSObject {
-  external String? get telegramGroupLink;
-  external String? get elementGroupLink;
-  external String? get simplexGroupLink;
-  external String? get signalGroupLink;
-}
-
-/// Extension type for accessing window JavaScript object
-@JS()
-extension type JSWindow(JSObject _) implements JSObject {
-  external AppConfig? get appConfig;
-}
 
 /// Web-specific implementation for group links loaded from JavaScript config at runtime
 /// The config is loaded from /config.js which can be mounted/overwritten in Docker
@@ -33,16 +17,15 @@ class GroupLinks {
     if (_initialized) return;
 
     try {
-      // Access window.appConfig from JavaScript using dart:js_interop
-      final windowObj = window as JSObject;
-      final windowTyped = JSWindow(windowObj);
-      final appConfig = windowTyped.appConfig;
+      // Access window.appConfig from JavaScript using dart:js
+      final windowObj = js.context['window'] ?? js.context;
+      final appConfig = windowObj['appConfig'];
 
       if (appConfig != null) {
-        final telegramLink = appConfig.telegramGroupLink;
-        final elementLink = appConfig.elementGroupLink;
-        final simplexLink = appConfig.simplexGroupLink;
-        final signalLink = appConfig.signalGroupLink;
+        final telegramLink = appConfig['telegramGroupLink'] as String?;
+        final elementLink = appConfig['elementGroupLink'] as String?;
+        final simplexLink = appConfig['simplexGroupLink'] as String?;
+        final signalLink = appConfig['signalGroupLink'] as String?;
 
         // Use configured value if provided, otherwise use default constant
         _telegram =
@@ -69,7 +52,7 @@ class GroupLinks {
         _signal = GroupLinksConstants.defaultSignal;
       }
     } catch (e) {
-      Logger.log.w('⚠️ Error loading group links config: $e');
+      Logger.log.w(() => '⚠️ Error loading group links config: $e');
       // Fall back to default constants on error
       _telegram = GroupLinksConstants.defaultTelegram;
       _element = GroupLinksConstants.defaultElement;

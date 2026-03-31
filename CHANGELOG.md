@@ -1,3 +1,9 @@
+## [0.5.0] - 2026-03-15
+- multiple wallets support
+- cashu wallet
+- taker receive to any wallet that supports it, like NWC or cashu, not just LNURL
+- better privacy since lnurl is no longer sent to the coordinator, just the invoice
+
 ## [0.4.6] - 2026-01-24
 - fix: numeric keyboard not hiding on un-focus
 - fix: apple app links support

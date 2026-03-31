@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:ndk/domain_layer/entities/wallet/wallet.dart';
+import 'package:ndk/presentation_layer/ndk.dart';
 import '../../../i18n/gen/strings.g.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -11,9 +13,9 @@ import 'package:ndk/shared/logger/logger.dart';
 import '../../models/offer.dart';
 import '../../models/coordinator_info.dart'; // Added
 import '../../providers/providers.dart';
-import '../../services/key_service.dart'; // For LN Address prompt
 import '../../services/api_service_nostr.dart';
 import '../../widgets/progress_indicators.dart'; // Import TakerProgressIndicator
+import '../../widgets/lightning_address_widget.dart';
 
 // --- Main Screen Widget ---
 
@@ -43,7 +45,7 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
     // Add listener to rebuild when BLIK code changes
     _blikController.addListener(() {
       final currentLength = _blikController.text.length;
-      
+
       // Detect paste: if length jumped from <6 to 6, dismiss keyboard
       if (_previousBlikLength < 6 && currentLength == 6) {
         final text = _blikController.text;
@@ -52,9 +54,9 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
           _blikFocusNode.unfocus();
         }
       }
-      
+
       _previousBlikLength = currentLength;
-      
+
       setState(() {
         // Trigger rebuild to update button state
       });
@@ -92,12 +94,14 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
           // Fallback if coordinator info is somehow null
           _maxBlikInputTime = const Duration(seconds: 20); // Default fallback
           Logger.log.w(
-            "[TakerSubmitBlikScreen] Warning: CoordinatorInfo was null, using default timeout.",
+            () =>
+                "[TakerSubmitBlikScreen] Warning: CoordinatorInfo was null, using default timeout.",
           );
         }
       } catch (e) {
         Logger.log.e(
-          "[TakerSubmitBlikScreen] Error fetching coordinator info: $e. Using default timeout.",
+          () =>
+              "[TakerSubmitBlikScreen] Error fetching coordinator info: $e. Using default timeout.",
         );
         _maxBlikInputTime = const Duration(
           seconds: 20,
@@ -149,13 +153,15 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
       // TODO is this really not necessary? then we don't need to getMyActiveOffer
       // await ref.read(activeOfferProvider.notifier).setActiveOffer(fullOffer);
       Logger.log.i(
-        "[TakerSubmitBlikScreen] Successfully fetched full offer details.",
+        () =>
+            "[TakerSubmitBlikScreen] Successfully fetched full offer details.",
       );
 
       // Ensure _maxBlikInputTime is set before starting timer
       if (_maxBlikInputTime == null) {
         Logger.log.e(
-          "[TakerSubmitBlikScreen] _maxBlikInputTime is null before _startBlikInputTimer. This should not happen.",
+          () =>
+              "[TakerSubmitBlikScreen] _maxBlikInputTime is null before _startBlikInputTimer. This should not happen.",
         );
         _maxBlikInputTime = Duration(
           seconds: _coordinatorInfo?.reservationSeconds ?? 20,
@@ -173,7 +179,7 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
       });
     } catch (e) {
       Logger.log.e(
-        "[TakerSubmitBlikScreen] Error fetching full offer details: $e",
+        () => "[TakerSubmitBlikScreen] Error fetching full offer details: $e",
       );
       if (mounted) {
         _resetToOfferList(
@@ -199,7 +205,8 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
     final reservedAt = offer.reservedAt;
     if (reservedAt == null) {
       Logger.log.e(
-        "[TakerSubmitBlikScreen] Error: reservedAt is null when starting timer. Resetting.",
+        () =>
+            "[TakerSubmitBlikScreen] Error: reservedAt is null when starting timer. Resetting.",
       );
       _resetToOfferList(t.offers.errors.detailsMissing);
       return;
@@ -209,7 +216,8 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
     // Ensure _maxBlikInputTime is non-null before proceeding
     if (_maxBlikInputTime == null) {
       Logger.log.e(
-        "[TakerSubmitBlikScreen] Error: _maxBlikInputTime is null in _startBlikInputTimer. Resetting.",
+        () =>
+            "[TakerSubmitBlikScreen] Error: _maxBlikInputTime is null in _startBlikInputTimer. Resetting.",
       );
       _resetToOfferList("${t.offers.errors.detailsMissing} (Timeout config)");
       return;
@@ -221,7 +229,8 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
     final timeUntilExpiry = expiresAt.difference(now);
 
     Logger.log.d(
-      "[TakerSubmitBlikScreen] Starting BLIK input timeout timer for ${_maxBlikInputTime!.inSeconds}s. Expires ~ $expiresAt",
+      () =>
+          "[TakerSubmitBlikScreen] Starting BLIK input timeout timer for ${_maxBlikInputTime!.inSeconds}s. Expires ~ $expiresAt",
     );
 
     if (timeUntilExpiry.isNegative) {
@@ -234,7 +243,7 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
   Future<void> _handleBlikInputTimeout() async {
     _blikInputTimer?.cancel();
     if (mounted) {
-      Logger.log.i("[TakerSubmitBlikScreen] BLIK input timer expired.");
+      Logger.log.i(() => "[TakerSubmitBlikScreen] BLIK input timer expired.");
       await ref.read(activeOfferProvider.notifier).setActiveOffer(null);
       _resetToOfferList(t.taker.submitBlik.timeExpired);
     }
@@ -256,88 +265,16 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
     });
   }
 
-  Future<String?> _promptForLightningAddress(
-    BuildContext context,
-    KeyService keyService,
-  ) async {
-    final controller = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-
-    return showDialog<String>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: Text(t.lightningAddress.prompts.enter),
-          content: Form(
-            key: formKey,
-            child: TextFormField(
-              controller: controller,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                hintText: t.lightningAddress.labels.hint,
-                labelText: t.lightningAddress.labels.address,
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty || !value.contains('@')) {
-                  return t.lightningAddress.prompts.invalid;
-                }
-                return null;
-              },
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(t.common.buttons.cancel),
-              onPressed: () {
-                Navigator.of(dialogContext).pop(null);
-              },
-            ),
-            TextButton(
-              child: Text(t.common.buttons.saveAndContinue),
-              onPressed: () async {
-                if (formKey.currentState!.validate()) {
-                  final address = controller.text;
-                  showDialog(
-                    context: dialogContext,
-                    barrierDismissible: false,
-                    builder:
-                        (context) =>
-                            const Center(child: CircularProgressIndicator()),
-                  );
-                  try {
-                    await keyService.saveLightningAddress(address);
-                    Navigator.of(dialogContext).pop(); // Pop loading
-                    Navigator.of(dialogContext).pop(address); // Return saved
-                  } catch (e) {
-                    Navigator.of(dialogContext).pop(); // Pop loading
-                    ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          t.lightningAddress.errors.saving(
-                            details: e.toString(),
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<void> _submitBlik() async {
     _blikInputTimer?.cancel();
 
     final offer = widget.initialOffer;
     final blikCode = _blikController.text;
     final takerId = ref.read(publicKeyProvider).value;
-    final keyService = ref.read(keyServiceProvider);
-    String? lnAddress = ref.read(lightningAddressProvider).value;
+    final hasReceivingWallet = await ref.read(
+      hasReceivingWalletProvider.future,
+    );
+    final ndk = ref.read(ndkProvider);
 
     // --- Validations ---
     if (takerId == null) {
@@ -360,21 +297,53 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
       _startBlikInputTimer(offer);
       return;
     }
-    if (lnAddress == null || lnAddress.isEmpty || !lnAddress.contains('@')) {
-      Logger.log.d(
-        "[TakerSubmitBlikScreen] LN Address missing, prompting user.",
+    if (!hasReceivingWallet) {
+      LightningAddressWidget.showReceivingWalletRequiredDialog(context, ref, t);
+      ref.read(errorProvider.notifier).state =
+          t.wallet.missingReceiving.message;
+      _startBlikInputTimer(offer);
+      return;
+    }
+    if (ndk == null) {
+      ref.read(errorProvider.notifier).state = t.system.errors.generic;
+      _startBlikInputTimer(offer);
+      return;
+    }
+
+    final defaultReceivingWallet = ndk.wallets.defaultWalletForReceiving;
+    if (defaultReceivingWallet == null || !defaultReceivingWallet.canReceive) {
+      LightningAddressWidget.showReceivingWalletRequiredDialog(context, ref, t);
+      ref.read(errorProvider.notifier).state =
+          t.wallet.missingReceiving.message;
+      _startBlikInputTimer(offer);
+      return;
+    }
+
+    final takerFeeAmount =
+        offer.takerFees ??
+        (_coordinatorInfo != null
+            ? (offer.amountSats * _coordinatorInfo!.takerFee / 100).ceil()
+            : 0);
+    final amountToInvoiceSats = offer.amountSats - takerFeeAmount;
+    if (amountToInvoiceSats <= 0) {
+      ref.read(errorProvider.notifier).state = t.system.errors.generic;
+      _startBlikInputTimer(offer);
+      return;
+    }
+
+    late final String takerInvoice;
+    try {
+      takerInvoice = await _createInvoiceForDefaultReceivingWallet(
+        ndk: ndk,
+        amountSats: amountToInvoiceSats,
       );
-      lnAddress = await _promptForLightningAddress(context, keyService);
-      if (lnAddress == null) {
-        Logger.log.d(
-          "[TakerSubmitBlikScreen] User cancelled LN Address prompt.",
-        );
-        ref.read(errorProvider.notifier).state =
-            t.lightningAddress.prompts.required;
-        _startBlikInputTimer(offer);
-        return;
-      }
-      Logger.log.i("[TakerSubmitBlikScreen] LN Address obtained: $lnAddress");
+    } catch (e) {
+      Logger.log.e(
+        () => '[TakerSubmitBlikScreen] Failed to create taker invoice: $e',
+      );
+      ref.read(errorProvider.notifier).state = t.system.errors.generic;
+      _startBlikInputTimer(offer);
+      return;
     }
     // --- End Validations ---
 
@@ -387,7 +356,7 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
         offerId: offer.id,
         takerId: takerId,
         blikCode: blikCode,
-        takerLightningAddress: lnAddress,
+        takerInvoice: takerInvoice,
         coordinatorPubkey: offer.coordinatorPubkey,
       );
 
@@ -399,7 +368,8 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
       await ref.read(activeOfferProvider.notifier).setActiveOffer(updatedOffer);
 
       Logger.log.i(
-        "[TakerSubmitBlikScreen] BLIK submitted. Navigating to WaitConfirmation.",
+        () =>
+            "[TakerSubmitBlikScreen] BLIK submitted. Navigating to WaitConfirmation.",
       );
       if (mounted) {
         context.go('/wait-confirmation', extra: updatedOffer);
@@ -417,13 +387,85 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
     }
   }
 
+  Future<String> _createInvoiceForDefaultReceivingWallet({
+    required Ndk ndk,
+    required int amountSats,
+  }) async {
+    Wallet? wallet = ndk.wallets.defaultWalletForReceiving;
+    if (wallet == null) {
+      wallet = ndk.wallets.getWalletsForUnit('sat').firstWhere(
+        (w) => w.canReceive,
+        orElse: () => throw Exception('No receiving wallet available'),
+      );
+      throw Exception('No default receiving wallet configured');
+    }
+    final result = await ndk.wallets.receive(
+      walletId: wallet.id,
+      amountSats: amountSats,
+    );
+    final invoice = _extractBolt11Invoice(result);
+    if (invoice != null) {
+      return invoice;
+    }
+    throw Exception('Unable to generate invoice from default receiving wallet');
+  }
+
+  String? _extractBolt11Invoice(dynamic value) {
+    String? normalize(String? raw) {
+      if (raw == null) return null;
+      final trimmed = raw.trim();
+      final withoutPrefix =
+          trimmed.toLowerCase().startsWith('lightning:')
+              ? trimmed.substring('lightning:'.length).trim()
+              : trimmed;
+      if (withoutPrefix.toLowerCase().startsWith('lnbc')) {
+        return withoutPrefix;
+      }
+      return null;
+    }
+
+    if (value is String) {
+      return normalize(value);
+    }
+
+    if (value is Map) {
+      final keys = <String>['bolt11', 'invoice', 'payment_request', 'request'];
+      for (final key in keys) {
+        final candidate = value[key];
+        if (candidate is String) {
+          final normalized = normalize(candidate);
+          if (normalized != null) {
+            return normalized;
+          }
+        }
+      }
+      return null;
+    }
+
+    try {
+      final invoice = (value as dynamic).invoice;
+      if (invoice is String) {
+        return normalize(invoice);
+      }
+    } catch (_) {}
+
+    try {
+      final bolt11 = (value as dynamic).bolt11;
+      if (bolt11 is String) {
+        return normalize(bolt11);
+      }
+    } catch (_) {}
+
+    return null;
+  }
+
   Future<void> _pasteFromClipboard() async {
     final textData = await Clipboard.getData(Clipboard.kTextPlain);
     setState(() {
       if (textData != null &&
           textData.text != null &&
           textData.text!.isNotEmpty) {
-        Logger.log.d("clipboard.getData:${textData.text}");
+        Logger.log.d(() => "clipboard.getData:${textData.text}");
         final pastedText = textData.text!;
         final digitsOnly = pastedText.replaceAll(RegExp(r'[^0-9]'), '');
         if (digitsOnly.length == 6) {
@@ -569,7 +611,10 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
                   controller: _blikController,
                   focusNode: _blikFocusNode,
                   autofocus: true,
-                  keyboardType: TextInputType.phone,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                    signed: false,
+                  ),
                   // keyboardType: TextInputType.number,
                   maxLength: 6,
                   textAlign: TextAlign.left,

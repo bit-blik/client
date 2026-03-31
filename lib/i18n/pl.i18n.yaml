@@ -86,6 +86,7 @@ offers:
     finishedOffers: Zakończone oferty
     finishedOffersWithTime: "Zakończone oferty (ostatnie 24h):"
     noAvailable: Brak dostępnych ofert.
+    noAvailableTip: "Wskazówka: udostępnij Bitblik w swojej społeczności i wśród znajomych, aby zwiększyć liczbę zamówień w Bitblik."
     noSuccessfulTrades: Brak udanych transakcji.
     loadingDetails: "Ładowanie szczegółów oferty..." # Używane przez taker.paymentProcess & taker.waitConfirmation
   
@@ -716,6 +717,10 @@ settings:
 wallet:
   title: Portfel
   description: Zarządzaj ustawieniami portfela Lightning
+  missingReceiving:
+    title: Wymagany portfel odbiorczy
+    message: Brak skonfigurowanego portfela do odbierania. Dodaj go w ustawieniach portfela, aby przyjmować oferty.
+    openSettings: Ustawienia portfela
 
 nwc:
   title: Nostr Wallet Connect (NWC)

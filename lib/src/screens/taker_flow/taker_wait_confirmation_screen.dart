@@ -47,7 +47,7 @@ class _TakerWaitConfirmationScreenState
     ];
 
     if (!validStatuses.contains(widget.offer.statusEnum)) {
-      Logger.log.d(
+      Logger.log.d(() => 
         "[TakerWaitConfirmation initState] Error: Received invalid offer state: ${widget.offer.status}. Resetting.",
       );
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -78,7 +78,7 @@ class _TakerWaitConfirmationScreenState
         });
       }
     } catch (e) {
-      Logger.log.e(
+      Logger.log.e(() => 
         "[TakerWaitConfirmation] Error fetching coordinator info: $e",
       );
       setState(() {
@@ -94,7 +94,7 @@ class _TakerWaitConfirmationScreenState
   }
 
   void _initializeOrUpdateCountdownTimer(Offer offer) {
-    Logger.log.d(
+    Logger.log.d(() => 
       "[TakerWaitConfirmation] Initializing/Updating countdown timer...",
     );
     _startConfirmationTimer(offer);
@@ -110,7 +110,7 @@ class _TakerWaitConfirmationScreenState
     final now = DateTime.now();
     final initialRemaining = expiresAt.difference(now);
 
-    Logger.log.d(
+    Logger.log.d(() => 
       "[TakerWaitConfirmation] Starting confirmation timer. Expires ~ $expiresAt",
     );
 
@@ -143,7 +143,7 @@ class _TakerWaitConfirmationScreenState
   void _handleConfirmationTimeout() {
     _confirmationTimer?.cancel();
     if (mounted) {
-      Logger.log.d("[TakerWaitConfirmation] Confirmation timer expired.");
+      Logger.log.d(() => "[TakerWaitConfirmation] Confirmation timer expired.");
       setState(() {
         _timerExpired = true;
       });
@@ -185,7 +185,7 @@ class _TakerWaitConfirmationScreenState
       if (!mounted) return;
 
       if (offer == null) {
-        Logger.log.d(
+        Logger.log.d(() => 
           "[TakerWaitConfirmation] Active offer is null. Resetting.",
         );
         _resetToOfferList(t.offers.status.cancelled);
@@ -220,7 +220,7 @@ class _TakerWaitConfirmationScreenState
         currentStatusEnum == OfferStatus.settled ||
         currentStatusEnum == OfferStatus.payingTaker ||
         currentStatusEnum == OfferStatus.takerPaid) {
-      Logger.log.d(
+      Logger.log.d(() => 
         "[TakerWaitConfirmation] Status is $currentStatusEnum. Navigating to process screen.",
       );
       _confirmationTimer?.cancel();
@@ -299,7 +299,7 @@ class _TakerWaitConfirmationScreenState
   }
 
   Future<void> _resendBlik(Offer offer) async {
-    Logger.log.d(
+    Logger.log.d(() => 
       "[TakerWaitConfirmation] Retry selected for offer ${offer.id}",
     );
 
@@ -353,7 +353,7 @@ class _TakerWaitConfirmationScreenState
 
     try {
       final apiService = ref.read(apiServiceProvider);
-      Logger.log.i(
+      Logger.log.i(() => 
         "[TakerWaitConfirmation] Reporting taker charged for offer ${offer.id}",
       );
       await apiService.markBlikCharged(offer.id, offer.coordinatorPubkey);
@@ -369,7 +369,7 @@ class _TakerWaitConfirmationScreenState
       //   context.go('/taker-conflict', extra: offer.id);
       // }
     } catch (e) {
-      Logger.log.e("[TakerWaitConfirmation] Error reporting conflict: $e");
+      Logger.log.e(() => "[TakerWaitConfirmation] Error reporting conflict: $e");
       if (mounted) {
         final t = Translations.of(context);
         ref.read(errorProvider.notifier).state = t.taker.waitConfirmation.errors
