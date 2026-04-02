@@ -795,10 +795,10 @@ packages:
     dependency: transitive
     description:
       name: nip07_event_signer
-      sha256: a89a9012e2d17e784f372df11d6d5959e1fa9300085b39fd6b1857702c19e220
+      sha256: "5241837ec948d76b8415d657697634bf71a4a5180b60ce50238fa621dfb908ea"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.10-dev.0"
+    version: "1.0.10-dev.1"
   nm:
     dependency: transitive
     description:
