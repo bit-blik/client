@@ -1,13 +1,10 @@
-identifier: app.bitblik
-name: BitBlik
-summary: Bitcoin Blik codes exchange app
-description: Pay with Bitcoin using Blik codes. Buy Bitcoin selling Blik codes.
 repository: https://github.com/bit-blik/client
-homepage: https://bitblik.app
+name: BitBlik
+description: Pay with Bitcoin using Blik codes. Buy Bitcoin selling Blik codes.
+summary: Bitcoin Blik codes exchange app
 license: MIT
+website: https://bitblik.app
+release_notes: CHANGELOG.md
 changelog: CHANGELOG.md
-blossom_server: https://cdn.zapstore.dev
-assets:
-  - build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-  - build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
-  - build/app/outputs/flutter-apk/app-x86_64-release.apk
+metadata_sources:
+    - github
