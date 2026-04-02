@@ -752,9 +752,11 @@ packages:
   ndk:
     dependency: "direct main"
     description:
-      path: "../../ndk/packages/ndk"
-      relative: true
-    source: path
+      path: "packages/ndk"
+      ref: eb394361a398e944ea2ff14ec5f0c7ae6128bc1a
+      resolved-ref: eb394361a398e944ea2ff14ec5f0c7ae6128bc1a
+      url: "https://github.com/relaystr/ndk.git"
+    source: git
     version: "0.8.2-dev.0+1"
   ndk_bip32_keys:
     dependency: transitive
@@ -775,9 +777,11 @@ packages:
   ndk_flutter:
     dependency: "direct main"
     description:
-      path: "../../ndk/packages/ndk_flutter"
-      relative: true
-    source: path
+      path: "packages/ndk_flutter"
+      ref: eb394361a398e944ea2ff14ec5f0c7ae6128bc1a
+      resolved-ref: eb394361a398e944ea2ff14ec5f0c7ae6128bc1a
+      url: "https://github.com/relaystr/ndk.git"
+    source: git
     version: "0.8.2-dev.0+1"
   ndk_objectbox:
     dependency: "direct main"

@@ -72,17 +72,17 @@ dependencies:
 
 dependency_overrides:
   ndk:
-#    git:
-#      url: https://github.com/relaystr/ndk.git
-#      path: packages/ndk
-#      ref: 0e21d30b7bcb1617fb831816e4124fcb491b8a6e
-    path: ../../ndk/packages/ndk
+    git:
+      url: https://github.com/relaystr/ndk.git
+      path: packages/ndk
+      ref: eb394361a398e944ea2ff14ec5f0c7ae6128bc1a
+#    path: ../../ndk/packages/ndk
   ndk_flutter:
-#    git:
-#      url: https://github.com/relaystr/ndk.git
-#      path: packages/ndk_flutter
-#      ref: 0e21d30b7bcb1617fb831816e4124fcb491b8a6e
-    path: ../../ndk/packages/ndk_flutter
+    git:
+      url: https://github.com/relaystr/ndk.git
+      path: packages/ndk_flutter
+      ref: eb394361a398e944ea2ff14ec5f0c7ae6128bc1a
+#    path: ../../ndk/packages/ndk_flutter
 #  ndk_objectbox:
 #    git:
 #      url: https://github.com/relaystr/ndk.git

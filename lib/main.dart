@@ -266,16 +266,19 @@ class MyApp extends ConsumerStatefulWidget {
   ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends ConsumerState<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   StreamSubscription<Uri>? _sub;
   final AppLinks _appLinks = AppLinks();
   bool _routerReady = false;
-  bool _pendingWalletNavigation = false;
+  String? _pendingRouteNavigation;
   final List<Uri> _pendingDeepLinks = [];
+  AppLifecycleState? _appLifecycleState;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _appLifecycleState = WidgetsBinding.instance.lifecycleState;
     try {
       ref.read(keyServiceProvider);
       ref.read(apiServiceProvider);
@@ -291,10 +294,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     // Initialize API service and start coordinator discovery
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _routerReady = true;
-      if (_pendingWalletNavigation) {
-        _pendingWalletNavigation = false;
-        _openWalletScreen();
-      }
+      _tryHandlePendingRouteNavigation();
       if (_pendingDeepLinks.isNotEmpty) {
         final queued = List<Uri>.from(_pendingDeepLinks);
         _pendingDeepLinks.clear();
@@ -349,6 +349,24 @@ class _MyAppState extends ConsumerState<MyApp> {
     }
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _appLifecycleState = state;
+    if (state == AppLifecycleState.resumed) {
+      _tryHandlePendingRouteNavigation();
+    }
+  }
+
+  void _tryHandlePendingRouteNavigation() {
+    final route = _pendingRouteNavigation;
+    if (route == null) return;
+    if (!_routerReady) return;
+    if (_appLifecycleState != AppLifecycleState.resumed) return;
+
+    _pendingRouteNavigation = null;
+    _goToRoute(route);
+  }
+
   Future<void> _checkInitialLink() async {
     try {
       final initialUri = await _appLinks.getInitialLink();
@@ -361,15 +379,26 @@ class _MyAppState extends ConsumerState<MyApp> {
   }
 
   void _openWalletScreen() {
+    _goToRouteWhenReady(WalletScreen.routeName);
+  }
+
+  void _goToRouteWhenReady(String route) {
     if (!mounted) return;
-    if (!_routerReady) {
-      _pendingWalletNavigation = true;
+    if (!_routerReady || _appLifecycleState != AppLifecycleState.resumed) {
+      _pendingRouteNavigation = route;
       return;
     }
-    final goRouter = ref.read(routerProvider);
-    final currentPath = goRouter.routerDelegate.currentConfiguration.uri.path;
-    if (currentPath == WalletScreen.routeName) return;
-    goRouter.go(WalletScreen.routeName);
+    _goToRoute(route);
+  }
+
+  void _goToRoute(String route) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final goRouter = ref.read(routerProvider);
+      final currentPath = goRouter.routerDelegate.currentConfiguration.uri.path;
+      if (currentPath == route) return;
+      goRouter.go(route);
+    });
   }
 
   Future<void> _handleDeepLink(Uri uri) async {
@@ -401,7 +430,7 @@ class _MyAppState extends ConsumerState<MyApp> {
         return;
       }
       if (path.endsWith('nwc-callback')) {
-        _openWalletScreen();
+        _openPostNwcConnectionRoute();
         ref.read(walletProtocolDispatcherProvider).dispatch(uri.toString());
         return;
       }
@@ -423,10 +452,26 @@ class _MyAppState extends ConsumerState<MyApp> {
     }
   }
 
+  void _openPostNwcConnectionRoute() {
+    final activeOffer = ref.read(activeOfferProvider);
+
+    if (activeOffer != null && activeOffer.status == OfferStatus.created.name) {
+      Logger.log.i(
+        () =>
+            '📝 Active offer found in created status, navigating to pay screen',
+      );
+      _goToRouteWhenReady('/pay');
+      return;
+    }
+
+    Logger.log.i(
+      () => '💳 No active offer in created status, navigating to wallet',
+    );
+    _openWalletScreen();
+  }
+
   /// Handle NWC deep link: connect wallet and navigate based on active offer status
   Future<void> _handleNwcDeepLink(String connectionString) async {
-    final router = ref.read(routerProvider);
-
     Logger.log.i(() => '🔗 NWC deep link: connecting wallet...');
 
     try {
@@ -452,24 +497,7 @@ class _MyAppState extends ConsumerState<MyApp> {
 
       Logger.log.i(() => '💰 NWC connected via deep link');
 
-      // Check if there's an active offer in 'created' status
-      final activeOffer = ref.read(activeOfferProvider);
-
-      if (activeOffer != null &&
-          activeOffer.status == OfferStatus.created.name) {
-        // Active offer in created status - go to pay invoice screen
-        Logger.log.i(
-          () =>
-              '📝 Active offer found in created status, navigating to pay screen',
-        );
-        router.go('/pay');
-      } else {
-        // No active offer or not in created status - go to wallet screen
-        Logger.log.i(
-          () => '💳 No active offer in created status, navigating to wallet',
-        );
-        _openWalletScreen();
-      }
+      _openPostNwcConnectionRoute();
     } catch (e) {
       Logger.log.e(() => '❌ Error connecting NWC via deep link: $e');
       // Still navigate to wallet screen on error so user can see what happened
@@ -479,6 +507,7 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _sub?.cancel();
     super.dispose();
   }

@@ -122,7 +122,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen>
                           showPendingTransactions: false,
                           showRecentTransactions: false,
                           albyGoConnectConfig: AlbyGoConnectConfig(
-                            connectMethod: AlbyGoConnectMethod.walletAuth,
+                            connectMethod: AlbyGoConnectMethod.nostrNwcCallback,
                             appName: 'BitBlik',
                             appIconUrl:
                                 'https://bitblik.app/assets/assets/logo.png',
