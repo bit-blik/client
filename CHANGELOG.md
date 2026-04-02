@@ -1,4 +1,4 @@
-## [0.5.1] - 2026-04-01
+## [0.5.1] - 2026-04-02
 
 - fix: wallet initialization
 - fix: NWC cached permissions to improve UX
