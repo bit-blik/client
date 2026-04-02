@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 0.5.0+20
+version: 0.5.1+21
 environment:
   sdk: ^3.7.2
 
@@ -71,18 +71,18 @@ dependencies:
   mobile_scanner: ^7.1.4
 
 dependency_overrides:
-#  ndk:
+  ndk:
 #    git:
 #      url: https://github.com/relaystr/ndk.git
 #      path: packages/ndk
-#      ref: 407378f55c3fb6d0e2a11f44ec071adda05ecc2e
-#    path: ../../ndk/packages/ndk
-#  ndk_flutter:
+#      ref: 0e21d30b7bcb1617fb831816e4124fcb491b8a6e
+    path: ../../ndk/packages/ndk
+  ndk_flutter:
 #    git:
 #      url: https://github.com/relaystr/ndk.git
 #      path: packages/ndk_flutter
-#      ref: 407378f55c3fb6d0e2a11f44ec071adda05ecc2e
-##    path: ../../ndk/packages/ndk_flutter
+#      ref: 0e21d30b7bcb1617fb831816e4124fcb491b8a6e
+    path: ../../ndk/packages/ndk_flutter
 #  ndk_objectbox:
 #    git:
 #      url: https://github.com/relaystr/ndk.git

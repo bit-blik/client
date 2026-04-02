@@ -447,8 +447,11 @@ class ApiServiceNostr {
 
   Stream<Offer> get offersStream => _nostrService.offersStream;
 
-  Future<void> startOfferSubscription() async =>
-      _nostrService.startOfferSubscription();
+  Future<void> startOfferSubscription() async {
+    // Ensure KeyService/NDK are initialized before starting subscriptions.
+    await init();
+    await _nostrService.startOfferSubscription();
+  }
 
   Future<Offer?> getOffer(String offerId) async {
     try {

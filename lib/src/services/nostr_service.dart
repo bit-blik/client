@@ -289,27 +289,23 @@ class NostrService {
           '🔑 Client signer initialized with pubkey: ${_keyService.publicKeyHex}',
     );
 
-    // Wait for NDK to actually connect to at least one relay
-    Logger.log.t(() => '⏳ Waiting for NDK to connect to relays...');
+    // Do not block initialization on relay connectivity.
+    // Wallet permissions (including cached NWC permissions) can be available
+    // before relays are connected, and startup should stay responsive.
+    Logger.log.t(
+      () => '⏳ Skipping blocking relay wait during initialization.',
+    );
 
-    // Wait up to 10 seconds for connection
-    bool connected = false;
-    for (int i = 0; i < 20; i++) {
-      await Future.delayed(const Duration(milliseconds: 500));
-      // Check if any relays are connected (this is a simple heuristic)
-      // In a real implementation, you'd check NDK's connection status
-      // For now, we'll just wait a reasonable amount of time
-      if (i >= 3) {
-        // Wait at least 2 seconds
-        connected = true;
-        break;
-      }
-    }
-
-    if (connected) {
-      Logger.log.i(() => '✅ NDK connection wait completed');
-    } else {
-      Logger.log.w(() => '⚠️ NDK connection timeout - proceeding anyway');
+    // Best-effort connectivity probe for diagnostics only.
+    try {
+      await ndk!.connectivity.relayConnectivityChanges.first.timeout(
+        const Duration(milliseconds: 250),
+      );
+      Logger.log.t(() => '✅ Relay connectivity event received during startup');
+    } on TimeoutException {
+      Logger.log.t(() => 'ℹ️ No relay connectivity event yet (continuing)');
+    } catch (e) {
+      Logger.log.t(() => 'ℹ️ Relay connectivity probe failed (continuing): $e');
     }
   }
 

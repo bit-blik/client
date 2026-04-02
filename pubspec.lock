@@ -752,11 +752,10 @@ packages:
   ndk:
     dependency: "direct main"
     description:
-      name: ndk
-      sha256: "4b2c2fbf8aa6883582e6c33e07e084677cb0f8cd876c4ed9d7f86cabb65a42ce"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.8.1"
+      path: "../../ndk/packages/ndk"
+      relative: true
+    source: path
+    version: "0.8.2-dev.0+1"
   ndk_bip32_keys:
     dependency: transitive
     description:
@@ -776,11 +775,10 @@ packages:
   ndk_flutter:
     dependency: "direct main"
     description:
-      name: ndk_flutter
-      sha256: f55670d6891598c8a6f2b23930ad8d3e82f8407e3b5039a7c2ab5ca7316a2b72
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.8.1"
+      path: "../../ndk/packages/ndk_flutter"
+      relative: true
+    source: path
+    version: "0.8.2-dev.0+1"
   ndk_objectbox:
     dependency: "direct main"
     description:
@@ -793,10 +791,10 @@ packages:
     dependency: transitive
     description:
       name: nip07_event_signer
-      sha256: "6e1c63b10dcac4ee203276f89dd2374e942cf4542014515e7c081ee28121ad52"
+      sha256: a89a9012e2d17e784f372df11d6d5959e1fa9300085b39fd6b1857702c19e220
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.8"
+    version: "1.0.10-dev.0"
   nm:
     dependency: transitive
     description:

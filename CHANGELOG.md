@@ -1,3 +1,9 @@
+## [0.5.1] - 2026-04-01
+
+- fix: wallet initialization
+- fix: NWC cached permissions to improve UX
+- feat: Alby Go NWC connect available on iOS
+
 ## [0.5.0] - 2026-04-01
 - multiple wallets support
 - cashu wallet

@@ -2,8 +2,8 @@ import 'dart:async'; // For Stream.periodic
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ndk/domain_layer/entities/wallet/wallet.dart';
-import 'package:ndk/domain_layer/entities/wallet/wallet_balance.dart';
+import 'package:ndk/entities.dart';
+import 'package:ndk_flutter/ndk_flutter.dart';
 import 'package:ndk/shared/logger/logger.dart';
 
 import '../models/coordinator_info.dart';
@@ -410,7 +410,7 @@ final coordinatorReservationDurationProvider =
 
 // Only initialize the Nostr offer subscription once (global for the app lifetime)
 final offersSubscriptionInitializer = FutureProvider<void>((ref) async {
-  final apiService = ref.watch(apiServiceProvider);
+  final apiService = await ref.watch(initializedApiServiceProvider.future);
   await apiService.startOfferSubscription();
 });
 
@@ -493,6 +493,7 @@ final lightningAddressProvider = FutureProvider<String?>((ref) async {
 /// Provider that indicates whether any wallet can receive funds.
 /// This listens to wallet changes so UI updates immediately after add/remove.
 final hasReceivingWalletProvider = StreamProvider<bool>((ref) async* {
+  await ref.watch(initializedApiServiceProvider.future);
   final ndk = ref.watch(ndkProvider);
   if (ndk == null) {
     yield false;
@@ -508,10 +509,7 @@ final hasReceivingWalletProvider = StreamProvider<bool>((ref) async* {
     return false;
   }
 
-  final initialWallets = await ndk.wallets.walletsStream.first.timeout(
-    const Duration(milliseconds: 250),
-    onTimeout: () => <Wallet>[],
-  );
+  final initialWallets = ndk.wallets.getWalletsForUnit('sat');
   yield hasReceivingWallet(initialWallets);
 
   await for (final wallets in ndk.wallets.walletsStream) {
@@ -719,9 +717,15 @@ final errorProvider = StateProvider<String?>((ref) => null);
 
 // Provider to access NDK instance for connectivity management
 final ndkProvider = Provider((ref) {
-  // final apiService = await ref.read(initializedApiServiceProvider.future);
+  ref.watch(initializedApiServiceProvider);
   final apiService = ref.watch(apiServiceProvider);
   return apiService.ndk;
+});
+
+final ndkFlutterProvider = Provider<NdkFlutter?>((ref) {
+  final ndk = ref.watch(ndkProvider);
+  if (ndk == null) return null;
+  return NdkFlutter(ndk: ndk);
 });
 
 /// Connection state enum for relay websocket
@@ -830,6 +834,105 @@ final appLifecycleProvider = Provider<AppLifecycleNotifier>((ref) {
     notifier.dispose();
   });
   return notifier;
+});
+
+final nwcWalletAuthCoordinatorProvider = Provider<NwcWalletAuthCoordinator>((
+  ref,
+) {
+  return NwcWalletAuthCoordinator();
+});
+
+class WalletProtocolDispatcher {
+  Future<bool> Function(String url)? _handler;
+  final List<String> _pending = <String>[];
+
+  void attach(Future<bool> Function(String url) handler) {
+    _handler = handler;
+
+    if (_pending.isEmpty) return;
+    final queued = List<String>.from(_pending);
+    _pending.clear();
+    for (final url in queued) {
+      unawaited(_dispatchNow(url));
+    }
+  }
+
+  void detach(Future<bool> Function(String url) handler) {
+    if (identical(_handler, handler)) {
+      _handler = null;
+    }
+  }
+
+  void dispatch(String url) {
+    final handler = _handler;
+    if (handler != null) {
+      unawaited(_dispatchNow(url));
+      return;
+    }
+    _pending.add(url);
+  }
+
+  Future<bool> _dispatchNow(String url) async {
+    final handler = _handler;
+    if (handler == null) return false;
+    try {
+      return await handler(url);
+    } catch (_) {
+      return false;
+    }
+  }
+}
+
+final walletProtocolDispatcherProvider = Provider<WalletProtocolDispatcher>((
+  ref,
+) {
+  return WalletProtocolDispatcher();
+});
+
+/// App-level background wallet warmup.
+/// Ensures NWC wallets are initialized even if the user never opens /wallet.
+final walletWarmupProvider = Provider<void>((ref) {
+  StreamSubscription? walletsSubscription;
+
+  void warmupWallets(Iterable<Wallet> wallets) {
+    final ndk = ref.read(ndkProvider);
+    if (ndk == null) return;
+
+    for (final wallet in wallets) {
+      if (wallet.type == WalletType.NWC) {
+        try {
+          // Triggers NWC capability/balance hydration (uses cache when available).
+          ndk.wallets.getBalance(wallet.id, 'sat');
+        } catch (e) {
+          Logger.log.w(
+            () => '⚠️ NWC wallet warmup failed for ${wallet.id}: $e',
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> startWarmup() async {
+    try {
+      await ref.read(initializedApiServiceProvider.future);
+      final ndk = ref.read(ndkProvider);
+      if (ndk == null) return;
+
+      warmupWallets(ndk.wallets.getWalletsForUnit('sat'));
+
+      walletsSubscription = ndk.wallets.walletsStream.listen((wallets) {
+        warmupWallets(wallets);
+      });
+    } catch (e) {
+      Logger.log.w(() => '⚠️ Background wallet warmup init failed: $e');
+    }
+  }
+
+  unawaited(startWarmup());
+
+  ref.onDispose(() {
+    walletsSubscription?.cancel();
+  });
 });
 
 /// Notifier that handles app lifecycle changes and reconnects NDK when app resumes
