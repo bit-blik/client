@@ -17,6 +17,8 @@
 
 - unzip it into bitblik.app web html root / ios/<version-number>
 
+- make sure files in /ios/<version-number>/ are readable by everyone (chmod 644)
+
 - add version to https://bitblik.app/.well-known/sources/alt-store-source.json (not the one in git, but in the VPS /ios/...)
 
 ## Android
