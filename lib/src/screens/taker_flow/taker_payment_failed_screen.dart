@@ -120,8 +120,8 @@ class _TakerPaymentFailedScreenState
           final status = OfferStatus.values.byName(next.status);
           _handleStatusUpdate(status);
         } catch (e) {
-          Logger.log.e(() => 
-            "Error parsing offer status in TakerPaymentFailedScreen: $e",
+          Logger.log.e(
+            () => "Error parsing offer status in TakerPaymentFailedScreen: $e",
           );
         }
       }

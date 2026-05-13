@@ -24,7 +24,6 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
   StreamSubscription<AppLocale>? _localeSubscription;
   AppLocale? _currentLocale;
 
-
   @override
   void initState() {
     super.initState();
@@ -34,7 +33,9 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
     _localeSubscription = LocaleSettings.getLocaleStream().listen((locale) {
       // Check if the locale actually changed to avoid redundant loads if the stream emits the same locale
       if (_currentLocale != locale) {
-        Logger.log.d(() => "FAQ Screen: Locale changed to $locale, reloading content.");
+        Logger.log.d(
+          () => "FAQ Screen: Locale changed to $locale, reloading content.",
+        );
         _currentLocale = locale;
         _loadFaqContent();
       }
@@ -78,20 +79,30 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
       try {
         markdownData = await rootBundle.loadString(filePath);
       } catch (e) {
-        Logger.log.w(() => 'Could not load FAQ for language: $langCode. Falling back to English. Error: $e');
+        Logger.log.w(
+          () =>
+              'Could not load FAQ for language: $langCode. Falling back to English. Error: $e',
+        );
         langCode = 'en';
         filePath = 'assets/faq/faq_$langCode.md';
         try {
           markdownData = await rootBundle.loadString(filePath);
         } catch (fallbackError) {
-          Logger.log.w(() => 'Could not load English fallback FAQ. Error: $fallbackError');
-          throw Exception('Failed to load FAQ content for $langCode and fallback en.');
+          Logger.log.w(
+            () => 'Could not load English fallback FAQ. Error: $fallbackError',
+          );
+          throw Exception(
+            'Failed to load FAQ content for $langCode and fallback en.',
+          );
         }
       }
-      
+
       // Convert Markdown to HTML
-      final html = md.markdownToHtml(markdownData, inlineSyntaxes: [md.InlineHtmlSyntax()]);
-      
+      final html = md.markdownToHtml(
+        markdownData,
+        inlineSyntaxes: [md.InlineHtmlSyntax()],
+      );
+
       setState(() {
         _htmlContent = html; // Store HTML content
       });
@@ -159,13 +170,17 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
       return Column(
         children: [
           backButton,
-          const Expanded(child: Center(child: Text('No FAQ content available.'))),
+          const Expanded(
+            child: Center(child: Text('No FAQ content available.')),
+          ),
         ],
       );
     }
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0), // Apply padding to SingleChildScrollView
+      padding: const EdgeInsets.all(
+        16.0,
+      ), // Apply padding to SingleChildScrollView
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

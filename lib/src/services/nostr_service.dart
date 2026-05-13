@@ -292,9 +292,7 @@ class NostrService {
     // Do not block initialization on relay connectivity.
     // Wallet permissions (including cached NWC permissions) can be available
     // before relays are connected, and startup should stay responsive.
-    Logger.log.t(
-      () => '⏳ Skipping blocking relay wait during initialization.',
-    );
+    Logger.log.t(() => '⏳ Skipping blocking relay wait during initialization.');
 
     // Best-effort connectivity probe for diagnostics only.
     try {

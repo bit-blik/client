@@ -50,15 +50,17 @@ class TakerPaymentProcessScreen extends ConsumerWidget {
             Expanded(
               child: Center(
                 child:
-                    // paymentHash == null
-                    //     ? _buildErrorContent(
-                    //       context,
-                    //       t.taker.paymentProcess.errors.missingPaymentHash,
-                    //     )
-                    //     :
-                    _buildPollingContent(context, ref
-                        // , paymentHash
-                    ),
+                // paymentHash == null
+                //     ? _buildErrorContent(
+                //       context,
+                //       t.taker.paymentProcess.errors.missingPaymentHash,
+                //     )
+                //     :
+                _buildPollingContent(
+                  context,
+                  ref,
+                  // , paymentHash
+                ),
               ),
             ),
           ],
@@ -158,7 +160,6 @@ class _PaymentChecklist extends ConsumerWidget {
   });
 
   String _getStepText(PaymentStep step) {
-
     switch (step) {
       case PaymentStep.makerConfirmed:
         return t.taker.paymentProcess.steps.makerConfirmedBlik;

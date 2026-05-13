@@ -204,7 +204,8 @@ class Offer {
             return DateTime.parse(v);
           } catch (_) {
             final asInt = int.tryParse(v);
-            if (asInt != null) return DateTime.fromMillisecondsSinceEpoch(asInt);
+            if (asInt != null)
+              return DateTime.fromMillisecondsSinceEpoch(asInt);
           }
         }
         // Sensible fallback to "now" to avoid crash; ideally this should not happen.
@@ -214,7 +215,10 @@ class Offer {
         json['maker_pubkey'],
         'unknown_maker',
       ), // Default if 'maker_pubkey' is null or not a string
-      coordinatorPubkey: safeString(json['coordinator_pubkey'], 'unknown_coordinator'), // Added coordinator pubkey
+      coordinatorPubkey: safeString(
+        json['coordinator_pubkey'],
+        'unknown_coordinator',
+      ), // Added coordinator pubkey
       takerPubkey: json['taker_pubkey'] as String?, // Already nullable
       reservedAt: parseOptionalDateTime(json['reserved_at']),
       blikReceivedAt: parseOptionalDateTime(json['blik_received_at']),
@@ -269,7 +273,9 @@ class Offer {
       return OfferStatus.values.byName(status);
     } catch (e) {
       // Handle cases where the string doesn't match any enum value
-      Logger.log.w(() => 'Warning: Unknown offer status "$status", defaulting to created.');
+      Logger.log.w(
+        () => 'Warning: Unknown offer status "$status", defaulting to created.',
+      );
       return OfferStatus
           .created; // Or throw an error, depending on desired behavior
     }

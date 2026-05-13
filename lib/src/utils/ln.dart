@@ -5,7 +5,10 @@ import 'package:http/http.dart' as http;
 import '../../i18n/gen/strings.g.dart'; // Import Slang's generated file
 
 // Add LNURL validation function
-Future<String?> validateLightningAddress(String address, Translations strings) async {
+Future<String?> validateLightningAddress(
+  String address,
+  Translations strings,
+) async {
   if (!address.contains('@')) {
     return strings.lightningAddress.prompts.invalid;
   }

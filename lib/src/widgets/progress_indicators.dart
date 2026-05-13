@@ -8,11 +8,8 @@ import '../../i18n/gen/strings.g.dart';
 // Taker Progress Indicator Widget - reusable for taker flow screens
 class TakerProgressIndicator extends StatelessWidget {
   final int activeStep; // 1, 2, or 3
-  
-  const TakerProgressIndicator({
-    super.key,
-    this.activeStep = 1,
-  });
+
+  const TakerProgressIndicator({super.key, this.activeStep = 1});
 
   @override
   Widget build(BuildContext context) {
@@ -158,17 +155,14 @@ class _FundedOfferProgressIndicatorState
   Widget build(BuildContext context) {
     if (_progress <= 0) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 20.0,
-        horizontal: 20.0,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
       child: Stack(
         alignment: Alignment.center,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: SizedBox(
-              height: 25  ,
+              height: 25,
               child: LinearProgressIndicator(
                 value: _progress,
                 backgroundColor: Colors.grey[500],
@@ -178,7 +172,9 @@ class _FundedOfferProgressIndicatorState
             ),
           ),
           Text(
-            t.offers.progress.waitingForTaker(time: _formatMMSS(_remainingSeconds)),
+            t.offers.progress.waitingForTaker(
+              time: _formatMMSS(_remainingSeconds),
+            ),
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w400,
@@ -232,8 +228,9 @@ class _ReservationProgressIndicatorState
     // Check if either reservedAt or maxDuration changed
     if (widget.reservedAt != oldWidget.reservedAt ||
         widget.maxDuration != oldWidget.maxDuration) {
-      Logger.log.d(() => 
-        "[ReservationProgress] reservedAt or maxDuration changed. Recalculating.",
+      Logger.log.d(
+        () =>
+            "[ReservationProgress] reservedAt or maxDuration changed. Recalculating.",
       );
       _timer?.cancel();
       _remainingSeconds =
@@ -295,11 +292,15 @@ class _ReservationProgressIndicatorState
   }
 
   Future<void> _triggerRefresh() async {
-    Logger.log.d(() => "[ReservationProgress] Timer expired. Refreshing providers.");
+    Logger.log.d(
+      () => "[ReservationProgress] Timer expired. Refreshing providers.",
+    );
     if (mounted) {
       ref.invalidate(availableOffersProvider);
     } else {
-      Logger.log.d(() => "[ReservationProgress] Widget disposed before refresh.");
+      Logger.log.d(
+        () => "[ReservationProgress] Widget disposed before refresh.",
+      );
     }
   }
 
@@ -307,10 +308,7 @@ class _ReservationProgressIndicatorState
   Widget build(BuildContext context) {
     if (_progress <= 0) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(
-        top: 4.0,
-        bottom: 8.0,
-      ),
+      padding: const EdgeInsets.only(top: 4.0, bottom: 8.0),
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -378,7 +376,9 @@ class _BlikConfirmationProgressIndicatorState
   void didUpdateWidget(covariant BlikConfirmationProgressIndicator oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.blikReceivedAt != oldWidget.blikReceivedAt) {
-      Logger.log.d(() => "[BlikConfirmProgress] blikReceivedAt changed. Recalculating.");
+      Logger.log.d(
+        () => "[BlikConfirmProgress] blikReceivedAt changed. Recalculating.",
+      );
       _timer?.cancel();
       _calculateProgress();
       if (_progress > 0) {
@@ -432,11 +432,15 @@ class _BlikConfirmationProgressIndicatorState
   }
 
   Future<void> _triggerRefresh() async {
-    Logger.log.d(() => "[BlikConfirmProgress] Timer expired. Refreshing providers.");
+    Logger.log.d(
+      () => "[BlikConfirmProgress] Timer expired. Refreshing providers.",
+    );
     if (mounted) {
       ref.invalidate(availableOffersProvider);
     } else {
-      Logger.log.d(() => "[BlikConfirmProgress] Widget disposed before refresh.");
+      Logger.log.d(
+        () => "[BlikConfirmProgress] Widget disposed before refresh.",
+      );
     }
   }
 
@@ -444,10 +448,7 @@ class _BlikConfirmationProgressIndicatorState
   Widget build(BuildContext context) {
     if (_progress <= 0) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(
-        top: 4.0,
-        bottom: 8.0,
-      ),
+      padding: const EdgeInsets.only(top: 4.0, bottom: 8.0),
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -588,8 +589,9 @@ class _CircularCountdownTimerState extends State<CircularCountdownTimer> {
   @override
   Widget build(BuildContext context) {
     // Calculate dynamic font size based on widget size (larger text)
-    final dynamicFontSize = widget.size * 0.35; // 35% of circle size for bigger text
-    
+    final dynamicFontSize =
+        widget.size * 0.35; // 35% of circle size for bigger text
+
     return SizedBox(
       width: widget.size,
       height: widget.size,

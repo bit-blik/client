@@ -49,11 +49,7 @@ class _MakerSuccessScreenState extends ConsumerState<MakerSuccessScreen> {
     _confettiCount++;
     Confetti.launch(
       context,
-      options: const ConfettiOptions(
-        particleCount: 100,
-        spread: 70,
-        y: 0.6,
-      ),
+      options: const ConfettiOptions(particleCount: 100, spread: 70, y: 0.6),
     );
   }
 

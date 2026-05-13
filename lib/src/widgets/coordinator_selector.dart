@@ -25,7 +25,8 @@ class CoordinatorSelector extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<CoordinatorSelector> createState() => _CoordinatorSelectorState();
+  ConsumerState<CoordinatorSelector> createState() =>
+      _CoordinatorSelectorState();
 }
 
 class _CoordinatorSelectorState extends ConsumerState<CoordinatorSelector> {
@@ -79,18 +80,30 @@ class _CoordinatorSelectorState extends ConsumerState<CoordinatorSelector> {
   @override
   void didUpdateWidget(CoordinatorSelector oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.selectedCoordinator?.pubkey != widget.selectedCoordinator?.pubkey) {
+    if (oldWidget.selectedCoordinator?.pubkey !=
+        widget.selectedCoordinator?.pubkey) {
       _loadTermsAcceptance();
     }
   }
 
-  Widget _buildInfoChip(BuildContext context, IconData icon, String text, {Color? iconColor, Color? textColor}) {
+  Widget _buildInfoChip(
+    BuildContext context,
+    IconData icon,
+    String text, {
+    Color? iconColor,
+    Color? textColor,
+  }) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, size: 12, color: iconColor ?? Colors.grey),
         const SizedBox(width: 4),
-        Text(text, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: textColor ?? Colors.grey)),
+        Text(
+          text,
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: textColor ?? Colors.grey),
+        ),
       ],
     );
   }
@@ -109,8 +122,14 @@ class _CoordinatorSelectorState extends ConsumerState<CoordinatorSelector> {
               children:
                   coordinators.map((coordinator) {
                     final rate = widget.fiatExchangeRate ?? 1.0;
-                    final minPln = (coordinator.minAmountSats / 100000000.0 * rate).toStringAsFixed(2);
-                    final maxPln = (coordinator.maxAmountSats / 100000000.0 * rate).floor().toString();
+                    final minPln = (coordinator.minAmountSats /
+                            100000000.0 *
+                            rate)
+                        .toStringAsFixed(2);
+                    final maxPln =
+                        (coordinator.maxAmountSats / 100000000.0 * rate)
+                            .floor()
+                            .toString();
                     final feePct = coordinator.makerFee.toStringAsFixed(2);
                     final t = Translations.of(context);
                     return ListTile(
@@ -119,18 +138,30 @@ class _CoordinatorSelectorState extends ConsumerState<CoordinatorSelector> {
                         children: [
                           Row(
                             children: [
-                              (coordinator.icon != null && coordinator.icon!.isNotEmpty)
+                              (coordinator.icon != null &&
+                                      coordinator.icon!.isNotEmpty)
                                   ? (coordinator.icon!.startsWith('http')
-                                      ? Image.network(coordinator.icon!, width: 32, height: 32)
-                                      : Image.asset(coordinator.icon!, width: 32, height: 32))
+                                      ? Image.network(
+                                        coordinator.icon!,
+                                        width: 32,
+                                        height: 32,
+                                      )
+                                      : Image.asset(
+                                        coordinator.icon!,
+                                        width: 32,
+                                        height: 32,
+                                      ))
                                   : const Icon(Icons.account_circle, size: 32),
                               const SizedBox(width: 8),
                               Text(
                                 coordinator.name,
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
                                   color:
-                                      (coordinator.responsive == false || coordinator.responsive == null)
+                                      (coordinator.responsive == false ||
+                                              coordinator.responsive == null)
                                           ? Colors.grey
                                           : null,
                                 ),
@@ -138,37 +169,64 @@ class _CoordinatorSelectorState extends ConsumerState<CoordinatorSelector> {
                               if (coordinator.responsive == true)
                                 const Padding(
                                   padding: EdgeInsets.only(left: 4.0),
-                                  child: Icon(Icons.check_circle, color: Colors.green, size: 18),
+                                  child: Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                    size: 18,
+                                  ),
                                 ),
                               if (coordinator.responsive == false)
                                 Padding(
                                   padding: const EdgeInsets.only(left: 4.0),
                                   child: Tooltip(
-                                    message: t.coordinator.selector.unresponsive,
+                                    message:
+                                        t.coordinator.selector.unresponsive,
                                     preferBelow: false,
-                                    child: const Icon(Icons.error_outline, color: Colors.redAccent, size: 18),
+                                    child: const Icon(
+                                      Icons.error_outline,
+                                      color: Colors.redAccent,
+                                      size: 18,
+                                    ),
                                   ),
                                 ),
                               if (coordinator.responsive == null)
                                 Padding(
                                   padding: const EdgeInsets.only(left: 4.0),
                                   child: Tooltip(
-                                    message: t.coordinator.selector.waitingResponse,
+                                    message:
+                                        t.coordinator.selector.waitingResponse,
                                     preferBelow: false,
-                                    child: const Icon(Icons.help_outline, color: Colors.amber, size: 18),
+                                    child: const Icon(
+                                      Icons.help_outline,
+                                      color: Colors.amber,
+                                      size: 18,
+                                    ),
                                   ),
                                 ),
                               const Spacer(),
                               IconButton(
-                                icon: Image.asset('assets/nostr.png', width: 32, height: 32),
-                                tooltip: t.coordinator.selector.viewNostrProfile,
+                                icon: Image.asset(
+                                  'assets/nostr.png',
+                                  width: 32,
+                                  height: 32,
+                                ),
+                                tooltip:
+                                    t.coordinator.selector.viewNostrProfile,
                                 onPressed: () async {
-                                  final url = 'https://njump.to/${Nip19.encodePubKey(coordinator.pubkey)}';
-                                  await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                                  final url =
+                                      'https://njump.to/${Nip19.encodePubKey(coordinator.pubkey)}';
+                                  await launchUrl(
+                                    Uri.parse(url),
+                                    mode: LaunchMode.externalApplication,
+                                  );
                                 },
                               ),
-                              if (widget.selectedCoordinator?.pubkey == coordinator.pubkey)
-                                Icon(Icons.check, color: Theme.of(context).primaryColor),
+                              if (widget.selectedCoordinator?.pubkey ==
+                                  coordinator.pubkey)
+                                Icon(
+                                  Icons.check,
+                                  color: Theme.of(context).primaryColor,
+                                ),
                             ],
                           ),
                           const SizedBox(height: 2),
@@ -179,7 +237,8 @@ class _CoordinatorSelectorState extends ConsumerState<CoordinatorSelector> {
                               if (coordinator.version.isNotEmpty)
                                 Text(
                                   'v${coordinator.version}',
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(color: Colors.grey),
                                 ),
                               Text(
                                 t.coordinator.info.rangeDisplay(
@@ -187,28 +246,28 @@ class _CoordinatorSelectorState extends ConsumerState<CoordinatorSelector> {
                                   maxAmount: maxPln,
                                   currency: 'PLN',
                                 ),
-                                style: Theme
-                                    .of(context)
-                                    .textTheme
-                                    .bodySmall,
+                                style: Theme.of(context).textTheme.bodySmall,
                               ),
                               Text(
                                 t.coordinator.info.feeDisplay(fee: feePct),
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.blueGrey),
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(color: Colors.blueGrey),
                               ),
                             ],
                           ),
                         ],
                       ),
                       onTap:
-                          (coordinator.responsive == false || coordinator.responsive == null)
+                          (coordinator.responsive == false ||
+                                  coordinator.responsive == null)
                               ? null
                               : () {
                                 Navigator.of(context).pop();
                                 widget.onCoordinatorSelected?.call(coordinator);
                               },
                       tileColor:
-                          (coordinator.responsive == false || coordinator.responsive == null)
+                          (coordinator.responsive == false ||
+                                  coordinator.responsive == null)
                               ? Colors.grey.withOpacity(0.15)
                               : null,
                     );
@@ -257,25 +316,44 @@ class _CoordinatorSelectorState extends ConsumerState<CoordinatorSelector> {
       final coordinators = coordinatorsAsync.value;
 
       // Debug logging
-      Logger.log.d(() => '🔍 CoordinatorSelector: Found ${coordinators.length} coordinators');
+      Logger.log.d(
+        () =>
+            '🔍 CoordinatorSelector: Found ${coordinators.length} coordinators',
+      );
       for (final coordinator in coordinators) {
-        Logger.log.d(() => '  - ${coordinator.name}: responsive=${coordinator.responsive}');
+        Logger.log.d(
+          () => '  - ${coordinator.name}: responsive=${coordinator.responsive}',
+        );
       }
 
       // Find the first responsive coordinator for auto-selection
-      final responsiveCoordinators = coordinators.where((c) => c.responsive == true).toList();
-      final firstResponsiveCoordinator = responsiveCoordinators.isNotEmpty ? responsiveCoordinators.first : null;
+      final responsiveCoordinators =
+          coordinators.where((c) => c.responsive == true).toList();
+      final firstResponsiveCoordinator =
+          responsiveCoordinators.isNotEmpty
+              ? responsiveCoordinators.first
+              : null;
 
-      Logger.log.d(() => '🔍 CoordinatorSelector: Found ${responsiveCoordinators.length} responsive coordinators');
+      Logger.log.d(
+        () =>
+            '🔍 CoordinatorSelector: Found ${responsiveCoordinators.length} responsive coordinators',
+      );
       if (firstResponsiveCoordinator != null) {
-        Logger.log.d(() => '  - First responsive: ${firstResponsiveCoordinator.name}');
+        Logger.log.d(
+          () => '  - First responsive: ${firstResponsiveCoordinator.name}',
+        );
       } else {
         Logger.log.d(() => '  - No responsive coordinators found');
       }
 
       // Auto-select the first responsive coordinator if none is selected
-      if (selectedCoordinator == null && firstResponsiveCoordinator != null && widget.onCoordinatorSelected != null) {
-        Logger.log.d(() => '🔍 CoordinatorSelector: Auto-selecting ${firstResponsiveCoordinator.name}');
+      if (selectedCoordinator == null &&
+          firstResponsiveCoordinator != null &&
+          widget.onCoordinatorSelected != null) {
+        Logger.log.d(
+          () =>
+              '🔍 CoordinatorSelector: Auto-selecting ${firstResponsiveCoordinator.name}',
+        );
         // Use WidgetsBinding to call the callback after the current build is complete
         WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.onCoordinatorSelected!(firstResponsiveCoordinator);
@@ -283,14 +361,22 @@ class _CoordinatorSelectorState extends ConsumerState<CoordinatorSelector> {
       }
 
       // Use selected coordinator if available, otherwise use the first responsive one
-      final displayCoordinator = selectedCoordinator ?? firstResponsiveCoordinator;
-      Logger.log.d(() => '🔍 CoordinatorSelector: Display coordinator: ${displayCoordinator?.name ?? 'none'}');
+      final displayCoordinator =
+          selectedCoordinator ?? firstResponsiveCoordinator;
+      Logger.log.d(
+        () =>
+            '🔍 CoordinatorSelector: Display coordinator: ${displayCoordinator?.name ?? 'none'}',
+      );
 
       if (displayCoordinator != null) {
         // Compose details for min/max PLN and maker fee
         final rate = widget.fiatExchangeRate ?? 1.0;
-        final minPln = (displayCoordinator.minAmountSats / 100000000.0 * rate).toStringAsFixed(2);
-        final maxPln = (displayCoordinator.maxAmountSats / 100000000.0 * rate).floor().toString();
+        final minPln = (displayCoordinator.minAmountSats / 100000000.0 * rate)
+            .toStringAsFixed(2);
+        final maxPln =
+            (displayCoordinator.maxAmountSats / 100000000.0 * rate)
+                .floor()
+                .toString();
         final feePct = displayCoordinator.makerFee.toStringAsFixed(2);
         final t = Translations.of(context);
         return GestureDetector(
@@ -304,18 +390,24 @@ class _CoordinatorSelectorState extends ConsumerState<CoordinatorSelector> {
                 children: [
                   Row(
                     children: [
-                      (displayCoordinator.icon != null && displayCoordinator.icon!.isNotEmpty)
+                      (displayCoordinator.icon != null &&
+                              displayCoordinator.icon!.isNotEmpty)
                           ? (displayCoordinator.icon!.startsWith('http')
-                          ? Image.network(displayCoordinator.icon!, width: 32, height: 32)
-                          : Image.asset(displayCoordinator.icon!, width: 32, height: 32))
+                              ? Image.network(
+                                displayCoordinator.icon!,
+                                width: 32,
+                                height: 32,
+                              )
+                              : Image.asset(
+                                displayCoordinator.icon!,
+                                width: 32,
+                                height: 32,
+                              ))
                           : const Icon(Icons.account_circle, size: 32),
                       const SizedBox(width: 8),
                       Text(
                         displayCoordinator.name,
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .titleMedium
+                        style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.w600),
                       ),
                       const Spacer(),
@@ -330,11 +422,9 @@ class _CoordinatorSelectorState extends ConsumerState<CoordinatorSelector> {
                       if (displayCoordinator.version.isNotEmpty)
                         Text(
                           'v${displayCoordinator.version}',
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.copyWith(color: Colors.grey),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                         ),
                       Text(
                         t.coordinator.info.rangeDisplay(
@@ -342,23 +432,19 @@ class _CoordinatorSelectorState extends ConsumerState<CoordinatorSelector> {
                           maxAmount: maxPln,
                           currency: 'PLN',
                         ),
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .bodySmall,
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                       Text(
                         t.coordinator.info.feeDisplay(fee: feePct),
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(color: Colors.blueGrey),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: Colors.blueGrey),
                       ),
                     ],
                   ),
                   // Terms of Usage checkbox
-                  if (displayCoordinator.termsOfUsageNaddr != null && !widget.showInfoOnly) ...[
+                  if (displayCoordinator.termsOfUsageNaddr != null &&
+                      !widget.showInfoOnly) ...[
                     const SizedBox(height: 12),
                     Row(
                       children: [
@@ -393,9 +479,10 @@ class _CoordinatorSelectorState extends ConsumerState<CoordinatorSelector> {
                               MouseRegion(
                                 cursor: SystemMouseCursors.click,
                                 child: GestureDetector(
-                                  onTap: () => _openTermsOfUsage(
-                                    displayCoordinator.termsOfUsageNaddr!,
-                                  ),
+                                  onTap:
+                                      () => _openTermsOfUsage(
+                                        displayCoordinator.termsOfUsageNaddr!,
+                                      ),
                                   child: Text(
                                     t.coordinator.selector.termsOfUsage,
                                     style: const TextStyle(
@@ -437,7 +524,7 @@ class _CoordinatorSelectorState extends ConsumerState<CoordinatorSelector> {
       child: ElevatedButton.icon(
         icon: const Icon(Icons.hub),
         label: Text(t.coordinator.selector.choose),
-          onPressed: () => _showCoordinatorPicker(context),
+        onPressed: () => _showCoordinatorPicker(context),
       ),
     );
   }

@@ -23,7 +23,6 @@ class _MakerWaitForBlikScreenState
   bool _isLoadingConfig = true;
   String? _configError;
 
-
   @override
   void initState() {
     super.initState();
@@ -58,8 +57,9 @@ class _MakerWaitForBlikScreenState
       _startStatusCheckTimer();
     } catch (e) {
       if (!mounted) return;
-      Logger.log.e(() => 
-        "[MakerWaitForBlikScreen] Error loading coordinator info:  [1m${e.toString()} [0m",
+      Logger.log.e(
+        () =>
+            "[MakerWaitForBlikScreen] Error loading coordinator info:  [1m${e.toString()} [0m",
       );
       setState(() {
         _isLoadingConfig = false;
@@ -77,8 +77,9 @@ class _MakerWaitForBlikScreenState
   void _startStatusCheckTimer() {
     // Ensure this is called only after _reservationDuration is set
     if (_reservationDuration == null) {
-      Logger.log.w(() => 
-        "[MakerWaitForBlikScreen] _startStatusCheckTimer called before _reservationDuration is set. Aborting timer start.",
+      Logger.log.w(
+        () =>
+            "[MakerWaitForBlikScreen] _startStatusCheckTimer called before _reservationDuration is set. Aborting timer start.",
       );
       if (mounted && _configError == null && !_isLoadingConfig) {
         setState(() {
@@ -98,8 +99,9 @@ class _MakerWaitForBlikScreenState
     final coordinatorPubkey = offer?.coordinatorPubkey;
 
     if (offer == null || makerId == null || coordinatorPubkey == null) {
-      Logger.log.e(() => 
-        "[MakerWaitForBlik] Error: Missing offer, public key or coordinator pubkey.",
+      Logger.log.e(
+        () =>
+            "[MakerWaitForBlik] Error: Missing offer, public key or coordinator pubkey.",
       );
       return;
     }
@@ -107,7 +109,9 @@ class _MakerWaitForBlikScreenState
     Logger.log.d(() => "[MakerWaitForBlik] Status update received: $status");
 
     if (status == OfferStatus.blikReceived) {
-      Logger.log.i(() => "[MakerWaitForBlik] BLIK received/sent. Fetching code via API...");
+      Logger.log.i(
+        () => "[MakerWaitForBlik] BLIK received/sent. Fetching code via API...",
+      );
 
       try {
         final apiService = ref.read(apiServiceProvider);
@@ -116,47 +120,60 @@ class _MakerWaitForBlikScreenState
           makerId,
           coordinatorPubkey,
         );
-        Logger.log.d(() => "[MakerWaitForBlik] API returned blikCode: $blikCode");
+        Logger.log.d(
+          () => "[MakerWaitForBlik] API returned blikCode: $blikCode",
+        );
 
         if (blikCode != null && blikCode.isNotEmpty) {
-          Logger.log.d(() => 
-            "[MakerWaitForBlik] BLIK code is valid. Storing in provider...",
+          Logger.log.d(
+            () =>
+                "[MakerWaitForBlik] BLIK code is valid. Storing in provider...",
           );
           ref.read(receivedBlikCodeProvider.notifier).state = blikCode;
-          Logger.log.i(() => "[MakerWaitForBlik] Stored BLIK code from API: $blikCode");
+          Logger.log.i(
+            () => "[MakerWaitForBlik] Stored BLIK code from API: $blikCode",
+          );
 
           if (mounted) {
-            Logger.log.d(() => 
-              "[MakerWaitForBlik] Navigating to MakerConfirmPaymentScreen...",
+            Logger.log.d(
+              () =>
+                  "[MakerWaitForBlik] Navigating to MakerConfirmPaymentScreen...",
             );
             context.go('/confirm-blik');
           }
         } else {
-          Logger.log.e(() => 
-            "[MakerWaitForBlik] Error: Status is $status but API returned no BLIK code. Resetting.",
+          Logger.log.e(
+            () =>
+                "[MakerWaitForBlik] Error: Status is $status but API returned no BLIK code. Resetting.",
           );
           if (mounted) {
             // _resetToRoleSelection(t.system.errors.generic);
           }
         }
       } catch (e) {
-        Logger.log.e(() => "[MakerWaitForBlik] Error calling getBlikCodeForMaker: $e");
+        Logger.log.e(
+          () => "[MakerWaitForBlik] Error calling getBlikCodeForMaker: $e",
+        );
         if (mounted) {
           // _resetToRoleSelection(t.system.errors.generic);
         }
       }
     } else if (status == OfferStatus.funded) {
-      Logger.log.i(() => 
-        "[MakerWaitForBlik] Offer reverted to FUNDED (Taker likely timed out). Popping back.",
+      Logger.log.i(
+        () =>
+            "[MakerWaitForBlik] Offer reverted to FUNDED (Taker likely timed out). Popping back.",
       );
       if (mounted) {
         context.go('/wait-taker');
       }
     } else if (status == OfferStatus.reserved) {
-      Logger.log.d(() => "[MakerWaitForBlik] Still waiting for BLIK (Status: $status).");
+      Logger.log.d(
+        () => "[MakerWaitForBlik] Still waiting for BLIK (Status: $status).",
+      );
     } else {
-      Logger.log.w(() => 
-        "[MakerWaitForBlik] Offer in unexpected state ($status). Resetting.",
+      Logger.log.w(
+        () =>
+            "[MakerWaitForBlik] Offer in unexpected state ($status). Resetting.",
       );
       if (mounted) {
         // _resetToRoleSelection(t.system.errors.generic);
@@ -265,20 +282,29 @@ class _MakerWaitForBlikScreenState
                   decoration: BoxDecoration(
                     color: Colors.blue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: Colors.blue.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Padding(
                         padding: EdgeInsets.only(top: 2),
-                        child: Icon(Icons.info_outline, color: Colors.blue, size: 20),
+                        child: Icon(
+                          Icons.info_outline,
+                          color: Colors.blue,
+                          size: 20,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           t.maker.waitForBlik.messageInfo,
-                          style: const TextStyle(fontSize: 13, color: Colors.blue),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.blue,
+                          ),
                           softWrap: true,
                         ),
                       ),
@@ -315,7 +341,7 @@ class _MakerWaitForBlikScreenState
                   ],
                 ),
                 const SizedBox(height: 40),
-                
+
                 // Center: Large circular progress bar with time
                 Center(
                   child: CircularCountdownTimer(
@@ -328,28 +354,28 @@ class _MakerWaitForBlikScreenState
                     fontSize: 48,
                   ),
                 ),
-                
+
                 const SizedBox(height: 30),
-                
+
                 // Bottom section: Offer details
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                  // Offer details (bottom left)
-                  _buildDetailRow(
-                    context,
-                    t.offers.details.amountLabel,
-                    '${(offer.fiatAmount * 100).round() % 100 == 0 ? offer.fiatAmount.toStringAsFixed(0) : offer.fiatAmount.toStringAsFixed(2)} ${offer.fiatCurrency}',
-                  ),
-                  const SizedBox(height: 8),
-                  _buildDetailRow(
-                    context,
-                    t.offers.details.makerFeeLabel,
-                    '${offer.makerFees} sats',
-                  ),
-                ],
-              ),
-            ],
+                    // Offer details (bottom left)
+                    _buildDetailRow(
+                      context,
+                      t.offers.details.amountLabel,
+                      '${(offer.fiatAmount * 100).round() % 100 == 0 ? offer.fiatAmount.toStringAsFixed(0) : offer.fiatAmount.toStringAsFixed(2)} ${offer.fiatCurrency}',
+                    ),
+                    const SizedBox(height: 8),
+                    _buildDetailRow(
+                      context,
+                      t.offers.details.makerFeeLabel,
+                      '${offer.makerFees} sats',
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
@@ -363,10 +389,7 @@ class _MakerWaitForBlikScreenState
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.black87,
-          ),
+          style: const TextStyle(fontSize: 16, color: Colors.black87),
         ),
         Text(
           value,

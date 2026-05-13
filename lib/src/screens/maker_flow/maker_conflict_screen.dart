@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../models/offer.dart';
-import '../../providers/providers.dart'; 
+import '../../providers/providers.dart';
 
 class MakerConflictScreen extends ConsumerStatefulWidget {
   final Offer offer;
@@ -27,7 +27,10 @@ class _MakerConflictScreenState extends ConsumerState<MakerConflictScreen> {
   //   super.dispose();
   // }
 
-  Future<void> _showConfirmationDialog(BuildContext context, WidgetRef ref) async {
+  Future<void> _showConfirmationDialog(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -78,14 +81,22 @@ class _MakerConflictScreenState extends ConsumerState<MakerConflictScreen> {
     ref.read(errorProvider.notifier).state = null;
 
     try {
-      await apiService.confirmMakerPayment(widget.offer.id, makerId, widget.offer.coordinatorPubkey);
+      await apiService.confirmMakerPayment(
+        widget.offer.id,
+        makerId,
+        widget.offer.coordinatorPubkey,
+      );
 
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(t.maker.confirmPayment.feedback.confirmedTakerPaid)),
+        SnackBar(
+          content: Text(t.maker.confirmPayment.feedback.confirmedTakerPaid),
+        ),
       );
       context.go('/maker-success', extra: widget.offer);
     } catch (e) {
-      final errorMsg = t.maker.confirmPayment.errors.confirming(details: e.toString());
+      final errorMsg = t.maker.confirmPayment.errors.confirming(
+        details: e.toString(),
+      );
       ref.read(errorProvider.notifier).state = errorMsg;
       scaffoldMessenger.showSnackBar(SnackBar(content: Text(errorMsg)));
     } finally {
@@ -99,7 +110,6 @@ class _MakerConflictScreenState extends ConsumerState<MakerConflictScreen> {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final makerId = await ref.read(publicKeyProvider.future);
 
-
     if (makerId == null) {
       scaffoldMessenger.showSnackBar(
         SnackBar(content: Text(t.maker.amountForm.errors.publicKeyNotLoaded)),
@@ -109,7 +119,7 @@ class _MakerConflictScreenState extends ConsumerState<MakerConflictScreen> {
 
     final bool? confirmed = await showDialog<bool>(
       context: context,
-      barrierDismissible: false, 
+      barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: Text(t.maker.conflict.disputeDialog.title),
@@ -129,23 +139,28 @@ class _MakerConflictScreenState extends ConsumerState<MakerConflictScreen> {
     );
 
     if (confirmed != true) {
-      return; 
+      return;
     }
 
     // ref.read(isLoadingProvider.notifier).state = true;
     // ref.read(errorProvider.notifier).state = null;
 
     try {
-      await apiService.openDispute(widget.offer.id,  widget.offer.coordinatorPubkey);
+      await apiService.openDispute(
+        widget.offer.id,
+        widget.offer.coordinatorPubkey,
+      );
 
       setState(() {
-        _isDisputeOpened = true; 
+        _isDisputeOpened = true;
       });
       scaffoldMessenger.showSnackBar(
         SnackBar(content: Text(t.maker.conflict.feedback.disputeOpenedSuccess)),
       );
     } catch (e) {
-      final errorMsg = t.maker.conflict.errors.openingDispute(error: e.toString());
+      final errorMsg = t.maker.conflict.errors.openingDispute(
+        error: e.toString(),
+      );
       ref.read(errorProvider.notifier).state = errorMsg;
       scaffoldMessenger.showSnackBar(SnackBar(content: Text(errorMsg)));
     } finally {
@@ -158,8 +173,7 @@ class _MakerConflictScreenState extends ConsumerState<MakerConflictScreen> {
     final isLoading = ref.watch(isLoadingProvider);
 
     return Scaffold(
-      body:
-        Padding(
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
           child: Column(
@@ -198,7 +212,7 @@ class _MakerConflictScreenState extends ConsumerState<MakerConflictScreen> {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
-                        foregroundColor:  Colors.white,
+                        foregroundColor: Colors.white,
                       ),
                       onPressed: () => _showConfirmationDialog(context, ref),
                       child: Text(t.maker.conflict.actions.confirmPayment),
@@ -207,7 +221,7 @@ class _MakerConflictScreenState extends ConsumerState<MakerConflictScreen> {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.error,
-                        foregroundColor:  Colors.white,
+                        foregroundColor: Colors.white,
                       ),
                       onPressed: () => _openDispute(context, ref),
                       child: Text(t.maker.conflict.actions.openDispute),

@@ -13,8 +13,10 @@ class TakerConflictScreen extends ConsumerStatefulWidget {
   const TakerConflictScreen({super.key, required this.offerId});
 
   @override
-  ConsumerState<TakerConflictScreen> createState() => _TakerConflictScreenState();
+  ConsumerState<TakerConflictScreen> createState() =>
+      _TakerConflictScreenState();
 }
+
 class _TakerConflictScreenState extends ConsumerState<TakerConflictScreen> {
   @override
   Widget build(BuildContext context) {
@@ -40,8 +42,11 @@ class _TakerConflictScreenState extends ConsumerState<TakerConflictScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Icon(Icons.warning_amber_rounded,
-                  size: 80, color: Colors.orange),
+              const Icon(
+                Icons.warning_amber_rounded,
+                size: 80,
+                color: Colors.orange,
+              ),
               const SizedBox(height: 24),
               Text(
                 t.taker.conflict.headline,
@@ -49,10 +54,7 @@ class _TakerConflictScreenState extends ConsumerState<TakerConflictScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              Text(
-                t.taker.conflict.body,
-                textAlign: TextAlign.center,
-              ),
+              Text(t.taker.conflict.body, textAlign: TextAlign.center),
               const SizedBox(height: 16),
               Text(
                 t.taker.conflict.instructions,
@@ -74,8 +76,8 @@ class _TakerConflictScreenState extends ConsumerState<TakerConflictScreen> {
   }
 
   void _handleStatusUpdate(OfferStatus statusEnum, BuildContext context) {
-    Logger.log.i(() => 
-      "[TakerConflictScreen] Offer status updated to ${statusEnum.name}",
+    Logger.log.i(
+      () => "[TakerConflictScreen] Offer status updated to ${statusEnum.name}",
     );
 
     // Navigate to payment process screen for successful payment statuses
@@ -83,8 +85,9 @@ class _TakerConflictScreenState extends ConsumerState<TakerConflictScreen> {
         statusEnum == OfferStatus.settled ||
         statusEnum == OfferStatus.payingTaker ||
         statusEnum == OfferStatus.takerPaid) {
-      Logger.log.d(() => 
-        "[TakerConflictScreen] Status is ${statusEnum.name}. Navigating to payment process screen.",
+      Logger.log.d(
+        () =>
+            "[TakerConflictScreen] Status is ${statusEnum.name}. Navigating to payment process screen.",
       );
       if (mounted) {
         context.go('/paying-taker');
@@ -92,8 +95,9 @@ class _TakerConflictScreenState extends ConsumerState<TakerConflictScreen> {
     }
     // Navigate to payment failed screen
     else if (statusEnum == OfferStatus.takerPaymentFailed) {
-      Logger.log.d(() => 
-        "[TakerConflictScreen] Status is takerPaymentFailed. Navigating to payment failed screen.",
+      Logger.log.d(
+        () =>
+            "[TakerConflictScreen] Status is takerPaymentFailed. Navigating to payment failed screen.",
       );
       if (mounted) {
         final offer = ref.read(activeOfferProvider);

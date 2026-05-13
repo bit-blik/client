@@ -19,14 +19,15 @@ class MakerConfirmPaymentScreen extends ConsumerStatefulWidget {
 class _MakerConfirmPaymentScreenState
     extends ConsumerState<MakerConfirmPaymentScreen> {
   bool _fetchAttempted = false;
-  
+
   bool _isExpiredStatus() {
     final offer = ref.read(activeOfferProvider);
     if (offer == null) return false;
     return offer.status == OfferStatus.expiredBlik.name ||
-           offer.status == OfferStatus.expiredSentBlik.name || offer.status == OfferStatus.takerCharged.name;
+        offer.status == OfferStatus.expiredSentBlik.name ||
+        offer.status == OfferStatus.takerCharged.name;
   }
-  
+
   @override
   void initState() {
     super.initState();
@@ -65,7 +66,10 @@ class _MakerConfirmPaymentScreenState
     }
   }
 
-  Future<void> _showConfirmationDialog(BuildContext context, WidgetRef ref) async {
+  Future<void> _showConfirmationDialog(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -135,8 +139,9 @@ class _MakerConfirmPaymentScreenState
       //   );
       // }
 
-      Logger.log.i(() => 
-        "[MakerConfirmPaymentScreen] Confirming payment for offer $offerId by maker $makerId",
+      Logger.log.i(
+        () =>
+            "[MakerConfirmPaymentScreen] Confirming payment for offer $offerId by maker $makerId",
       );
       await apiService.confirmMakerPayment(
         offerId,
@@ -187,8 +192,9 @@ class _MakerConfirmPaymentScreenState
 
     try {
       final apiService = ref.read(apiServiceProvider);
-      Logger.log.i(() => 
-        "[MakerConfirmPaymentScreen] Marking BLIK invalid for offer ${offer.id} by maker $makerId",
+      Logger.log.i(
+        () =>
+            "[MakerConfirmPaymentScreen] Marking BLIK invalid for offer ${offer.id} by maker $makerId",
       );
       await apiService.markBlikInvalid(
         offer.id,
@@ -297,16 +303,17 @@ class _MakerConfirmPaymentScreenState
               Expanded(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    final upperContent = isExpired
-                        ? _buildExpiredContent(t)
-                        : _buildNormalContent(
-                            t,
-                            formattedBlikCode,
-                            blikStyle,
-                            isFetchingBlik,
-                            receivedBlikCode,
-                            copyButtonWidth,
-                          );
+                    final upperContent =
+                        isExpired
+                            ? _buildExpiredContent(t)
+                            : _buildNormalContent(
+                              t,
+                              formattedBlikCode,
+                              blikStyle,
+                              isFetchingBlik,
+                              receivedBlikCode,
+                              copyButtonWidth,
+                            );
                     // Make upper content scrollable only when needed
                     return SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
@@ -326,14 +333,17 @@ class _MakerConfirmPaymentScreenState
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Show info block if offer is in takerCharged status
-                  if (ref.watch(activeOfferProvider)?.statusEnum == OfferStatus.takerCharged) ...[
+                  if (ref.watch(activeOfferProvider)?.statusEnum ==
+                      OfferStatus.takerCharged) ...[
                     Container(
                       padding: const EdgeInsets.all(16),
                       margin: const EdgeInsets.only(bottom: 12),
                       decoration: BoxDecoration(
                         color: Colors.orange.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: Colors.orange.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -350,7 +360,10 @@ class _MakerConfirmPaymentScreenState
                           Expanded(
                             child: Text(
                               t.maker.confirmPayment.takerChargedWarning,
-                              style: const TextStyle(fontSize: 14, color: Colors.orange),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.orange,
+                              ),
                               softWrap: true,
                             ),
                           ),
@@ -497,10 +510,7 @@ class _MakerConfirmPaymentScreenState
               const SizedBox(height: 8),
               Text(
                 t.maker.confirmPayment.retrieving,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
             ],
           ],
@@ -514,23 +524,19 @@ class _MakerConfirmPaymentScreenState
                 gradient: const LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFFFF0000),
-                    Color(0xFFFF007F),
-                  ],
+                  colors: [Color(0xFFFF0000), Color(0xFFFF007F)],
                 ),
                 borderRadius: BorderRadius.circular(40),
               ),
               child: ElevatedButton(
-                onPressed: receivedBlikCode == null
-                    ? null
-                    : () => _copyToClipboard(receivedBlikCode),
+                onPressed:
+                    receivedBlikCode == null
+                        ? null
+                        : () => _copyToClipboard(receivedBlikCode),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(40),
                   ),
@@ -538,11 +544,7 @@ class _MakerConfirmPaymentScreenState
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
-                      Icons.copy,
-                      color: Colors.white,
-                      size: 18,
-                    ),
+                    const Icon(Icons.copy, color: Colors.white, size: 18),
                     const SizedBox(width: 8),
                     Text(
                       t.maker.confirmPayment.actions.copyBlik,
@@ -597,10 +599,7 @@ class _MakerConfirmPaymentScreenState
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
             t.maker.confirmPayment.expiredWarning,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black87,
-            ),
+            style: const TextStyle(fontSize: 16, color: Colors.black87),
             textAlign: TextAlign.center,
           ),
         ),
@@ -653,14 +652,13 @@ class _MakerConfirmPaymentScreenState
   void _handleStatusUpdate(OfferStatus statusEnum) {
     if (statusEnum == OfferStatus.expiredBlik ||
         statusEnum == OfferStatus.expiredSentBlik ||
-        statusEnum == OfferStatus.takerCharged
-    ) {
+        statusEnum == OfferStatus.takerCharged) {
       // No special action needed, UI will update accordingly
-      Logger.log.i(() => 
-        "[MakerConfirmPaymentScreen] Offer status updated to expired. UI will reflect this.",
+      Logger.log.i(
+        () =>
+            "[MakerConfirmPaymentScreen] Offer status updated to expired. UI will reflect this.",
       );
-      setState(() {
-      });
+      setState(() {});
     } else if (statusEnum == OfferStatus.takerCharged) {
       context.go("/maker-invalid-blik");
     } else if (statusEnum == OfferStatus.reserved) {

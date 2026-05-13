@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 
 // Platform-specific imports
 import 'platform_detection_stub.dart'
-if (dart.library.html) 'platform_detection_web.dart'
-if (dart.library.io) 'platform_detection_io.dart';
+    if (dart.library.html) 'platform_detection_web.dart'
+    if (dart.library.io) 'platform_detection_io.dart';
 
 /// Utility class for platform detection, especially for web environments
 class PlatformDetection {

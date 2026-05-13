@@ -393,10 +393,12 @@ class _TakerSubmitBlikScreenState extends ConsumerState<TakerSubmitBlikScreen> {
   }) async {
     Wallet? wallet = ndk.wallets.defaultWalletForReceiving;
     if (wallet == null) {
-      wallet = ndk.wallets.getWalletsForUnit('sat').firstWhere(
-        (w) => w.canReceive,
-        orElse: () => throw Exception('No receiving wallet available'),
-      );
+      wallet = ndk.wallets
+          .getWalletsForUnit('sat')
+          .firstWhere(
+            (w) => w.canReceive,
+            orElse: () => throw Exception('No receiving wallet available'),
+          );
       throw Exception('No default receiving wallet configured');
     }
     final result = await ndk.wallets.receive(

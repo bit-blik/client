@@ -20,16 +20,28 @@ class MakerInvalidBlikScreen extends ConsumerWidget {
       if (next != null && next.id == offer.id) {
         final status = next.statusEnum;
         if (status == OfferStatus.conflict) {
-          Logger.log.d(() => "[MakerInvalidBlikScreen] Offer status changed to conflict. Navigating...");
+          Logger.log.d(
+            () =>
+                "[MakerInvalidBlikScreen] Offer status changed to conflict. Navigating...",
+          );
           context.go('/maker-conflict', extra: offer);
         } else if (status == OfferStatus.reserved) {
-          Logger.log.d(() => "[MakerInvalidBlikScreen] Offer status changed to reserved. Navigating back to wait-blik.");
+          Logger.log.d(
+            () =>
+                "[MakerInvalidBlikScreen] Offer status changed to reserved. Navigating back to wait-blik.",
+          );
           context.go('/wait-blik', extra: offer);
         } else if (status == OfferStatus.funded) {
-          Logger.log.d(() => "[MakerInvalidBlikScreen] Offer status changed to funded. Navigating back to wait taker.");
+          Logger.log.d(
+            () =>
+                "[MakerInvalidBlikScreen] Offer status changed to funded. Navigating back to wait taker.",
+          );
           context.go('/wait-taker', extra: offer);
         } else if (status == OfferStatus.expired) {
-          Logger.log.d(() => "[MakerInvalidBlikScreen] Offer status changed to expired. Navigating back to home.");
+          Logger.log.d(
+            () =>
+                "[MakerInvalidBlikScreen] Offer status changed to expired. Navigating back to home.",
+          );
           ref.read(activeOfferProvider.notifier).setActiveOffer(null);
           context.go('/');
         }
@@ -49,7 +61,11 @@ class MakerInvalidBlikScreen extends ConsumerWidget {
             children: <Widget>[
               const MakerProgressIndicator(activeStep: 2),
               const SizedBox(height: 30),
-              const Icon(Icons.warning_amber_rounded, size: 60, color: Colors.orange),
+              const Icon(
+                Icons.warning_amber_rounded,
+                size: 60,
+                color: Colors.orange,
+              ),
               const SizedBox(height: 30),
               Text(
                 t.maker.invalidBlik.info,

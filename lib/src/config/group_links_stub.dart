@@ -46,4 +46,3 @@ class GroupLinks {
         signal.isNotEmpty;
   }
 }
-

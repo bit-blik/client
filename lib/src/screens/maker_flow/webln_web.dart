@@ -6,7 +6,9 @@ Future<bool> get isWeblnSupported async {
   try {
     await FlutterWebln.enable();
     final weblnValue = weblnDecode(FlutterWebln.webln);
-    Logger.log.d(() => "!!!!!!!!!!!!!: isWeblnSupported weblnValue: $weblnValue");
+    Logger.log.d(
+      () => "!!!!!!!!!!!!!: isWeblnSupported weblnValue: $weblnValue",
+    );
     if (weblnValue.isNotEmpty) {
       try {
         bool a = await FlutterWebln.getInfo().then((response) {
@@ -38,7 +40,7 @@ Future<void> sendWeblnPayment(String invoice) async {
     } else {
       Logger.log.d(() => "!!!! send payment result $result");
     }
-  } catch(e) {
+  } catch (e) {
     Logger.log.d(() => "!!!!!!!!!!!!! send payment: $e");
     rethrow;
   }
